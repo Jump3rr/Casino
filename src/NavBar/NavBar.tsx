@@ -5,7 +5,7 @@ import { onAuthStateChanged, User } from 'firebase/auth'
 
 const TopBarWrapper = styled.div`
   height: 10vh;
-  background-color: red;
+  background-color: blue;
 `
 export const NavBar = () => {
   const [user, setUser] = useState<User | any>({})
