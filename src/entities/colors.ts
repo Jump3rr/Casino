@@ -3,7 +3,8 @@ export const Colors = {
   lighterGreen: '#2c6133',
   black: '#000',
   white: '#fff',
-  darkRed: '#59101c',
+  darkRed: '#170000',
+  //darkRed: '#450202',
   gold: '#FFD700',
   red: '#cc2929',
 };

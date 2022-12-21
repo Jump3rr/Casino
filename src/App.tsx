@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import store from './tools/store';
-import { NavBar } from './NavBar/NavBar';
+import { NavBar } from './components/NavBar/NavBar';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LoginPage from './Login/LoginPage';
-import RegisterPage from './Login/RegisterPage';
+import LoginPage from './components/Login/LoginPage';
+import RegisterPage from './components/Login/RegisterPage';
 import { auth } from './tools/firebaseConfig';
 import PrivateRoute from './PrivateRoute';
 
