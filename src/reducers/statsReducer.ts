@@ -1,13 +1,13 @@
-import * as actionTypes from '../actions/actionTypes/statsTypes'
-import update from 'immutability-helper'
+import * as actionTypes from '../actions/actionTypes/statsTypes';
+import update from 'immutability-helper';
 
 export interface IStatsReducer {
-  stats: number[]
+  stats: number[];
 }
-const localData = localStorage.getItem('history')
+const localData = localStorage.getItem('history');
 const defaultState = (): IStatsReducer => ({
   stats: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-})
+});
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (state = defaultState(), action: any) => {
@@ -16,15 +16,15 @@ export default (state = defaultState(), action: any) => {
       return {
         ...state,
         stats: localData !== null ? JSON.parse(localData) : state.stats,
-      }
+      };
     }
     case actionTypes.PUSH_STATS: {
       return update(state, {
         stats: { $splice: [[9, 1]], $unshift: [action.payload.score] },
-      })
+      });
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};

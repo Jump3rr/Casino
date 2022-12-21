@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
-import { Provider } from 'react-redux'
-import store from './tools/store'
-import { NavBar } from './NavBar/NavBar'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import LoginPage from './Login/LoginPage'
-import RegisterPage from './Login/RegisterPage'
-import { auth } from './tools/firebaseConfig'
-import PrivateRoute from './PrivateRoute'
+import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import store from './tools/store';
+import { NavBar } from './NavBar/NavBar';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginPage from './Login/LoginPage';
+import RegisterPage from './Login/RegisterPage';
+import { auth } from './tools/firebaseConfig';
+import PrivateRoute from './PrivateRoute';
 
 function App() {
   return (
@@ -14,14 +14,14 @@ function App() {
       <Router>
         <Routes>
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<NavBar />} />
+            <Route path='/' element={<NavBar />} />
           </Route>
-          <Route path="/Login" element={<LoginPage />} />
-          <Route path="/Register" element={<RegisterPage />} />
+          <Route path='/Login' element={<LoginPage />} />
+          <Route path='/Register' element={<RegisterPage />} />
         </Routes>
       </Router>
     </Provider>
-  )
+  );
 }
 
-export default App
+export default App;

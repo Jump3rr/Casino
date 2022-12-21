@@ -1,5 +1,5 @@
-import { IItems } from "../entities/items";
-import * as actionTypes from "../actions/actionTypes/slotsTypes";
+import { IItems } from '../entities/items';
+import * as actionTypes from '../actions/actionTypes/slotsTypes';
 
 export interface IItemsReducer {
   itemsList: IItems[];
@@ -11,129 +11,129 @@ const defaultState = (): IItemsReducer => ({
   itemsList: [
     {
       id: 1,
-      img: "🍒",
-      multiply: 3
+      img: '🍒',
+      multiply: 3,
     },
     {
       id: 2,
-      img: "🍇",
-      multiply: 5
+      img: '🍇',
+      multiply: 5,
     },
     {
       id: 3,
-      img: "🍉",
-      multiply: 8
+      img: '🍉',
+      multiply: 8,
     },
     {
       id: 4,
-      img: "🍓",
-      multiply: 10
+      img: '🍓',
+      multiply: 10,
     },
     {
       id: 5,
-      img: "🍏",
-      multiply: 15
+      img: '🍏',
+      multiply: 15,
     },
     {
       id: 6,
-      img: "🍍",
-      multiply: 20
+      img: '🍍',
+      multiply: 20,
     },
     {
       id: 7,
-      img: "🍋",
-      multiply: 25
+      img: '🍋',
+      multiply: 25,
     },
     {
       id: 8,
-      img: "🏆",
-      multiply: 30
-    }
+      img: '🏆',
+      multiply: 30,
+    },
   ],
   items2List: [
     {
       id: 1,
-      img: "🍒",
-      multiply: 3
+      img: '🍒',
+      multiply: 3,
     },
     {
       id: 2,
-      img: "🍇",
-      multiply: 5
+      img: '🍇',
+      multiply: 5,
     },
     {
       id: 3,
-      img: "🍉",
-      multiply: 8
+      img: '🍉',
+      multiply: 8,
     },
     {
       id: 4,
-      img: "🍓",
-      multiply: 10
+      img: '🍓',
+      multiply: 10,
     },
     {
       id: 5,
-      img: "🍏",
-      multiply: 15
+      img: '🍏',
+      multiply: 15,
     },
     {
       id: 6,
-      img: "🍍",
-      multiply: 20
+      img: '🍍',
+      multiply: 20,
     },
     {
       id: 7,
-      img: "🍋",
-      multiply: 25
+      img: '🍋',
+      multiply: 25,
     },
     {
       id: 8,
-      img: "🏆",
-      multiply: 30
-    }
+      img: '🏆',
+      multiply: 30,
+    },
   ],
   items3List: [
     {
       id: 1,
-      img: "🍒",
-      multiply: 3
+      img: '🍒',
+      multiply: 3,
     },
     {
       id: 2,
-      img: "🍇",
-      multiply: 5
+      img: '🍇',
+      multiply: 5,
     },
     {
       id: 3,
-      img: "🍉",
-      multiply: 8
+      img: '🍉',
+      multiply: 8,
     },
     {
       id: 4,
-      img: "🍓",
-      multiply: 10
+      img: '🍓',
+      multiply: 10,
     },
     {
       id: 5,
-      img: "🍏",
-      multiply: 15
+      img: '🍏',
+      multiply: 15,
     },
     {
       id: 6,
-      img: "🍍",
-      multiply: 20
+      img: '🍍',
+      multiply: 20,
     },
     {
       id: 7,
-      img: "🍋",
-      multiply: 25
+      img: '🍋',
+      multiply: 25,
     },
     {
       id: 8,
-      img: "🏆",
-      multiply: 30
-    }
-  ]
+      img: '🏆',
+      multiply: 30,
+    },
+  ],
 });
 
 const shuffle = (array: IItems[]) => {
@@ -146,7 +146,7 @@ const shuffle = (array: IItems[]) => {
 
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex],
-      array[currentIndex]
+      array[currentIndex],
     ];
   }
   return array;
@@ -159,7 +159,7 @@ export default (state = defaultState(), action: any) => {
         ...state,
         itemsList: shuffle(state?.itemsList),
         items2List: shuffle(state?.items2List),
-        items3List: shuffle(state?.items3List)
+        items3List: shuffle(state?.items3List),
       };
     }
     case actionTypes.SHUFFLE_ITEMS: {
@@ -167,7 +167,7 @@ export default (state = defaultState(), action: any) => {
         ...state,
         itemsList: shuffle(state.itemsList),
         items2List: shuffle(state.items2List),
-        items3List: shuffle(state.items3List)
+        items3List: shuffle(state.items3List),
       };
     }
     default: {

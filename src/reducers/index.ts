@@ -1,14 +1,14 @@
-import { combineReducers } from "redux";
-import items, { IItemsReducer } from "./itemsReducer";
-import credits, { ICreditsReducer } from "./creditsReducer";
-import bet, { IBetReducer } from "./betReducer";
-import stats, { IStatsReducer } from "./statsReducer";
+import { combineReducers } from 'redux';
+import items, { IItemsReducer } from './itemsReducer';
+import credits, { ICreditsReducer } from './creditsReducer';
+import bet, { IBetReducer } from './betReducer';
+import stats, { IStatsReducer } from './statsReducer';
 
 export default combineReducers({
   items,
   credits,
   bet,
-  stats
+  stats,
 });
 
 export interface IState {
