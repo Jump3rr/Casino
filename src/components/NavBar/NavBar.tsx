@@ -89,7 +89,7 @@ export const NavBar = () => {
             </ProfileSingleSection>
             <ProfileSingleSection>
               <Texts>{auth.currentUser?.email}</Texts>
-              <TextButtons to='/'>Profile</TextButtons>
+              <TextButtons to='/profile'>Profile</TextButtons>
             </ProfileSingleSection>
             <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
           </ProfileSection>
