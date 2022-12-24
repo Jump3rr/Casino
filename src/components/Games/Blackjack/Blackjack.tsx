@@ -1,309 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-
-// type Card = {
-//   suit: string;
-//   value: number;
-// };
-
-// type Deck = {
-//   cards: Card[];
-// };
-
-// type Hand = Card[];
-
-// type BlackjackGame = {
-//   deck: Deck;
-//   playerHand: Hand;
-//   dealerHand: Hand;
-// };
-
-// function createDeck(): Deck {
-//   const cards: Card[] = [];
-//   const suits = ['hearts', 'diamonds', 'spades', 'clubs'];
-//   for (const suit of suits) {
-//     for (let i = 1; i <= 13; i++) {
-//       cards.push({ suit, value: i });
-//     }
-//   }
-//   return { cards };
-// }
-
-// function shuffleDeck(deck: Deck): void {
-//   // Losowa permutacja tablicy za pomocą algorytmu Fisher-Yates
-//   for (let i = deck.cards.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
-//   }
-// }
-
-// function dealCard(deck: Deck): Card {
-//   return deck.cards.pop()!;
-// }
-
-// function getHandTotal(hand: Hand): number {
-//   let total = 0;
-//   let aceCount = 0;
-//   for (const card of hand) {
-//     if (card.value === 1) {
-//       aceCount++;
-//     } else {
-//       total += Math.min(card.value, 10);
-//     }
-//   }
-//   while (aceCount > 0) {
-//     if (total + 11 <= 21) {
-//       total += 11;
-//     } else {
-//       total++;
-//     }
-//     aceCount--;
-//   }
-//   return total;
-// }
-
-// function Blackjack() {
-//   //const [game, setGame] = useState<BlackjackGame | null>(null);
-//   const [deck, setDeck] = useState<Deck | null>(null);
-//   const [playerHand, setPlayerHand] = useState<Card[]>([]);
-//   const [dealerHand, setDealerHand] = useState<Card[]>([]);
-//   const [winner, setWinner] = useState<'player' | 'dealer' | 'push' | null>(
-//     null
-//   );
-
-//   function startGame(): void {
-//     const newDeck = createDeck();
-//     shuffleDeck(newDeck);
-//     setDeck(newDeck);
-//     setPlayerHand([dealCard(newDeck), dealCard(newDeck)]);
-//     setDealerHand([dealCard(newDeck), dealCard(newDeck)]);
-//   }
-
-//   async function hit() {
-//     //game!.playerHand.push(dealCard(game!.deck));
-//     //console.log('abc');
-//     //setPlayerHand([...playerHand, dealCard(deck!)]);
-//     setPlayerHand([...playerHand, dealCard(deck!)]);
-//   }
-
-//   //   useEffect(() => {
-//   //     console.log('abc');
-//   //     const dealerTotal = getHandTotal(dealerHand);
-//   //     if (dealerTotal >= 17) {
-//   //       setWinner(determineWinner());
-//   //     } else if (dealerTotal < 17) {
-//   //       stand();
-//   //     }
-//   //   }, [dealerHand]);
-
-//   function stand(): void {
-//     // if (getHandTotal(dealerHand) < 17) {
-//     //   setDealerHand([...dealerHand, dealCard(deck!)]);
-//     // }
-//     while (getHandTotal(dealerHand) < 17) {
-//       setTimeout(() => {
-//         console.log(dealerHand);
-//         setDealerHand([...dealerHand, dealCard(deck!)]);
-//         console.log(dealerHand);
-//       }, 5000);
-//     }
-//     setWinner(determineWinner());
-//   }
-//   function determineWinner(): 'player' | 'dealer' | 'push' {
-//     const playerTotal = getHandTotal(playerHand);
-//     const dealerTotal = getHandTotal(dealerHand);
-//     if (playerTotal > 21) {
-//       return 'dealer';
-//     } else if (dealerTotal > 21) {
-//       return 'player';
-//     } else if (playerTotal > dealerTotal) {
-//       return 'player';
-//     } else if (dealerTotal > playerTotal) {
-//       return 'dealer';
-//     } else {
-//       return 'push';
-//     }
-//   }
-
-//   if (winner) {
-//     return (
-//       <div>
-//         <p>Wygrywa: {winner}</p>
-//         <button onClick={startGame}>Zagraj ponownie</button>
-//       </div>
-//     );
-//   } else if (deck) {
-//     return (
-//       <div>
-//         <p>Twoje karty:</p>
-//         <ul>
-//           {playerHand.map((card) => (
-//             <li key={card.suit + card.value}>
-//               {card.value} {card.suit}
-//             </li>
-//           ))}
-//         </ul>
-//         <p>Suma punktów: {getHandTotal(playerHand)}</p>
-//         <p>Karty krupiera:</p>
-//         <ul>
-//           {dealerHand.map((card, index) => (
-//             <li key={card.suit + card.value}>
-//               {index === 0 ? 'X' : card.value + ' ' + card.suit}
-//             </li>
-//           ))}
-//         </ul>
-//         <button onClick={hit}>Dobierz kartę</button>
-//         <button onClick={stand}>Zostań przy tych kartach</button>
-//       </div>
-//     );
-//   } else {
-//     return <button onClick={startGame}>Rozpocznij grę</button>;
-//   }
-// }
-
-// export default Blackjack;
-
-// import React, { useState } from 'react';
-
-// type Card = {
-//   suit: string;
-//   value: number;
-// };
-
-// type Deck = {
-//   cards: Card[];
-// };
-
-// function createDeck(): Deck {
-//   const cards: Card[] = [];
-//   const suits = ['hearts', 'diamonds', 'spades', 'clubs'];
-//   for (const suit of suits) {
-//     for (let i = 1; i <= 13; i++) {
-//       cards.push({ suit, value: i });
-//     }
-//   }
-//   return { cards };
-// }
-
-// function shuffleDeck(deck: Deck): void {
-//   // Losowa permutacja tablicy za pomocą algorytmu Fisher-Yates
-//   for (let i = deck.cards.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
-//   }
-// }
-
-// function dealCard(deck: Deck): Card {
-//   return deck.cards.pop()!;
-// }
-
-// function getHandTotal(hand: Card[]): number {
-//   let total = 0;
-//   let aceCount = 0;
-//   for (const card of hand) {
-//     if (card.value === 1) {
-//       aceCount++;
-//     } else {
-//       total += Math.min(card.value, 10);
-//     }
-//   }
-//   while (aceCount > 0) {
-//     if (total + 11 <= 21) {
-//       total += 11;
-//     } else {
-//       total++;
-//     }
-//     aceCount--;
-//   }
-//   return total;
-// }
-
-// function Blackjack() {
-//   const [deck, setDeck] = useState<Deck | null>(null);
-//   const [playerHand, setPlayerHand] = useState<Card[]>([]);
-//   const [dealerHand, setDealerHand] = useState<Card[]>([]);
-//   const [winner, setWinner] = useState<'player' | 'dealer' | 'push' | null>(
-//     null
-//   );
-
-//   function startGame(): void {
-//     const newDeck = createDeck();
-//     shuffleDeck(newDeck);
-//     setDeck(newDeck);
-//     setPlayerHand([dealCard(newDeck), dealCard(newDeck)]);
-//     setDealerHand([dealCard(newDeck), dealCard(newDeck)]);
-//   }
-
-//   function hit(): void {
-//     console.log(getHandTotal(playerHand));
-//     console.log(playerHand);
-//     setPlayerHand([...playerHand, dealCard(deck!)]);
-//     console.log(winner);
-//     console.log(playerHand);
-//     console.log(getHandTotal(playerHand));
-//   }
-
-//   function stand(): void {
-//     while (getHandTotal(dealerHand) < 17) {
-//       console.log('a');
-//       setDealerHand([...dealerHand, dealCard(deck!)]);
-//       setWinner(determineWinner());
-//     }
-//   }
-
-//   function determineWinner(): 'player' | 'dealer' | 'push' {
-//     const playerTotal = getHandTotal(playerHand);
-//     const dealerTotal = getHandTotal(dealerHand);
-//     if (playerTotal > 21) {
-//       return 'dealer';
-//     } else if (dealerTotal > 21) {
-//       return 'player';
-//     } else if (playerTotal > dealerTotal) {
-//       return 'player';
-//     } else if (dealerTotal > playerTotal) {
-//       return 'dealer';
-//     } else {
-//       return 'push';
-//     }
-//   }
-
-//   if (winner) {
-//     return (
-//       <div>
-//         <p>Wygrywa: {winner}</p>
-//         <button onClick={startGame}>Zagraj ponownie</button>
-//       </div>
-//     );
-//   } else if (playerHand.length > 0) {
-//     return (
-//       <div>
-//         <p>Twoje karty:</p>
-//         <ul>
-//           {playerHand.map((card) => (
-//             <li key={card.suit + card.value}>
-//               {card.value} {card.suit}
-//             </li>
-//           ))}
-//         </ul>
-//         <p>Suma punktów: {getHandTotal(playerHand)}</p>
-//         <p>Karty krupiera:</p>
-//         <ul>
-//           {dealerHand.map((card, index) => (
-//             <li key={card.suit + card.value}>
-//               {index === 0 ? 'X' : card.value + ' ' + card.suit}
-//             </li>
-//           ))}
-//         </ul>
-//         <button onClick={hit}>Dobierz kartę</button>
-//         <button onClick={stand}>Zostań przy tych kartach</button>
-//       </div>
-//     );
-//   } else {
-//     return <button onClick={startGame}>Rozpocznij grę</button>;
-//   }
-// }
-
-// export default Blackjack;
-
 import React, { useState, useEffect } from 'react';
 import CurrentBet from './CurrentBet';
 import DealerHand from './DealerHand';
@@ -365,7 +59,7 @@ const getHandValue = (cards: Card[]): number => {
   let value = 0;
   let numAces = 0;
   for (const card of cards) {
-    if (card.rank === Rank.Ace) {
+    if (card.rank === 'A') {
       numAces++;
     } else if (card.rank === 'J' || card.rank === 'K' || card.rank === 'Q') {
       value += 10;
@@ -386,56 +80,51 @@ const getHandValue = (cards: Card[]): number => {
 
 const Blackjack: React.FC = () => {
   const [playerCards, setPlayerCards] = useState<Card[]>([]);
-  const shuffledDeck = shuffleDeck(deck);
+  const [shuffledDeck, setShuffledDeck] = useState<Card[]>(shuffleDeck(deck));
   const [dealerCards, setDealerCards] = useState<Card[]>([]);
   const [gameState, setGameState] = useState<
     'playing' | 'won' | 'lost' | 'tied'
   >('playing');
   const [playerBalance, setPlayerBalance] = useState(1000);
   const [currentBet, setCurrentBet] = useState(0);
-  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
-    setPlayerCards([shuffledDeck[0], shuffledDeck[2]]);
-    setDealerCards([shuffledDeck[1], shuffledDeck[3]]);
+    let newDeck = [...shuffledDeck];
+    const newPlayerCards = [shuffledDeck[0], shuffledDeck[2]];
+    setPlayerCards(newPlayerCards);
+    newDeck = shuffledDeck.filter((card) => !newPlayerCards.includes(card));
+
+    const newDealerCards = [shuffledDeck[1], shuffledDeck[3]];
+    setDealerCards(newDealerCards);
+    setShuffledDeck(newDeck.filter((card) => !newDealerCards.includes(card)));
   }, []);
 
   const handleHit = () => {
     if (gameState === 'playing') {
-      const newPlayerCards = [
-        ...playerCards,
-        shuffledDeck[playerCards.length + dealerCards.length],
-      ];
+      const newPlayerCards = [...playerCards, shuffledDeck[0]];
       setPlayerCards(newPlayerCards);
-      if (getHandValue(newPlayerCards) > 21) {
+      setShuffledDeck(
+        shuffledDeck.filter(
+          (card) => card !== newPlayerCards[newPlayerCards.length - 1]
+        )
+      );
+      if (getHandValue(newPlayerCards) > 21521) {
         setGameState('lost');
         setPlayerBalance(playerBalance - currentBet);
       }
     }
-  };
-  const checkDealer = () => {
-    if (getHandValue(dealerCards)) return true;
-    else return false;
   };
 
   const handleStand = () => {
     let newDealerCards = [...dealerCards];
     if (gameState === 'playing') {
       while (getHandValue(newDealerCards) < 17) {
-        console.log('abc');
-        newDealerCards.push(
-          shuffledDeck[playerCards.length + dealerCards.length]
-        );
+        newDealerCards.push(shuffledDeck[0]);
       }
       setDealerCards(newDealerCards);
     }
     const newDelaerHandValue = getHandValue(newDealerCards);
-    console.log('abc');
-    console.log(getHandValue(dealerCards));
-    let dealerHandValue = getHandValue(dealerCards);
     const playerHandValue = getHandValue(playerCards);
-    console.log('PLAYER:' + getHandValue(playerCards));
-    console.log('bot:' + newDelaerHandValue);
     if (newDelaerHandValue > 21 || newDelaerHandValue < playerHandValue) {
       setGameState('won');
       setPlayerBalance(playerBalance + currentBet);
