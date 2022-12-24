@@ -77,8 +77,8 @@ export const NavBar = () => {
         <h2>LOGO</h2>
         <Menu>
           <ButtonsSection>
-            <TextButtons to='/login'>HOME</TextButtons>
-            <TextButtons to='/'>RANKING</TextButtons>
+            <TextButtons to='/'>HOME</TextButtons>
+            <TextButtons to='/blackjack'>RANKING</TextButtons>
             <TextButtons to='/'>BIGGEST WINS</TextButtons>
             <TextButtons to='/'>LIVE GAMES</TextButtons>
           </ButtonsSection>

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Input, MainWrapper } from '../../entities/CommonComponents';
 import { auth } from '../../tools/firebaseConfig';
+import { AiOutlineEdit } from 'react-icons/ai';
 
 const OneLine = styled.div`
   display: flex;
@@ -16,7 +17,10 @@ export const ProfileComponent = () => {
       <h1>Your account:</h1>
       <OneLine>
         <h3>Profile picture:</h3>
-        <h3>{auth.currentUser?.photoURL}</h3>
+        <h3>
+          {auth.currentUser?.photoURL}
+          <AiOutlineEdit />
+        </h3>
       </OneLine>
       <OneLine>
         <h3>Email: </h3>
@@ -28,15 +32,18 @@ export const ProfileComponent = () => {
       </OneLine>
       <OneLine>
         <h3>Name</h3>
-        <h3>{auth.currentUser?.displayName}</h3>
+        <h3>
+          {auth.currentUser?.displayName}
+          <AiOutlineEdit />
+        </h3>
       </OneLine>
       <OneLine>
         <h3>Phone number:</h3>
-        <h3>{auth.currentUser?.phoneNumber}</h3>
+        <h3>
+          {auth.currentUser?.phoneNumber}
+          <AiOutlineEdit />
+        </h3>
       </OneLine>
-      <div>
-        <label>Set avatar</label>
-      </div>
     </MainWrapper>
   );
 };

@@ -9,6 +9,7 @@ import { auth } from './tools/firebaseConfig';
 import PrivateRoute from './PrivateRoute';
 import { ProfileComponent } from './components/Profile/Profile';
 import { MainPage } from './components/MainPage/MainPage';
+import Blackjack from './components/Games/Blackjack/Blackjack';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           >
             <Route path='/' element={<MainPage />} />
             <Route path='/profile' element={<ProfileComponent />} />
+            <Route path='/blackjack' element={<Blackjack />} />
           </Route>
           <Route path='/Login' element={<LoginPage />} />
           <Route path='/Register' element={<RegisterPage />} />
