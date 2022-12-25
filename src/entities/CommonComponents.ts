@@ -66,3 +66,43 @@ export const ErrorText = styled.div`
   font-weight: bold;
   color: ${Colors.red};
 `;
+
+export const Deck = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+export const CardContainer = styled.div`
+  background-color: white;
+  width: 7em;
+  height: 10em;
+  color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+`;
+export const TopCard = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  height: 33%;
+  font-size: x-large;
+  padding: 5px;
+`;
+export const BottomCard = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  height: 33%;
+  align-items: flex-end;
+  font-size: x-large;
+  padding: 5px;
+`;
+export const MiddleCard = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 33%;
+  align-items: center;
+  font-size: x-large;
+`;

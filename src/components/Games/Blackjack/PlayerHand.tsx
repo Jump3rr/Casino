@@ -1,5 +1,13 @@
 import React from 'react';
 import { Card } from './Blackjack';
+import styled from 'styled-components';
+import {
+  Deck,
+  CardContainer,
+  TopCard,
+  MiddleCard,
+  BottomCard,
+} from '../../../entities/CommonComponents';
 
 interface PlayerHandProps {
   cards: Card[];
@@ -7,15 +15,22 @@ interface PlayerHandProps {
 
 const PlayerHand: React.FC<PlayerHandProps> = ({ cards }) => {
   return (
-    <div>
+    <Deck>
       PLAYER:
-      {cards.map((card) => (
-        <div key={card.suit + card.rank}>
-          {card.suit}
-          {card.rank}
-        </div>
+      {cards?.map((card) => (
+        <CardContainer key={card.suit + card.rank}>
+          <TopCard>
+            {card.suit}
+            {card.rank}
+          </TopCard>
+          <MiddleCard>{card.suit}</MiddleCard>
+          <BottomCard>
+            {card.rank}
+            {card.suit}
+          </BottomCard>
+        </CardContainer>
       ))}
-    </div>
+    </Deck>
   );
 };
 

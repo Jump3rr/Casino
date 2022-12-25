@@ -79,7 +79,7 @@ export const NavBar = () => {
           <ButtonsSection>
             <TextButtons to='/'>HOME</TextButtons>
             <TextButtons to='/blackjack'>RANKING</TextButtons>
-            <TextButtons to='/'>BIGGEST WINS</TextButtons>
+            <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
             <TextButtons to='/'>LIVE GAMES</TextButtons>
           </ButtonsSection>
           <ProfileSection>

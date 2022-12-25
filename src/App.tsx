@@ -10,6 +10,7 @@ import PrivateRoute from './PrivateRoute';
 import { ProfileComponent } from './components/Profile/Profile';
 import { MainPage } from './components/MainPage/MainPage';
 import Blackjack from './components/Games/Blackjack/Blackjack';
+import Roulette from './components/Games/Roulette/Roulette';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path='/' element={<MainPage />} />
             <Route path='/profile' element={<ProfileComponent />} />
             <Route path='/blackjack' element={<Blackjack />} />
+            <Route path='/roulette' element={<Roulette />} />
           </Route>
           <Route path='/Login' element={<LoginPage />} />
           <Route path='/Register' element={<RegisterPage />} />

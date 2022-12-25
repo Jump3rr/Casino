@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Buttons } from '../../../entities/CommonComponents';
 import CurrentBet from './CurrentBet';
 import DealerHand from './DealerHand';
 import GameState from './GameState';
@@ -32,6 +34,19 @@ export interface Card {
   suit: Suit;
   rank: Rank;
 }
+const BlackjackGameContainer = styled.div`
+  /* display: flex;
+  justify-content: center;
+  flex-direction: column; */
+  text-align: center;
+  align-items: center;
+  align-content: center;
+  align-self: center;
+  box-align: center;
+`;
+const BlackjackButtons = styled(Buttons)`
+  padding: 5px;
+`;
 
 const generateDeck = (): Card[] => {
   const deck: Card[] = [];
@@ -87,6 +102,7 @@ const Blackjack: React.FC = () => {
   >('playing');
   const [playerBalance, setPlayerBalance] = useState(1000);
   const [currentBet, setCurrentBet] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     let newDeck = [...shuffledDeck];
@@ -108,9 +124,10 @@ const Blackjack: React.FC = () => {
           (card) => card !== newPlayerCards[newPlayerCards.length - 1]
         )
       );
-      if (getHandValue(newPlayerCards) > 21521) {
+      if (getHandValue(newPlayerCards) > 21) {
         setGameState('lost');
         setPlayerBalance(playerBalance - currentBet);
+        setFinished(true);
       }
     }
   };
@@ -122,17 +139,18 @@ const Blackjack: React.FC = () => {
         newDealerCards.push(shuffledDeck[0]);
       }
       setDealerCards(newDealerCards);
-    }
-    const newDelaerHandValue = getHandValue(newDealerCards);
-    const playerHandValue = getHandValue(playerCards);
-    if (newDelaerHandValue > 21 || newDelaerHandValue < playerHandValue) {
-      setGameState('won');
-      setPlayerBalance(playerBalance + currentBet);
-    } else if (newDelaerHandValue > playerHandValue) {
-      setGameState('lost');
-      setPlayerBalance(playerBalance - currentBet);
-    } else {
-      setGameState('tied');
+      const newDelaerHandValue = getHandValue(newDealerCards);
+      const playerHandValue = getHandValue(playerCards);
+      if (newDelaerHandValue > 21 || newDelaerHandValue < playerHandValue) {
+        setGameState('won');
+        setPlayerBalance(playerBalance + currentBet);
+      } else if (newDelaerHandValue > playerHandValue) {
+        setGameState('lost');
+        setPlayerBalance(playerBalance - currentBet);
+      } else {
+        setGameState('tied');
+      }
+      setFinished(true);
     }
   };
 
@@ -144,17 +162,21 @@ const Blackjack: React.FC = () => {
   };
 
   return (
-    <div>
+    <BlackjackGameContainer>
+      <DealerHand cards={dealerCards} finished={finished} />
       <PlayerHand cards={playerCards} />
-      <DealerHand cards={dealerCards} />
       <GameState state={gameState} />
       <PlayerBalance balance={playerBalance} />
       <CurrentBet bet={currentBet} />
-      <button onClick={handleHit}>Hit</button>
-      <button onClick={handleStand}>Stand</button>
-      <button onClick={() => handleBet(100)}>Bet 100</button>
-      <button onClick={() => handleBet(500)}>Bet 500</button>
-    </div>
+      <BlackjackButtons onClick={handleHit}>Hit</BlackjackButtons>
+      <BlackjackButtons onClick={handleStand}>Stand</BlackjackButtons>
+      <BlackjackButtons onClick={() => handleBet(100)}>
+        Bet 100
+      </BlackjackButtons>
+      <BlackjackButtons onClick={() => handleBet(500)}>
+        Bet 500
+      </BlackjackButtons>
+    </BlackjackGameContainer>
   );
 };
 
