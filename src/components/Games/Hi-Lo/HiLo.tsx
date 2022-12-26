@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Colors } from '../../../entities/colors';
 import {
   BottomCard,
   Buttons,
@@ -10,6 +11,25 @@ import {
   TopCard,
 } from '../../../entities/CommonComponents';
 import { Card, generateDeckOneSuit } from '../Cards/Cards';
+
+const HiLoButtons = styled(Buttons)`
+  padding: 1em 2em 1em 2em;
+`;
+const PlayButton = styled(HiLoButtons)`
+  background-color: ${Colors.red};
+  color: ${Colors.gold};
+
+  :hover {
+    border-color: ${Colors.red};
+    background-color: ${Colors.gold};
+    color: ${Colors.red};
+  }
+`;
+
+const payouts = [
+  0, 12.55, 6.27, 4.18, 3.14, 2.51, 2.09, 1.79, 1.57, 1.39, 1.25, 1.14, 1.05,
+];
+const reversedPayouts = [...payouts].reverse();
 
 export const HiLo = () => {
   const [card, setCard] = useState<Card | null>(null);
@@ -86,10 +106,14 @@ export const HiLo = () => {
           </CardContainer>
         )}
       </Deck>
-      <Buttons onClick={() => setPlayerPick(1)}>Higher</Buttons>
-      <Buttons onClick={() => setPlayerPick(2)}>Equal</Buttons>
-      <Buttons onClick={() => setPlayerPick(3)}>Lower</Buttons>
-      <Buttons onClick={handleClick}>PLAY</Buttons>
+      <HiLoButtons onClick={() => setPlayerPick(1)}>Higher</HiLoButtons>
+      {card && (card.value || card.value === 0)
+        ? reversedPayouts[card?.value]
+        : ''}
+      <HiLoButtons onClick={() => setPlayerPick(2)}>Equal</HiLoButtons>
+      <HiLoButtons onClick={() => setPlayerPick(3)}>Lower</HiLoButtons>
+      {card && (card.value || card.value === 0) ? payouts[card?.value] : ''}
+      <PlayButton onClick={handleClick}>PLAY</PlayButton>
     </MainWrapper>
   );
 };
