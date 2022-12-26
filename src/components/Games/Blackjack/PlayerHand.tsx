@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from './Blackjack';
 import styled from 'styled-components';
 import {
   Deck,
@@ -8,6 +7,7 @@ import {
   MiddleCard,
   BottomCard,
 } from '../../../entities/CommonComponents';
+import { Card } from '../Cards/Cards';
 
 interface PlayerHandProps {
   cards: Card[];

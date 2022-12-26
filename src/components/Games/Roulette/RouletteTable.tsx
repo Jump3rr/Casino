@@ -73,8 +73,11 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
         }
         setInfo('You lose');
         break;
-      case playerBet === 45:
+      case playerBet === 45 || playerBet === 47:
         winningNumber % 2 ? setInfo('You won') : setInfo('You lose');
+        break;
+      case playerBet === 48 || playerBet === 46:
+        winningNumber % 2 ? setInfo('You lose') : setInfo('You won');
         break;
       case playerBet === 49:
         if (winningNumber >= 19 && winningNumber <= 36) {

@@ -1,39 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Buttons } from '../../../entities/CommonComponents';
+import { generateDeck, Card } from '../Cards/Cards';
 import CurrentBet from './CurrentBet';
 import DealerHand from './DealerHand';
 import GameState from './GameState';
 import PlayerBalance from './PlayerBalance';
 import PlayerHand from './PlayerHand';
 
-enum Suit {
-  Club = '♣',
-  Diamond = '♦',
-  Heart = '♥',
-  Spade = '♠',
-}
-
-enum Rank {
-  Two = '2',
-  Three = '3',
-  Four = '4',
-  Five = '5',
-  Six = '6',
-  Seven = '7',
-  Eight = '8',
-  Nine = '9',
-  Ten = '10',
-  Jack = 'J',
-  Queen = 'Q',
-  King = 'K',
-  Ace = 'A',
-}
-
-export interface Card {
-  suit: Suit;
-  rank: Rank;
-}
 const BlackjackGameContainer = styled.div`
   /* display: flex;
   justify-content: center;
@@ -47,18 +21,6 @@ const BlackjackGameContainer = styled.div`
 const BlackjackButtons = styled(Buttons)`
   padding: 5px;
 `;
-
-const generateDeck = (): Card[] => {
-  const deck: Card[] = [];
-
-  for (const suit of Object.values(Suit)) {
-    for (const rank of Object.values(Rank)) {
-      deck.push({ suit, rank });
-    }
-  }
-
-  return deck;
-};
 
 const deck = generateDeck();
 

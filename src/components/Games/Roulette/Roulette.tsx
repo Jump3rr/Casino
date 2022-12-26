@@ -5,7 +5,9 @@ import { Buttons, MainWrapper } from '../../../entities/CommonComponents';
 import { rouletteData } from './RouletteData';
 import { RouletteTable } from './RouletteTable';
 
-const RouletteTableNumbers = styled.div``;
+const SpinButton = styled(Buttons)`
+  padding: 1em 2em 1em 2em;
+`;
 
 export default () => {
   const [mustSpin, setMustSpin] = useState(false);
@@ -35,7 +37,7 @@ export default () => {
           setMustSpin(false);
         }}
       />
-      <Buttons onClick={handleSpinClick}>SPIN</Buttons>
+      <SpinButton onClick={handleSpinClick}>SPIN</SpinButton>
 
       <RouletteTable winningNumber={winningNumber} />
     </MainWrapper>

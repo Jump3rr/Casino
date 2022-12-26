@@ -4,12 +4,13 @@ import { Colors } from './colors';
 
 export const MainWrapper = styled.div`
   background-color: ${Colors.mainGreen};
-  height: 80vh;
+  min-height: 80vh;
   justify-content: center;
   align-items: center;
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 5em;
 `;
 export const Input = styled.input`
   height: 2em;

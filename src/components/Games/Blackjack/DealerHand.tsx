@@ -6,7 +6,7 @@ import {
   MiddleCard,
   BottomCard,
 } from '../../../entities/CommonComponents';
-import { Card } from './Blackjack';
+import { Card } from '../Cards/Cards';
 
 interface DealerHandProps {
   cards: Card[];
