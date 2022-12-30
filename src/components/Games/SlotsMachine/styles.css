@@ -1,0 +1,33 @@
+.items {
+  overflow: hidden;
+}
+
+.items > span {
+  position: relative;
+  overflow: hidden;
+}
+
+.items__value {
+  display: inline-block;
+}
+
+.it-enter {
+  background: transparent;
+  transform: translateY(100%);
+}
+
+.it-enter.it-enter-active {
+  transform: translateY(0);
+  transition: all 1000ms;
+}
+
+.it-exit {
+  transform: translateY(0);
+  position: absolute;
+  left: 0;
+}
+
+.it-exit.it-exit-active {
+  transform: translateY(-100%);
+  transition: all 1000ms;
+}

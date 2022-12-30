@@ -81,6 +81,7 @@ export const NavBar = () => {
             <TextButtons to='/blackjack'>RANKING</TextButtons>
             <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
             <TextButtons to='/hilo'>LIVE GAMES</TextButtons>
+            <TextButtons to='/slots'>SLOTS-temp</TextButtons>
           </ButtonsSection>
           <ProfileSection>
             <ProfileSingleSection>

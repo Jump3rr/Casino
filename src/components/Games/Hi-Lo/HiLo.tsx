@@ -111,6 +111,7 @@ export const HiLo = () => {
         ? reversedPayouts[card?.value]
         : ''}
       <HiLoButtons onClick={() => setPlayerPick(2)}>Equal</HiLoButtons>
+      {payouts[1]}
       <HiLoButtons onClick={() => setPlayerPick(3)}>Lower</HiLoButtons>
       {card && (card.value || card.value === 0) ? payouts[card?.value] : ''}
       <PlayButton onClick={handleClick}>PLAY</PlayButton>

@@ -7,4 +7,10 @@ export const Colors = {
   //darkRed: '#450202',
   gold: '#FFD700',
   red: '#cc2929',
+
+  //white: "#FFF",
+  //black: "#000",
+  matrixGreen: '#008f11',
+  activeButton: '#8f0000',
+  button: '#f00',
 };
