@@ -60,7 +60,6 @@ export const BottomMachine: FC = () => {
     }));
   useEffect(() => {
     localStorage.setItem('credits', JSON.stringify(credits));
-    localStorage.setItem('history', JSON.stringify(stats));
   }, [credits, stats]);
 
   const CheckCredits = (): boolean => {

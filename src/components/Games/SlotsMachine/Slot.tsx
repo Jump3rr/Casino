@@ -25,22 +25,28 @@ const Item = styled.span`
 `;
 interface ISlot {
   items: IItems[];
+  time: number;
 }
 export const Slot: FC<ISlot> = (props) => {
+  const slotStyle = (): string => {
+    if (props.time === 1000) return 'first';
+    if (props.time === 2000) return 'second';
+    return 'third';
+  };
   return (
     <OneSlot>
       <div className='items'>
-        <TransitionGroup component='span'>
+        <TransitionGroup component='span' key={props.time}>
           <CSSTransition
-            classNames='it'
-            timeout={{ enter: 1000, exit: 1000 }}
+            classNames={slotStyle()} //{props.time === 1000 ? 'first' : 'second'} //'it'
+            timeout={{ enter: props.time, exit: props.time }}
             key={Math.random()}
             unmountOnExit
           >
             <Column className='items__value'>
               {props.items?.length > 0 &&
-                props.items.map((el) => {
-                  return <Item key={el.id}>{el.img}</Item>;
+                props.items.map((el, index) => {
+                  return <Item key={index + props.time}>{el.img}</Item>;
                 })}
             </Column>
           </CSSTransition>

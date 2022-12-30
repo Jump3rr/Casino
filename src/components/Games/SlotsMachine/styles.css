@@ -11,23 +11,44 @@
   display: inline-block;
 }
 
-.it-enter {
+.first-enter,
+.second-enter,
+.third-enter {
   background: transparent;
   transform: translateY(100%);
 }
 
-.it-enter.it-enter-active {
+.first-enter-active,
+.second-enter-active,
+.third-enter-active {
   transform: translateY(0);
-  transition: all 1000ms;
 }
 
-.it-exit {
+.first-exit,
+.second-exit,
+.third-exit {
   transform: translateY(0);
   position: absolute;
   left: 0;
 }
 
-.it-exit.it-exit-active {
+.first-exit-active,
+.second-exit-active,
+.third-exit-active {
   transform: translateY(-100%);
+}
+
+.first-enter-active,
+.first-exit-active {
   transition: all 1000ms;
+}
+
+.second-enter-active,
+.second-exit-active {
+  transition: all 2000ms;
+}
+
+.third-enter-active,
+.third-exit-active {
+  transition: all 3000ms;
 }

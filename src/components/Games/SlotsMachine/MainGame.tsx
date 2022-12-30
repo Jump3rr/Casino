@@ -23,9 +23,9 @@ export const MainGame: FC = () => {
   const Spin = (first: IItems[], second: IItems[], third: IItems[]) => {
     return (
       <MainWrapper>
-        <Slot items={first} />
-        <Slot items={second} />
-        <Slot items={third} />
+        <Slot items={first} time={1000} />
+        <Slot items={[...second, ...second]} time={2000} />
+        <Slot items={[...third, ...third, ...third]} time={3000} />
       </MainWrapper>
     );
   };
