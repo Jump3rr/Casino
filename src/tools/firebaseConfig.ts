@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -10,6 +11,8 @@ import { getAuth } from 'firebase/auth';
 const firebaseConfig = {
   apiKey: 'AIzaSyDA_76Bh5Um9xbMXIh6Gn1F0BLbfSYfsZI',
   authDomain: 'casino-6e127.firebaseapp.com',
+  databaseURL:
+    'https://casino-6e127-default-rtdb.europe-west1.firebasedatabase.app',
   projectId: 'casino-6e127',
   storageBucket: 'casino-6e127.appspot.com',
   messagingSenderId: '911263058038',
@@ -21,3 +24,4 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const auth = getAuth(app);
+export const db = getDatabase(app);

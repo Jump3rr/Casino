@@ -114,9 +114,9 @@ export const BottomMachine: FC = () => {
       await dispatch<ShuffleItems>(shuffleItems());
       await dispatch<DecrementCredits>(decrementCredits(bet));
       const score = await CheckScore();
+      await timeout(3000);
       await dispatch<IncrementCredits>(incrementCredits(bet * score));
       await dispatch<PushStat>(pushStat(bet * score));
-      await timeout(1000);
       await setClicked(false);
     }
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../tools/firebaseConfig';
+import { auth, db } from '../../tools/firebaseConfig';
 import {
   MainWrapper,
   Input,
@@ -10,6 +10,7 @@ import {
   ErrorText,
 } from '../../entities/CommonComponents';
 import styled from 'styled-components';
+import { onValue, ref, push, set } from 'firebase/database';
 
 const RegisterButton = styled(Buttons)`
   height: 2.5em;
@@ -35,10 +36,22 @@ export const RegisterPage = () => {
       setErrorMessage('');
       const user = await createUserWithEmailAndPassword(auth, email, password);
       console.log(user);
+      createDefaultDbUser();
     } catch (error: any) {
       setErrorMessage(error.message);
       console.log(error.message);
     }
+  };
+  const createDefaultDbUser = () => {
+    // const query = ref(db, `users/${auth.currentUser?.uid}`);
+    // // const defaultCredits = {
+    // //   credits: 5000,
+    // // };
+    // const defaultCredits = 5000;
+    // push(query, defaultCredits);
+    set(ref(db, `users/${auth.currentUser?.uid}`), {
+      credits: 5000,
+    });
   };
   return (
     <MainWrapper>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { app, auth } from '../../tools/firebaseConfig';
+import { app, auth, db } from '../../tools/firebaseConfig';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import { Colors } from '../../entities/colors';
 import { Buttons, TextButtons } from '../../entities/CommonComponents';
+import { onValue, ref, set } from 'firebase/database';
 
 const TopBarWrapper = styled.div`
   height: 10vh;
@@ -63,6 +64,26 @@ const ProfileSingleSection = styled.div`
 
 export const NavBar = () => {
   const [user, setUser] = useState<User | any>({});
+  const [currentBalance, setCurrentBalance] = useState(0);
+
+  const getData = () => {
+    const creditsRef = ref(db, 'users/' + auth.currentUser?.uid + '/credits');
+    onValue(creditsRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      setCurrentBalance(data);
+      //updateStarCount(postElement, data);
+
+      // onValue(data, (snapshot) => {
+      //   console.log([snapshot.val()]);
+      //   console.log([snapshot.val()][0]);
+      // });
+    });
+  };
+
+  useEffect(() => {
+    getData();
+  }, [auth.currentUser]);
 
   console.log(auth.currentUser);
   onAuthStateChanged(auth, (currentUser) => {
@@ -85,11 +106,15 @@ export const NavBar = () => {
           </ButtonsSection>
           <ProfileSection>
             <ProfileSingleSection>
-              <Texts>Balance: </Texts>
+              <Texts>Balance: {currentBalance}</Texts>
               <TextButtons to='/'>Add funds</TextButtons>
             </ProfileSingleSection>
             <ProfileSingleSection>
-              <Texts>{auth.currentUser?.email}</Texts>
+              <Texts>
+                {auth.currentUser?.displayName
+                  ? auth.currentUser.displayName
+                  : auth.currentUser?.email}
+              </Texts>
               <TextButtons to='/profile'>Profile</TextButtons>
             </ProfileSingleSection>
             <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
