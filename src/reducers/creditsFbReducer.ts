@@ -1,17 +1,16 @@
 import * as actionTypes from '../actions/actionTypes/creditsFbTypes';
 
 export interface ICreditsFbReducer {
-  credits: number;
+  fbcredits: number;
 }
-const localData = localStorage.getItem('credits');
-// const defaultState = (): ICreditsFbReducer => ({
-//   credits: 1000,
-// });
-const defaultState: any = [];
+const defaultState = (): ICreditsFbReducer => ({
+  fbcredits: 5000,
+});
+//const defaultState: any = [];
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (state: any = defaultState, action: any) => {
   switch (action.type) {
-    case actionTypes.GET_CREDITS: {
+    case actionTypes.GET_FBCREDITS: {
       return action.payload;
       //   const paylod: ['GET_CREDITS'] = action;
       //   //const paylod: actionTypes.IPostTypes['GET_POSTS'] = action;

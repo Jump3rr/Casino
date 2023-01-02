@@ -1,8 +1,7 @@
 import * as actionTypes from './actionTypes/creditsFbTypes';
-
-export const getCredits = () => ({
-  type: actionTypes.GET_CREDITS,
-});
+import { AnyAction, Dispatch } from 'redux';
+import { ref, onValue, get, getDatabase, child } from 'firebase/database';
+import { db, auth } from '../tools/firebaseConfig';
 
 export const incrementCredits = (bet: number) => ({
   type: actionTypes.INCREMENT_CREDITS,
@@ -13,21 +12,30 @@ export const decrementCredits = (bet: number) => ({
   payload: { bet },
 });
 
-import { Dispatch } from 'redux';
-import { ref, onValue } from 'firebase/database';
-import { db, auth } from '../tools/firebaseConfig';
+export const getFbCredits = () => async (dispatch: Dispatch) => {
+  //   const creditsRef = await ref(
+  //     db,
+  //     'users/' + auth.currentUser?.uid + '/credits'
+  //   );
+  //   get(child(ref(getDatabase()), 'users/' + auth.currentUser?.uid + '/credits'))
+  //     .then((snapshot) => {
+  //       if (snapshot.exists()) {
+  //         dispatch(fetchDataSuccess(snapshot.val()));
+  //       } else {
+  //         console.log('NO DATA');
+  //       }
+  //     })
+  //     .catch((error) => console.log(error));
+  //   // ----------------------------
+  //   //   await onValue(creditsRef, async (snapshot) => {
+  //   //     console.log('abc');
+  //   //     dispatch(fetchDataSuccess(snapshot.val()));
+  //   //   });
+};
 
-const APP_ID = '60c32fd3eb0a2f0af65b8d01';
-
-export const getFbCredits = async (dispatch: Dispatch) => {
-  const creditsRef = ref(db, 'users/' + auth.currentUser?.uid + '/credits');
-  onValue(creditsRef, async (snapshot) => {
-    const data = snapshot.val();
-    await console.log(data);
-    dispatch({
-      type: actionTypes.GET_CREDITS,
-      payload: data,
-    });
-    //setCurrentBalance(data);
-  });
+export const fetchDataSuccess = (data: any) => {
+  return {
+    type: actionTypes.GET_FBCREDITS,
+    payload: data,
+  };
 };

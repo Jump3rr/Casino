@@ -6,6 +6,14 @@ import { Link } from 'react-router-dom';
 import { Colors } from '../../entities/colors';
 import { Buttons, TextButtons } from '../../entities/CommonComponents';
 import { onValue, ref, set } from 'firebase/database';
+import { useDispatch, useSelector } from 'react-redux';
+import { IState } from '../../reducers';
+import { ICreditsFbReducer } from '../../reducers/creditsFbReducer';
+import { getFbCredits } from '../../actions/creditsFbActions';
+import store from '../../tools/store';
+import { useAppSelector } from '../../tools/hooks';
+import { useFirebase } from 'react-redux-firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const TopBarWrapper = styled.div`
   height: 10vh;
@@ -61,31 +69,64 @@ const ProfileSingleSection = styled.div`
   justify-content: center;
   text-align: center;
 `;
+export type AppDispatch = typeof store.dispatch;
 
+const useAppDispatch: () => AppDispatch = useDispatch;
+type GetFbCredits = ReturnType<typeof getFbCredits>;
 export const NavBar = () => {
   const [user, setUser] = useState<User | any>({});
   const [currentBalance, setCurrentBalance] = useState(0);
-
-  const getData = () => {
-    const creditsRef = ref(db, 'users/' + auth.currentUser?.uid + '/credits');
-    onValue(creditsRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
-      setCurrentBalance(data);
-      //updateStarCount(postElement, data);
-
-      // onValue(data, (snapshot) => {
-      //   console.log([snapshot.val()]);
-      //   console.log([snapshot.val()][0]);
-      // });
-    });
-  };
-
+  const dispatch = useAppDispatch();
+  const dispatch2 = useDispatch();
   useEffect(() => {
-    getData();
+    if (!auth.currentUser?.uid) {
+      return;
+    }
+    onSnapshot(doc(db, 'users', auth.currentUser?.uid), (doc) => {
+      if (Number(doc.data()?.credits)) setCurrentBalance(doc.data()?.credits);
+    });
   }, [auth.currentUser]);
+  // useEffect(() => {
+  //   const creditsRef = ref(db, 'users/' + auth.currentUser?.uid + '/credits');
+  //   onValue(creditsRef, (snapshot) => {
+  //     console.log('abc');
+  //     console.log('aaaa');
+  //     console.log(snapshot.val());
+  //     setCurrentBalance(snapshot.val());
+  //     //dispatch(fetchDataSuccess(snapshot.val()));
+  //   });
+  //   //setCurrentBalance(500);
+  // }, [auth, db]);
+  //   console.log('abc');
+  //   dispatch<GetFbCredits>(getFbCredits());
+  //   //dispatch(getFbCredits());
+  // }, [auth.currentUser, dispatch]);
+  //  --------------
+  // const { fbcredits } = useSelector<IState, ICreditsFbReducer>(
+  //   (globalState) => ({
+  //     ...globalState.fbcredits,
+  //   })
+  // );
 
-  console.log(auth.currentUser);
+  // const getData = () => {
+  //   const creditsRef = ref(db, 'users/' + auth.currentUser?.uid + '/credits');
+  //   onValue(creditsRef, (snapshot) => {
+  //     const data = snapshot.val();
+  //     console.log(data);
+  //     //setCurrentBalance(data);
+  //     //updateStarCount(postElement, data);
+
+  //     // onValue(data, (snapshot) => {
+  //     //   console.log([snapshot.val()]);
+  //     //   console.log([snapshot.val()][0]);
+  //     // });
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   firebase.watchEvent('value', todosPath);
+  // });
+
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
   });
@@ -106,6 +147,8 @@ export const NavBar = () => {
           </ButtonsSection>
           <ProfileSection>
             <ProfileSingleSection>
+              {/* {fbcredits !== null && <Texts>Balance: {fbcredits}</Texts>} */}
+
               <Texts>Balance: {currentBalance}</Texts>
               <TextButtons to='/'>Add funds</TextButtons>
             </ProfileSingleSection>

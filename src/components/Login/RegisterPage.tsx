@@ -11,6 +11,7 @@ import {
 } from '../../entities/CommonComponents';
 import styled from 'styled-components';
 import { onValue, ref, push, set } from 'firebase/database';
+import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
 
 const RegisterButton = styled(Buttons)`
   height: 2.5em;
@@ -42,16 +43,28 @@ export const RegisterPage = () => {
       console.log(error.message);
     }
   };
-  const createDefaultDbUser = () => {
+  const createDefaultDbUser = async () => {
+    if (!auth.currentUser?.uid) {
+      return;
+    }
+    try {
+      const docRef = await setDoc(doc(db, 'users', auth.currentUser.uid), {
+        credits: 5000,
+      });
+      console.log('Document written with ID: ');
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
     // const query = ref(db, `users/${auth.currentUser?.uid}`);
     // // const defaultCredits = {
     // //   credits: 5000,
     // // };
     // const defaultCredits = 5000;
     // push(query, defaultCredits);
-    set(ref(db, `users/${auth.currentUser?.uid}`), {
-      credits: 5000,
-    });
+    //---------------
+    // set(ref(db, `users/${auth.currentUser?.uid}`), {
+    //   credits: 5000,
+    // });
   };
   return (
     <MainWrapper>
