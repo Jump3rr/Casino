@@ -15,22 +15,24 @@ interface PlayerHandProps {
 
 const PlayerHand: React.FC<PlayerHandProps> = ({ cards }) => {
   return (
-    <Deck>
+    <>
       PLAYER:
-      {cards?.map((card) => (
-        <CardContainer key={card.suit + card.rank}>
-          <TopCard>
-            {card.suit}
-            {card.rank}
-          </TopCard>
-          <MiddleCard>{card.suit}</MiddleCard>
-          <BottomCard>
-            {card.rank}
-            {card.suit}
-          </BottomCard>
-        </CardContainer>
-      ))}
-    </Deck>
+      <Deck>
+        {cards?.map((card) => (
+          <CardContainer key={card.suit + card.rank}>
+            <TopCard>
+              {card.suit}
+              {card.rank}
+            </TopCard>
+            <MiddleCard>{card.suit}</MiddleCard>
+            <BottomCard>
+              {card.rank}
+              {card.suit}
+            </BottomCard>
+          </CardContainer>
+        ))}
+      </Deck>
+    </>
   );
 };
 

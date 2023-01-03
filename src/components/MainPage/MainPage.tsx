@@ -7,28 +7,13 @@ import {
   decrementFbCredits,
   incrementFbCredits,
 } from '../../actions/creditsFbActions';
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-const useAppDispatch: () => AppDispatch = useDispatch;
+import { useAppDispatch } from '../../tools/hooks';
 
 export const MainPage = () => {
   const dispatch = useAppDispatch();
 
   const updateCredits = async () => {
     dispatch(decrementFbCredits(50));
-    // if (!auth.currentUser?.uid) {
-    //   return;
-    // }
-    // try {
-    //   const docRef = await setDoc(doc(db, 'users', auth.currentUser.uid), {
-    //     credits: 1000,
-    //   });
-    //   console.log('Document written with ID: ');
-    // } catch (e) {
-    //   console.error('Error adding document: ', e);
-    // }
   };
   return (
     <>

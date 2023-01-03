@@ -61,7 +61,6 @@ const ProfileSingleSection = styled.div`
   justify-content: center;
   text-align: center;
 `;
-export type AppDispatch = typeof store.dispatch;
 
 export const NavBar = () => {
   const [user, setUser] = useState<User | any>({});

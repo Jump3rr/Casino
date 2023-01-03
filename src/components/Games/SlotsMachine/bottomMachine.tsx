@@ -11,6 +11,14 @@ import { pushStat } from '../../../actions/statsActions';
 import { Colors } from '../../../entities/colors';
 import { Buttons } from '../../../entities/CommonComponents';
 import { SmallDisplay } from '../../../entities/components';
+import {
+  ShuffleItems,
+  DecrementCredits,
+  IncrementCredits,
+  PushStat,
+  IncrementBet,
+  DecrementBet,
+} from '../../../entities/types';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { ICreditsReducer } from '../../../reducers/creditsReducer';
@@ -41,12 +49,6 @@ const SmallDisplayBet = styled(SmallDisplay)`
 
 export const BottomMachine: FC = () => {
   const dispatch = useDispatch();
-  type ShuffleItems = ReturnType<typeof shuffleItems>;
-  type IncrementCredits = ReturnType<typeof incrementCredits>;
-  type DecrementCredits = ReturnType<typeof decrementCredits>;
-  type IncrementBet = ReturnType<typeof incrementBet>;
-  type DecrementBet = ReturnType<typeof decrementBet>;
-  type PushStat = ReturnType<typeof pushStat>;
 
   const { itemsList, items2List, items3List, credits, bet, stats } =
     useSelector<

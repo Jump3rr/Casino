@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface GameStateProps {
-  state: 'playing' | 'won' | 'lost' | 'tied';
+  state: 'playing' | 'won' | 'lost' | 'tied' | 'waiting';
 }
 
 const GameState: React.FC<GameStateProps> = ({ state }) => {

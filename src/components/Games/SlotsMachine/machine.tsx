@@ -10,6 +10,12 @@ import { getStats } from '../../../actions/statsActions';
 import { Colors } from '../../../entities/colors';
 import { MainGame } from './MainGame';
 import './styles.css';
+import {
+  GetItems,
+  GetCredits,
+  GetBet,
+  GetStats,
+} from '../../../entities/types';
 
 const MainWrapper = styled.div`
   padding-top: 5vh;
@@ -28,11 +34,6 @@ const Display = styled.div`
   justify-content: space-around;
   align-items: center;
 `;
-
-type GetItems = ReturnType<typeof getItems>;
-type GetCredits = ReturnType<typeof getCredits>;
-type GetBet = ReturnType<typeof getBet>;
-type GetStats = ReturnType<typeof getStats>;
 
 export const Machine: FC = () => {
   const dispatch = useDispatch();

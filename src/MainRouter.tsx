@@ -15,18 +15,16 @@ import { useDispatch } from 'react-redux';
 import { getFbCredits } from './actions/creditsFbActions';
 import { auth } from './tools/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getBet } from './actions/betActions';
+import { GetBet, GetFbCredits } from './entities/types';
+import { useAppDispatch } from './tools/hooks';
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-const useAppDispatch: () => AppDispatch = useDispatch;
-
-type GetFbCredits = ReturnType<typeof getFbCredits>;
 function MainRouter() {
   const dispatch = useAppDispatch();
 
   onAuthStateChanged(auth, () => {
     dispatch<GetFbCredits>(getFbCredits());
+    dispatch<GetBet>(getBet());
   });
 
   return (

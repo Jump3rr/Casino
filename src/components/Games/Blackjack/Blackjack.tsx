@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Buttons } from '../../../entities/CommonComponents';
+import BetComponent from '../../BetComponent/BetComponent';
 import { generateDeck, Card } from '../Cards/Cards';
 import CurrentBet from './CurrentBet';
 import DealerHand from './DealerHand';
@@ -20,6 +21,8 @@ const BlackjackGameContainer = styled.div`
 `;
 const BlackjackButtons = styled(Buttons)`
   padding: 5px;
+  font-size: larger;
+  width: 10rem;
 `;
 
 const deck = generateDeck();
@@ -60,8 +63,8 @@ const Blackjack: React.FC = () => {
   const [shuffledDeck, setShuffledDeck] = useState<Card[]>(shuffleDeck(deck));
   const [dealerCards, setDealerCards] = useState<Card[]>([]);
   const [gameState, setGameState] = useState<
-    'playing' | 'won' | 'lost' | 'tied'
-  >('playing');
+    'playing' | 'won' | 'lost' | 'tied' | 'waiting'
+  >('waiting');
   const [playerBalance, setPlayerBalance] = useState(1000);
   const [currentBet, setCurrentBet] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -71,7 +74,6 @@ const Blackjack: React.FC = () => {
     const newPlayerCards = [shuffledDeck[0], shuffledDeck[2]];
     setPlayerCards(newPlayerCards);
     newDeck = shuffledDeck.filter((card) => !newPlayerCards.includes(card));
-
     const newDealerCards = [shuffledDeck[1], shuffledDeck[3]];
     setDealerCards(newDealerCards);
     setShuffledDeck(newDeck.filter((card) => !newDealerCards.includes(card)));
@@ -122,22 +124,27 @@ const Blackjack: React.FC = () => {
       setPlayerBalance(playerBalance - amount);
     }
   };
+  const startGame = () => {
+    handleBet(50);
+    setGameState('playing');
+  };
 
   return (
     <BlackjackGameContainer>
-      <DealerHand cards={dealerCards} finished={finished} />
-      <PlayerHand cards={playerCards} />
-      <GameState state={gameState} />
-      <PlayerBalance balance={playerBalance} />
-      <CurrentBet bet={currentBet} />
-      <BlackjackButtons onClick={handleHit}>Hit</BlackjackButtons>
-      <BlackjackButtons onClick={handleStand}>Stand</BlackjackButtons>
-      <BlackjackButtons onClick={() => handleBet(100)}>
-        Bet 100
-      </BlackjackButtons>
-      <BlackjackButtons onClick={() => handleBet(500)}>
-        Bet 500
-      </BlackjackButtons>
+      {gameState === 'waiting' ? (
+        <>
+          <BlackjackButtons onClick={startGame}>PLAY</BlackjackButtons>
+        </>
+      ) : (
+        <>
+          <DealerHand cards={dealerCards} finished={finished} />
+          <PlayerHand cards={playerCards} />
+          <GameState state={gameState} />
+          <BlackjackButtons onClick={handleHit}>Hit</BlackjackButtons>
+          <BlackjackButtons onClick={handleStand}>Stand</BlackjackButtons>
+        </>
+      )}
+      <BetComponent />
     </BlackjackGameContainer>
   );
 };
