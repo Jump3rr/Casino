@@ -13,17 +13,6 @@ export default (state: any = defaultState, action: any) => {
     case actionTypes.GET_FBCREDITS: {
       return action.payload;
     }
-    case actionTypes.INCREMENT_CREDITS: {
-      return {
-        credits: state.credits + action.payload.bet,
-      };
-    }
-    case actionTypes.DECREMENT_CREDITS: {
-      return {
-        ...state,
-        credits: state.credits - action.payload.bet,
-      };
-    }
     default: {
       return state;
     }
