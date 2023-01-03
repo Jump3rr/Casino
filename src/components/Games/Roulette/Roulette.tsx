@@ -7,6 +7,8 @@ import { RouletteTable } from './RouletteTable';
 
 const SpinButton = styled(Buttons)`
   padding: 1em 2em 1em 2em;
+  font-size: larger;
+  font-weight: bold;
 `;
 
 export default () => {
@@ -39,7 +41,7 @@ export default () => {
       />
       <SpinButton onClick={handleSpinClick}>SPIN</SpinButton>
 
-      <RouletteTable winningNumber={winningNumber} />
+      <RouletteTable winningNumber={winningNumber} isSpinning={mustSpin} />
     </MainWrapper>
   );
 };
