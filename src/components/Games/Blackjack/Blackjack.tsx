@@ -62,22 +62,22 @@ const Blackjack: React.FC = () => {
   const [playerCards, setPlayerCards] = useState<Card[]>([]);
   const [shuffledDeck, setShuffledDeck] = useState<Card[]>(shuffleDeck(deck));
   const [dealerCards, setDealerCards] = useState<Card[]>([]);
+  const [playerValue, setPlayerValue] = useState(0);
+  const [dealerValue, setDealerValue] = useState(0);
+
   const [gameState, setGameState] = useState<
     'playing' | 'won' | 'lost' | 'tied' | 'waiting'
   >('waiting');
   const [playerBalance, setPlayerBalance] = useState(1000);
   const [currentBet, setCurrentBet] = useState(0);
-  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    let newDeck = [...shuffledDeck];
-    const newPlayerCards = [shuffledDeck[0], shuffledDeck[2]];
-    setPlayerCards(newPlayerCards);
-    newDeck = shuffledDeck.filter((card) => !newPlayerCards.includes(card));
-    const newDealerCards = [shuffledDeck[1], shuffledDeck[3]];
-    setDealerCards(newDealerCards);
-    setShuffledDeck(newDeck.filter((card) => !newDealerCards.includes(card)));
-  }, []);
+    setPlayerValue(getHandValue(playerCards));
+    setDealerValue(getHandValue(dealerCards));
+    if (shuffledDeck.length < 26) {
+      setShuffledDeck(shuffleDeck(deck));
+    }
+  }, [playerCards, dealerCards]);
 
   const handleHit = () => {
     if (gameState === 'playing') {
@@ -88,10 +88,10 @@ const Blackjack: React.FC = () => {
           (card) => card !== newPlayerCards[newPlayerCards.length - 1]
         )
       );
+      //setPlayerValue(getHandValue(newPlayerCards));
       if (getHandValue(newPlayerCards) > 21) {
         setGameState('lost');
         setPlayerBalance(playerBalance - currentBet);
-        setFinished(true);
       }
     }
   };
@@ -99,8 +99,16 @@ const Blackjack: React.FC = () => {
   const handleStand = () => {
     let newDealerCards = [...dealerCards];
     if (gameState === 'playing') {
+      let i = 0;
       while (getHandValue(newDealerCards) < 17) {
-        newDealerCards.push(shuffledDeck[0]);
+        console.log(shuffledDeck);
+        newDealerCards.push(shuffledDeck[i]);
+        setShuffledDeck(
+          shuffledDeck.filter(
+            (card) => card !== newDealerCards[newDealerCards.length - 1]
+          )
+        );
+        i++;
       }
       setDealerCards(newDealerCards);
       const newDelaerHandValue = getHandValue(newDealerCards);
@@ -114,7 +122,7 @@ const Blackjack: React.FC = () => {
       } else {
         setGameState('tied');
       }
-      setFinished(true);
+      //setDealerValue(newDelaerHandValue);
     }
   };
 
@@ -127,24 +135,44 @@ const Blackjack: React.FC = () => {
   const startGame = () => {
     handleBet(50);
     setGameState('playing');
+    let newDeck = [...shuffledDeck];
+    const newPlayerCards = [shuffledDeck[0], shuffledDeck[2]];
+    setPlayerCards(newPlayerCards);
+    newDeck = shuffledDeck.filter((card) => !newPlayerCards.includes(card));
+    const newDealerCards = [shuffledDeck[1], shuffledDeck[3]];
+    setDealerCards(newDealerCards);
+    setShuffledDeck(newDeck.filter((card) => !newDealerCards.includes(card)));
+  };
+
+  const newGame = () => {
+    setGameState('waiting');
   };
 
   return (
     <BlackjackGameContainer>
       {gameState === 'waiting' ? (
         <>
+          <BetComponent />
           <BlackjackButtons onClick={startGame}>PLAY</BlackjackButtons>
         </>
       ) : (
         <>
-          <DealerHand cards={dealerCards} finished={finished} />
-          <PlayerHand cards={playerCards} />
-          <GameState state={gameState} />
+          <DealerHand
+            cards={dealerCards}
+            finished={gameState !== 'playing'}
+            value={dealerValue}
+          />
+          <PlayerHand cards={playerCards} value={playerValue} />
           <BlackjackButtons onClick={handleHit}>Hit</BlackjackButtons>
           <BlackjackButtons onClick={handleStand}>Stand</BlackjackButtons>
+          {gameState !== 'playing' && (
+            <>
+              <GameState state={gameState} />
+              <BlackjackButtons onClick={newGame}>Play again</BlackjackButtons>
+            </>
+          )}
         </>
       )}
-      <BetComponent />
     </BlackjackGameContainer>
   );
 };

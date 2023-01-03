@@ -11,12 +11,12 @@ import { Card } from '../Cards/Cards';
 
 interface PlayerHandProps {
   cards: Card[];
+  value: number;
 }
 
-const PlayerHand: React.FC<PlayerHandProps> = ({ cards }) => {
+const PlayerHand: React.FC<PlayerHandProps> = ({ cards, value }) => {
   return (
-    <>
-      PLAYER:
+    <div>
       <Deck>
         {cards?.map((card) => (
           <CardContainer key={card.suit + card.rank}>
@@ -32,7 +32,8 @@ const PlayerHand: React.FC<PlayerHandProps> = ({ cards }) => {
           </CardContainer>
         ))}
       </Deck>
-    </>
+      PLAYER: {value}
+    </div>
   );
 };
 

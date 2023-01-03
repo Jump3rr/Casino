@@ -11,35 +11,38 @@ import { Card } from '../Cards/Cards';
 interface DealerHandProps {
   cards: Card[];
   finished: boolean;
+  value: number;
 }
 
-const DealerHand: React.FC<DealerHandProps> = ({ cards, finished }) => {
+const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
   if (finished) {
     return (
-      <Deck>
-        {cards.length > 0 && (
-          <>
-            DEALER:
-            {cards?.map((card) => (
-              <CardContainer key={card.suit + card.rank}>
-                <TopCard>
-                  {card.suit}
-                  {card.rank}
-                </TopCard>
-                <MiddleCard>{card.suit}</MiddleCard>
-                <BottomCard>
-                  {card.rank}
-                  {card.suit}
-                </BottomCard>
-              </CardContainer>
-            ))}
-          </>
-        )}
-      </Deck>
+      <div>
+        DEALER: {value}
+        <Deck>
+          {cards.length > 0 && (
+            <>
+              {cards?.map((card) => (
+                <CardContainer key={card.suit + card.rank}>
+                  <TopCard>
+                    {card.suit}
+                    {card.rank}
+                  </TopCard>
+                  <MiddleCard>{card.suit}</MiddleCard>
+                  <BottomCard>
+                    {card.rank}
+                    {card.suit}
+                  </BottomCard>
+                </CardContainer>
+              ))}
+            </>
+          )}
+        </Deck>
+      </div>
     );
   }
   return (
-    <>
+    <div>
       DEALER:
       <Deck>
         {cards.length > 0 && (
@@ -63,7 +66,7 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, finished }) => {
           </>
         )}
       </Deck>
-    </>
+    </div>
   );
 };
 
