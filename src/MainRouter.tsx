@@ -14,9 +14,9 @@ import { Machine } from './components/Games/SlotsMachine/machine';
 import { useDispatch } from 'react-redux';
 import { getFbCredits } from './actions/creditsFbActions';
 import { auth } from './tools/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
 
 const useAppDispatch: () => AppDispatch = useDispatch;
@@ -24,10 +24,10 @@ const useAppDispatch: () => AppDispatch = useDispatch;
 type GetFbCredits = ReturnType<typeof getFbCredits>;
 function MainRouter() {
   const dispatch = useAppDispatch();
-  useEffect(() => {
+
+  onAuthStateChanged(auth, () => {
     dispatch<GetFbCredits>(getFbCredits());
-    //dispatch(getFbCredits());
-  }, [dispatch, auth.currentUser]);
+  });
 
   return (
     <Router>
