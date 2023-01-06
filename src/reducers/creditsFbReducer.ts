@@ -11,7 +11,7 @@ const defaultState: any = [];
 export default (state: any = defaultState, action: any) => {
   switch (action.type) {
     case actionTypes.GET_FBCREDITS: {
-      return action.payload;
+      return Math.round(action.payload * 100) / 100;
     }
     default: {
       return state;

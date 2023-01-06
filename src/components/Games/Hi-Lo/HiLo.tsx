@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import {
+  decrementFbCredits,
+  incrementFbCredits,
+} from '../../../actions/creditsFbActions';
 import { Colors } from '../../../entities/colors';
 import {
   BottomCard,
@@ -10,6 +15,10 @@ import {
   MiddleCard,
   TopCard,
 } from '../../../entities/CommonComponents';
+import { IState } from '../../../reducers';
+import { IBetReducer } from '../../../reducers/betReducer';
+import { useAppDispatch } from '../../../tools/hooks';
+import BetComponent from '../../BetComponent/BetComponent';
 import { Card, generateDeckOneSuit } from '../Cards/Cards';
 
 const HiLoButtons = styled(Buttons)`
@@ -35,6 +44,10 @@ export const HiLo = () => {
   const [card, setCard] = useState<Card | null>(null);
   const [newCard, setNewCard] = useState<Card | null>(null);
   const [playerPick, setPlayerPick] = useState(0);
+  const dispatch = useAppDispatch();
+  const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
+    ...globalState.bet,
+  }));
 
   const getRandomCard = () => {
     const deck: Card[] = generateDeckOneSuit();
@@ -44,6 +57,7 @@ export const HiLo = () => {
 
   const handleClick = () => {
     handleBet();
+
     setCard(newCard);
     setNewCard(getRandomCard());
     setPlayerPick(0);
@@ -53,27 +67,43 @@ export const HiLo = () => {
     if (playerPick === 0) {
       return;
     }
+    if (
+      (playerPick === 1 && card?.value === 12) ||
+      (playerPick === 3 && card?.value === 0)
+    ) {
+      return;
+    }
+    dispatch(decrementFbCredits(bet));
     switch (playerPick) {
       case 1:
-        if (newCard?.value && card?.value && newCard.value > card.value) {
-          console.log('You win');
+        if (
+          newCard?.value != undefined &&
+          card?.value != undefined &&
+          newCard.value > card.value
+        ) {
+          dispatch(incrementFbCredits(bet * reversedPayouts[card.value]));
           return;
         }
-        console.log('you lose');
         break;
       case 2:
-        if (newCard?.value && card?.value && newCard.value === card.value) {
-          console.log('You win');
+        if (
+          newCard?.value != undefined &&
+          card?.value != undefined &&
+          newCard.value === card.value
+        ) {
+          dispatch(incrementFbCredits(bet * payouts[1]));
           return;
         }
-        console.log('you lose');
         break;
       case 3:
-        if (newCard?.value && card?.value && newCard.value < card.value) {
-          console.log('You win');
+        if (
+          newCard?.value != undefined &&
+          card?.value != undefined &&
+          newCard.value < card.value
+        ) {
+          dispatch(incrementFbCredits(bet * payouts[card.value]));
           return;
         }
-        console.log('you lose');
         break;
     }
   };
@@ -106,15 +136,29 @@ export const HiLo = () => {
           </CardContainer>
         )}
       </Deck>
-      <HiLoButtons onClick={() => setPlayerPick(1)}>Higher</HiLoButtons>
+
+      <HiLoButtons id={'hilo-button-1'} onClick={() => setPlayerPick(1)}>
+        Higher
+      </HiLoButtons>
       {card && (card.value || card.value === 0)
         ? reversedPayouts[card?.value]
         : ''}
-      <HiLoButtons onClick={() => setPlayerPick(2)}>Equal</HiLoButtons>
+      <HiLoButtons id={'hilo-button-2'} onClick={() => setPlayerPick(2)}>
+        Equal
+      </HiLoButtons>
       {payouts[1]}
-      <HiLoButtons onClick={() => setPlayerPick(3)}>Lower</HiLoButtons>
+      <HiLoButtons id={'hilo-button-3'} onClick={() => setPlayerPick(3)}>
+        Lower
+      </HiLoButtons>
       {card && (card.value || card.value === 0) ? payouts[card?.value] : ''}
       <PlayButton onClick={handleClick}>PLAY</PlayButton>
+      {playerPick !== 0 && (
+        <div>
+          Your bet:{' '}
+          {playerPick === 1 ? 'Higher' : playerPick === 2 ? 'Equal' : 'Lower'}
+        </div>
+      )}
+      <BetComponent />
     </MainWrapper>
   );
 };
