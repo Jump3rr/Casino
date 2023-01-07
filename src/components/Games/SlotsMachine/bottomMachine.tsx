@@ -6,6 +6,10 @@ import {
   incrementCredits,
   decrementCredits,
 } from '../../../actions/creditsActions';
+import {
+  decrementFbCredits,
+  incrementFbCredits,
+} from '../../../actions/creditsFbActions';
 import { shuffleItems } from '../../../actions/slotsActions';
 import { pushStat } from '../../../actions/statsActions';
 import { Colors } from '../../../entities/colors';
@@ -24,49 +28,42 @@ import { IBetReducer } from '../../../reducers/betReducer';
 import { ICreditsReducer } from '../../../reducers/creditsReducer';
 import { IItemsReducer } from '../../../reducers/itemsReducer';
 import { IStatsReducer } from '../../../reducers/statsReducer';
+import { useAppDispatch } from '../../../tools/hooks';
+import BetComponent from '../../BetComponent/BetComponent';
 
 const MainWrapper = styled.div`
   height: 40vh;
   width: 95vw;
   background-color: ${Colors.black};
   color: ${Colors.matrixGreen};
+  /* display: flex;
+  justify-content: center; */
 `;
-const Settings = styled.div`
+const SpinButton = styled(Buttons)`
+  width: 10em;
+  height: 5em;
+`;
+
+const TempDiv = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  height: 70%;
-  font-size: 5vh;
-`;
-const CreditsText = styled.div`
-  font-size: 3vh;
-`;
-const SmallDisplayBet = styled(SmallDisplay)`
-  padding: 0 5vw 0 5vw;
-  font-size: 5vh;
+  justify-content: center;
 `;
 
 export const BottomMachine: FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
+    ...globalState.bet,
+  }));
 
-  const { itemsList, items2List, items3List, credits, bet, stats } =
-    useSelector<
-      IState,
-      ICreditsReducer & IBetReducer & IItemsReducer & IStatsReducer
-    >((globalState) => ({
-      ...globalState.items,
-      ...globalState.credits,
-      ...globalState.bet,
-      ...globalState.stats,
-    }));
-  useEffect(() => {
-    localStorage.setItem('credits', JSON.stringify(credits));
-  }, [credits, stats]);
-
-  const CheckCredits = (): boolean => {
-    return credits >= bet ? true : false;
-  };
+  const { itemsList, items2List, items3List } = useSelector<
+    IState,
+    ICreditsReducer & IBetReducer & IItemsReducer & IStatsReducer
+  >((globalState) => ({
+    ...globalState.items,
+    ...globalState.credits,
+    ...globalState.bet,
+    ...globalState.stats,
+  }));
 
   const CheckScore = (): number => {
     let score: number = 0;
@@ -110,40 +107,24 @@ export const BottomMachine: FC = () => {
   }
 
   async function HandleClick() {
-    const hasCredits = await CheckCredits();
-    if (hasCredits && !clicked) {
+    if (!clicked) {
       await setClicked(true);
       await dispatch<ShuffleItems>(shuffleItems());
-      await dispatch<DecrementCredits>(decrementCredits(bet));
+      dispatch(decrementFbCredits(bet));
       const score = await CheckScore();
       await timeout(3000);
-      await dispatch<IncrementCredits>(incrementCredits(bet * score));
+      dispatch(incrementFbCredits(bet * score));
       await dispatch<PushStat>(pushStat(bet * score));
       await setClicked(false);
     }
   }
 
-  const HandleIncrementBet = () => {
-    if (bet * 2 <= credits) {
-      dispatch<IncrementBet>(incrementBet());
-    }
-  };
-  const HandleDecrementBet = () => {
-    if (bet / 2 >= 1) {
-      dispatch<DecrementBet>(decrementBet());
-    }
-  };
-
   return (
     <MainWrapper>
-      <CreditsText>CREDITS:</CreditsText>
-      <SmallDisplay>{credits}</SmallDisplay>
-      <Settings>
-        <Buttons onClick={HandleIncrementBet}>+</Buttons>
-        <SmallDisplayBet>{bet}</SmallDisplayBet>
-        <Buttons onClick={HandleDecrementBet}>-</Buttons>
-        <Buttons onClick={HandleClick}>SPIN</Buttons>
-      </Settings>
+      <TempDiv>
+        <SpinButton onClick={HandleClick}>SPIN</SpinButton>
+      </TempDiv>
+      <BetComponent />
     </MainWrapper>
   );
 };
