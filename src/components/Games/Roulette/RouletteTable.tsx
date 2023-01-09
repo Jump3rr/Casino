@@ -5,6 +5,7 @@ import {
   incrementFbCredits,
 } from '../../../actions/creditsFbActions';
 import { Colors } from '../../../entities/colors';
+import { SelectedFields } from '../../../entities/types';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { useAppDispatch } from '../../../tools/hooks';
@@ -16,11 +17,6 @@ interface RouletteTableProps {
   winningNumber: number;
   isSpinning: boolean;
 }
-type SelectedFields = {
-  value: number;
-  backgroundColor: string;
-  bet: number;
-};
 
 export const RouletteTable: React.FC<RouletteTableProps> = ({
   winningNumber,

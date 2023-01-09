@@ -50,6 +50,7 @@ export const RegisterPage = () => {
     try {
       const docRef = await setDoc(doc(db, 'users', auth.currentUser.uid), {
         credits: 5000,
+        email: email,
       });
       console.log('Document written with ID: ');
     } catch (e) {

@@ -5,17 +5,22 @@ import {
   getCredits,
 } from '../actions/creditsActions';
 import { getFbCredits } from '../actions/creditsFbActions';
+import { getRanking } from '../actions/rankingActions';
 import { getItems, shuffleItems } from '../actions/slotsActions';
-import { getStats, pushStat } from '../actions/statsActions';
 
 export type GetFbCredits = ReturnType<typeof getFbCredits>;
+export type GetRanking = ReturnType<typeof getRanking>;
 export type GetBet = ReturnType<typeof getBet>;
 export type IncrementBet = ReturnType<typeof incrementBet>;
 export type DecrementBet = ReturnType<typeof decrementBet>;
 export type ShuffleItems = ReturnType<typeof shuffleItems>;
 export type IncrementCredits = ReturnType<typeof incrementCredits>;
 export type DecrementCredits = ReturnType<typeof decrementCredits>;
-export type PushStat = ReturnType<typeof pushStat>;
 export type GetItems = ReturnType<typeof getItems>;
 export type GetCredits = ReturnType<typeof getCredits>;
-export type GetStats = ReturnType<typeof getStats>;
+
+export type SelectedFields = {
+  value: number;
+  backgroundColor: string;
+  bet: number;
+};

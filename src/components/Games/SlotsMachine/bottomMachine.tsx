@@ -11,7 +11,6 @@ import {
   incrementFbCredits,
 } from '../../../actions/creditsFbActions';
 import { shuffleItems } from '../../../actions/slotsActions';
-import { pushStat } from '../../../actions/statsActions';
 import { Colors } from '../../../entities/colors';
 import { Buttons } from '../../../entities/CommonComponents';
 import { SmallDisplay } from '../../../entities/components';
@@ -19,7 +18,6 @@ import {
   ShuffleItems,
   DecrementCredits,
   IncrementCredits,
-  PushStat,
   IncrementBet,
   DecrementBet,
 } from '../../../entities/types';
@@ -27,7 +25,6 @@ import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { ICreditsReducer } from '../../../reducers/creditsReducer';
 import { IItemsReducer } from '../../../reducers/itemsReducer';
-import { IStatsReducer } from '../../../reducers/statsReducer';
 import { useAppDispatch } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
@@ -57,12 +54,11 @@ export const BottomMachine: FC = () => {
 
   const { itemsList, items2List, items3List } = useSelector<
     IState,
-    ICreditsReducer & IBetReducer & IItemsReducer & IStatsReducer
+    ICreditsReducer & IBetReducer & IItemsReducer
   >((globalState) => ({
     ...globalState.items,
     ...globalState.credits,
     ...globalState.bet,
-    ...globalState.stats,
   }));
 
   const CheckScore = (): number => {
@@ -114,7 +110,7 @@ export const BottomMachine: FC = () => {
       const score = await CheckScore();
       await timeout(3000);
       dispatch(incrementFbCredits(bet * score));
-      await dispatch<PushStat>(pushStat(bet * score));
+      //await dispatch<PushStat>(pushStat(bet * score));
       await setClicked(false);
     }
   }

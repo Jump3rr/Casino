@@ -6,16 +6,10 @@ import { Router, Route } from 'react-router-dom';
 import { getBet } from '../../../actions/betActions';
 import { getCredits } from '../../../actions/creditsActions';
 import { getItems } from '../../../actions/slotsActions';
-import { getStats } from '../../../actions/statsActions';
 import { Colors } from '../../../entities/colors';
 import { MainGame } from './MainGame';
 import './styles.css';
-import {
-  GetItems,
-  GetCredits,
-  GetBet,
-  GetStats,
-} from '../../../entities/types';
+import { GetItems, GetCredits, GetBet } from '../../../entities/types';
 
 const MainWrapper = styled.div`
   padding-top: 5vh;
@@ -41,7 +35,6 @@ export const Machine: FC = () => {
     dispatch<GetItems>(getItems());
     dispatch<GetCredits>(getCredits());
     dispatch<GetBet>(getBet());
-    dispatch<GetStats>(getStats());
   }, []);
 
   return (

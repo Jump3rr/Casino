@@ -16,14 +16,18 @@ import { getFbCredits } from './actions/creditsFbActions';
 import { auth } from './tools/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getBet } from './actions/betActions';
-import { GetBet, GetFbCredits } from './entities/types';
+import { GetBet, GetFbCredits, GetRanking } from './entities/types';
 import { useAppDispatch } from './tools/hooks';
+import Craps from './components/Games/Craps/Craps';
+import { getRanking } from './actions/rankingActions';
+import { RankingComponent } from './components/Ranking/RankingComponent';
 
 function MainRouter() {
   const dispatch = useAppDispatch();
 
   onAuthStateChanged(auth, () => {
     dispatch<GetFbCredits>(getFbCredits());
+    dispatch<GetRanking>(getRanking());
     dispatch<GetBet>(getBet());
   });
 
@@ -40,10 +44,12 @@ function MainRouter() {
         >
           <Route path='/' element={<MainPage />} />
           <Route path='/profile' element={<ProfileComponent />} />
+          <Route path='/ranking' element={<RankingComponent />} />
           <Route path='/blackjack' element={<Blackjack />} />
           <Route path='/roulette' element={<Roulette />} />
           <Route path='/hilo' element={<HiLo />} />
           <Route path='/slots' element={<Machine />} />
+          <Route path='/craps' element={<Craps />} />
         </Route>
         <Route path='/Login' element={<LoginPage />} />
         <Route path='/Register' element={<RegisterPage />} />
