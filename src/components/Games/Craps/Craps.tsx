@@ -20,17 +20,40 @@ const Dices = styled.div`
   width: 40vw;
   margin-bottom: 8em;
 `;
+const CrapsBets = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+  border: 1px solid black;
+
+  div {
+    border: 1px solid ${Colors.black};
+    box-sizing: border-box;
+    padding: 1em;
+    color: ${Colors.darkRed};
+    font-weight: bold;
+    background-color: ${Colors.lighterGreen};
+  }
+`;
+const FieldBet = styled.div`
+  grid-column-start: 1;
+  grid-column-end: 3;
+`;
+const BetButton = styled(Buttons)`
+  padding: 1em;
+  width: 10em;
+`;
 
 const Craps: React.FC = () => {
   const diceRef = useRef<any>(null);
   const diceRef2 = useRef<any>(null);
-  const [betted, setBetted] = useState(false);
   const [dice1Value, setDice1Value] = useState(0);
   const [dice2Value, setDice2Value] = useState(0);
   const [shotCounter, setShotCounter] = useState(0);
   const [winningNumber, setWinningNumber] = useState(0);
   const dispatch = useAppDispatch();
   const [playerBet, setPlayerBet] = useState<SelectedFields[]>([]);
+  const [playerTempBet, setPlayerTempBet] = useState<SelectedFields[]>([]);
   const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
     ...globalState.bet,
   }));
@@ -38,20 +61,20 @@ const Craps: React.FC = () => {
   const addPlayerBet = (value: number) => {
     let currentElement = document.getElementById(value.toString());
     if (currentElement != undefined) {
-      const inArray = playerBet.find((e) => e.value === value);
+      const inArray = playerTempBet.find((e) => e.value === value);
       if (inArray != undefined) {
         currentElement.style.backgroundColor = inArray.backgroundColor;
-        setPlayerBet(playerBet.filter((item) => item.value !== value));
+        setPlayerTempBet(playerTempBet.filter((item) => item.value !== value));
       } else {
         const newArray = [
-          ...playerBet,
+          ...playerTempBet,
           {
             value: value,
             backgroundColor: currentElement.style.backgroundColor,
             bet: bet,
           },
         ];
-        setPlayerBet(newArray);
+        setPlayerTempBet(newArray);
         currentElement.style.backgroundColor = Colors.gold;
       }
     }
@@ -62,12 +85,11 @@ const Craps: React.FC = () => {
   }, [shotCounter]);
 
   const handleBet = () => {
-    if (!betted) {
-      playerBet.forEach((el) => {
-        dispatch(decrementFbCredits(el.bet));
-      });
-    }
-    setBetted(true);
+    playerTempBet.forEach((el) => {
+      dispatch(decrementFbCredits(el.bet));
+    });
+    setPlayerBet([...playerBet, ...playerTempBet]);
+    setPlayerTempBet([]);
   };
 
   const rollDice = () => {
@@ -163,11 +185,12 @@ const Craps: React.FC = () => {
     const div = document.getElementById(el.value.toString());
     if (div != undefined) div.style.backgroundColor = el.backgroundColor;
     setPlayerBet(playerBet.filter((item) => item.value !== el.value));
+    setPlayerTempBet(playerBet.filter((item) => item.value !== el.value));
 
     if (el.value !== 5) {
       setPlayerBet([]);
+      setPlayerTempBet([]);
       setWinningNumber(0);
-      setBetted(false);
       setTimeout(() => {
         setShotCounter(0);
       }, 100);
@@ -192,52 +215,49 @@ const Craps: React.FC = () => {
           <Dice onRoll={(value) => setDice2Value(value)} size={150} />
         </div>
       </Dices>
-      <div
-        id='1'
-        className='div1'
-        onClick={(event) => {
-          if (shotCounter === 0) addPlayerBet(Number(event.currentTarget.id));
-        }}
-      >
-        Pass line
-      </div>
-      <div
-        id='2'
-        className='div2'
-        onClick={(event) => {
-          if (shotCounter === 0) addPlayerBet(Number(event.currentTarget.id));
-        }}
-      >
-        Don't pass
-      </div>
-      <div
-        id='3'
-        className='div3'
-        onClick={(event) => {
-          if (shotCounter > 0) addPlayerBet(Number(event.currentTarget.id));
-        }}
-      >
-        Come
-      </div>
-      <div
-        id='4'
-        className='div4'
-        onClick={(event) => {
-          if (shotCounter > 0) addPlayerBet(Number(event.currentTarget.id));
-        }}
-      >
-        Don't come
-      </div>
-      <div
-        id='5'
-        className='div5'
-        onClick={(event) => {
-          addPlayerBet(Number(event.currentTarget.id));
-        }}
-      >
-        Field
-      </div>
-      <Buttons onClick={handleBet}>BET</Buttons>
+      <CrapsBets>
+        <div
+          id='1'
+          onClick={(event) => {
+            if (shotCounter === 0) addPlayerBet(Number(event.currentTarget.id));
+          }}
+        >
+          Pass line
+        </div>
+        <div
+          id='2'
+          onClick={(event) => {
+            if (shotCounter === 0) addPlayerBet(Number(event.currentTarget.id));
+          }}
+        >
+          Don't pass
+        </div>
+        <div
+          id='3'
+          onClick={(event) => {
+            if (shotCounter > 0) addPlayerBet(Number(event.currentTarget.id));
+          }}
+        >
+          Come
+        </div>
+        <div
+          id='4'
+          onClick={(event) => {
+            if (shotCounter > 0) addPlayerBet(Number(event.currentTarget.id));
+          }}
+        >
+          Don't come
+        </div>
+        <FieldBet
+          id='5'
+          onClick={(event) => {
+            addPlayerBet(Number(event.currentTarget.id));
+          }}
+        >
+          Field
+        </FieldBet>
+      </CrapsBets>
+      <BetButton onClick={handleBet}>BET</BetButton>
       <BetComponent />
     </MainWrapper>
   );
