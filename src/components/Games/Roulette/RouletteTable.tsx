@@ -23,6 +23,7 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
   isSpinning,
 }) => {
   const [playerBet, setPlayerBet] = useState<SelectedFields[]>([]);
+  const [playerTempBet, setPlayerTempBet] = useState<SelectedFields[]>([]);
   const [won, setWon] = useState(0);
   const dispatch = useAppDispatch();
   const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
@@ -40,29 +41,30 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
   const addPlayerBet = (value: number) => {
     let currentElement = document.getElementById(value.toString());
     if (currentElement != undefined) {
-      const inArray = playerBet.find((e) => e.value === value);
+      const inArray = playerTempBet.find((e) => e.value === value);
       if (inArray != undefined) {
         currentElement.style.backgroundColor = inArray.backgroundColor;
-        setPlayerBet(playerBet.filter((item) => item.value !== value));
+        setPlayerTempBet(playerTempBet.filter((item) => item.value !== value));
       } else {
         const newArray = [
-          ...playerBet,
+          ...playerTempBet,
           {
             value: value,
             backgroundColor: currentElement.style.backgroundColor,
             bet: bet,
           },
         ];
-        setPlayerBet(newArray);
+        setPlayerTempBet(newArray);
         currentElement.style.backgroundColor = Colors.gold;
       }
     }
   };
   const handleBet = () => {
     setWon(0);
-    playerBet.forEach((el) => {
+    playerTempBet.forEach((el) => {
       dispatch(decrementFbCredits(el.bet));
     });
+    setPlayerBet([...playerBet, ...playerTempBet]);
   };
 
   const handleResult = () => {
@@ -127,6 +129,7 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
       if (div != undefined) div.style.backgroundColor = el.backgroundColor;
     });
     setPlayerBet([]);
+    setPlayerTempBet([]);
     dispatch(incrementFbCredits(wonValue));
     setWon(wonValue);
   };
