@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Dice from 'react-dice-roll';
+//import Dice from 'react-dice-roll';
+import { Dice } from './Dice';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -47,10 +48,7 @@ const BetButton = styled(Buttons)`
 `;
 
 const Craps: React.FC = () => {
-  const diceRef = useRef<any>(null);
-  const diceRef2 = useRef<any>(null);
-  const [dice1Value, setDice1Value] = useState(0);
-  const [dice2Value, setDice2Value] = useState(0);
+  const [result, setResult] = useState(0);
   const [shotCounter, setShotCounter] = useState(0);
   const [winningNumber, setWinningNumber] = useState(0);
   const dispatch = useAppDispatch();
@@ -95,7 +93,6 @@ const Craps: React.FC = () => {
   };
 
   const rollDice = () => {
-    const result = dice1Value + dice2Value;
     playerBet.forEach((el) => {
       if (el.value === 1) {
         if (shotCounter === 1) {
@@ -198,25 +195,36 @@ const Craps: React.FC = () => {
       }, 100);
     }
   };
+  function toggleClasses(die: any) {
+    die.classList.toggle('odd-roll');
+    die.classList.toggle('even-roll');
+  }
+
+  function getRandomNumber() {
+    return Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+  }
 
   const onRoll = () => {
-    diceRef.current.children[0].click();
-    diceRef2.current.children[0].click();
+    const dice = [...document.querySelectorAll('.die-list')] as HTMLElement[];
+    let tempResult = 0;
+    dice.forEach((die) => {
+      toggleClasses(die);
+      const number = getRandomNumber();
+      tempResult += number;
+      die.dataset.roll = number.toString();
+    });
     setTimeout(() => {
       setShotCounter(shotCounter + 1);
+      setResult(tempResult);
     }, 1001);
   };
 
   return (
     <MainWrapper>
-      <Dices onClick={onRoll}>
-        <div ref={diceRef}>
-          <Dice onRoll={(value) => setDice1Value(value)} size={150} />
-        </div>
-        <div ref={diceRef2}>
-          <Dice onRoll={(value) => setDice2Value(value)} size={150} />
-        </div>
-      </Dices>
+      <div>
+        <Dice />
+      </div>
+      <BetButton onClick={onRoll}>Roll</BetButton>
       <CrapsBets>
         <div
           id='1'
