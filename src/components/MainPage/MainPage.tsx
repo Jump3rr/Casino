@@ -94,6 +94,18 @@ export const MainPage = () => {
             </p>
           </GameDescription>
         </GameContainer>
+        <GameContainer onClick={() => navigate('/craps')}>
+          <GamesLogo src='/img/logo/craps-logo.png' alt='' />
+          <GameDescription>
+            <h3>Craps</h3>
+            <p>
+              Craps is a dice game in which players place bets on the outcome of
+              the roll, or a series of rolls, of a pair of dice. Players can bet
+              on the outcome of a single roll, a series of rolls, or a
+              combination of rolls.
+            </p>
+          </GameDescription>
+        </GameContainer>
       </GamesCategoryContainer>
     </MainWrapper>
   );

@@ -42,6 +42,8 @@ const FieldBet = styled.div`
 const BetButton = styled(Buttons)`
   padding: 1em;
   width: 10em;
+  font-size: larger;
+  font-weight: bold;
 `;
 
 const Craps: React.FC = () => {
@@ -208,10 +210,10 @@ const Craps: React.FC = () => {
   return (
     <MainWrapper>
       <Dices onClick={onRoll}>
-        <div ref={diceRef} className='dice'>
+        <div ref={diceRef}>
           <Dice onRoll={(value) => setDice1Value(value)} size={150} />
         </div>
-        <div ref={diceRef2} className='dice'>
+        <div ref={diceRef2}>
           <Dice onRoll={(value) => setDice2Value(value)} size={150} />
         </div>
       </Dices>
