@@ -44,47 +44,67 @@ export const PokerGame = () => {
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
   const [tableCards, setTableCards] = useState([]);
   const [playerCards, setPlayerCards] = useState([]);
-  let table;
-  let player: string;
+  const [table, setTable] = useState<Table>();
+  const [player, setPlayer] = useState('');
 
   useEffect(() => {
     const dataRef = ref(rtdb, 'tables');
     onValue(dataRef, (snapshot) => {
       const data = snapshot.val();
       const tables: Table[] = Object.entries(data);
-      table = tables.find((element) => element[0] === tableName);
-      if (table) {
+      const table_temp = tables.find(
+        (element) => element[0] === tableName
+      ) as Table;
+      setTable(table_temp);
+      if (table_temp) {
         let players_temp;
-        players_temp = Object.values(table[1].players);
+        players_temp = Object.values(table_temp[1].players);
         setPlayers(players_temp);
-        //player
-        const player_temp = Object.entries(table[1].players).find(
+        const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
-        console.log(player_temp);
-        if (player_temp && player_temp[0]) player = player_temp[0];
-        // players_temp?.length;
-        //while (gameState !== 'over') {}
-        setPlayerTurn(table, Object.keys(table[1].players)[0]);
+        if (player_temp && player_temp[0]) setPlayer(player_temp[0]);
       }
     });
   }, []);
 
-  const setPlayerTurn = (table: Table, player: string) => {
-    const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}/`);
-    update(dataRef, {
-      status: 'playing',
-    });
-    checkTurn(table);
+  const getDbIdOfPlayer = (table: Table, index: number) => {
+    return Object.entries(table[1].players)[index][0];
   };
-  const checkTurn = (table: Table) => {
-    console.log(player);
-    const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
-    onValue(dataRef, (snapshot) => {
-      const value = snapshot.val();
-      if (value.status === 'playing') setIsPlayerTurn(true);
-      else setIsPlayerTurn(false);
-    });
+
+  const setPlayersTurn = () => {
+    if (table) {
+      const actualPlayerIndex = Object.entries(table[1].players).findIndex(
+        (element) => Object(element[1]).status === 'playing'
+      );
+
+      if (typeof actualPlayerIndex === 'number') {
+        const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
+        let newTurn;
+        if (actualPlayerIndex + 1 < players.length)
+          newTurn = getDbIdOfPlayer(table, actualPlayerIndex + 1);
+        else newTurn = getDbIdOfPlayer(table, 0);
+
+        update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
+          status: 'waiting',
+        });
+        update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
+          status: 'playing',
+        });
+        checkTurn();
+      }
+    }
+  };
+
+  const checkTurn = () => {
+    if (table) {
+      const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value.status === 'playing') setIsPlayerTurn(true);
+        else setIsPlayerTurn(false);
+      });
+    }
   };
 
   return (
@@ -107,6 +127,7 @@ export const PokerGame = () => {
           <button>Fold</button>
         </>
       )}
+      <button onClick={setPlayersTurn}>update</button>
     </MainWrapper>
   );
 };
