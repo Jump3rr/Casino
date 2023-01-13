@@ -21,6 +21,8 @@ import { useAppDispatch } from './tools/hooks';
 import Craps from './components/Games/Craps/Craps';
 import { getRanking } from './actions/rankingActions';
 import { RankingComponent } from './components/Ranking/RankingComponent';
+import { PokerMenu } from './components/Games/Poker/PokerMenu';
+import { PokerGame } from './components/Games/Poker/PokerGame';
 
 function MainRouter() {
   const dispatch = useAppDispatch();
@@ -50,6 +52,8 @@ function MainRouter() {
           <Route path='/hilo' element={<HiLo />} />
           <Route path='/slots' element={<Machine />} />
           <Route path='/craps' element={<Craps />} />
+          <Route path='/poker/' element={<PokerMenu />} />
+          <Route path='/poker/:tableId' element={<PokerGame />} />
         </Route>
         <Route path='/Login' element={<LoginPage />} />
         <Route path='/Register' element={<RegisterPage />} />
