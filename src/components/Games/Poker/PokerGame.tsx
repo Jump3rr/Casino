@@ -12,10 +12,13 @@ import {
 } from 'firebase/database';
 import { MainWrapper } from '../../../entities/CommonComponents';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Card } from '../Cards/Cards';
 
 type Table = [string, TableSettings];
 type TableSettings = {
   name: string;
+  cards: Card[];
+  state: string;
   players: Player;
 };
 type Player = {
@@ -42,8 +45,9 @@ export const PokerGame = () => {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [players, setPlayers] = useState<any>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
-  const [tableCards, setTableCards] = useState([]);
-  const [playerCards, setPlayerCards] = useState([]);
+  const [allCards, setAllCards] = useState<Card[]>([]);
+  const [tableCards, setTableCards] = useState<Card[]>([]);
+  const [playerCards, setPlayerCards] = useState<Card[]>([]);
   const [table, setTable] = useState<Table>();
   const [player, setPlayer] = useState('');
 
@@ -64,11 +68,56 @@ export const PokerGame = () => {
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
         if (player_temp && player_temp[0]) setPlayer(player_temp[0]);
+        //getCards();
       }
     });
   }, []);
+  useEffect(() => {
+    getCards();
+    //playersCardsHandle();
+  }, [table]);
+  useEffect(() => {
+    playersCardsHandle();
+  }, [allCards]);
 
-  const getDbIdOfPlayer = (table: Table, index: number) => {
+  const getCards = () => {
+    if (table) {
+      setAllCards(Object.values(table[1].cards) as Card[]);
+    }
+  };
+  const playersCardsHandle = () => {
+    if (!table) {
+      return;
+    }
+    if (playerCards.length > 1) {
+      return;
+    }
+    let newAllCards = allCards;
+    for (let i = 0; i < players.length; i++) {
+      const player_temp = getDbIdOfPlayer(table, i);
+      const newPlayerCards = [allCards[i * 2], allCards[i * 2 + 1]];
+      console.log(player);
+      if (player_temp === player) {
+        setPlayerCards(newPlayerCards);
+      }
+
+      newAllCards = newAllCards.filter(
+        (card) =>
+          card !== newPlayerCards[newPlayerCards.length - 1] &&
+          card !== newPlayerCards[newPlayerCards.length - 2]
+      );
+
+      update(ref(rtdb, `tables/${table[0]}/players/${player_temp}/`), {
+        cards: newPlayerCards,
+      });
+    }
+    setAllCards(newAllCards);
+    update(ref(rtdb, `tables/${table[0]}/`), {
+      cards: newAllCards,
+    });
+  };
+
+  const getDbIdOfPlayer = (table: Table, index: number): string => {
     return Object.entries(table[1].players)[index][0];
   };
 
@@ -83,6 +132,7 @@ export const PokerGame = () => {
         let newTurn;
         if (actualPlayerIndex + 1 < players.length)
           newTurn = getDbIdOfPlayer(table, actualPlayerIndex + 1);
+        ///new card to table
         else newTurn = getDbIdOfPlayer(table, 0);
 
         update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
