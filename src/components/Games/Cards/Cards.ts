@@ -24,7 +24,7 @@ export enum Rank {
 export interface Card {
   suit: Suit;
   rank: Rank;
-  value?: number;
+  value: number;
 }
 
 export const generateDeckOneSuit = (): Card[] => {
@@ -43,15 +43,28 @@ export const generateDeckOneSuit = (): Card[] => {
 
 export const generateDeck = (): Card[] => {
   const deck: Card[] = [];
+  const suits = [Suit.Spade, Suit.Club, Suit.Diamond, Suit.Heart];
 
-  for (const suit of Object.values(Suit)) {
-    for (const rank of Object.values(Rank)) {
-      deck.push({ suit, rank });
+  suits.forEach((suit) => {
+    for (let value = 0; value < Object.values(Rank).length; value++) {
+      const rank = Object.values(Rank)[value];
+      deck.push({ suit, rank, value });
     }
-  }
-
+  });
   return deck;
 };
+
+// export const generateDeck = (): Card[] => {
+//   const deck: Card[] = [];
+
+//   for (const suit of Object.values(Suit)) {
+//     for (const rank of Object.values(Rank)) {
+//       deck.push({ suit, rank });
+//     }
+//   }
+
+//   return deck;
+// };
 export const shuffleDeck = (deck: Card[]): Card[] => {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

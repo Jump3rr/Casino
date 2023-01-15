@@ -21,10 +21,11 @@ type TableSettings = {
   state: string;
   players: Player;
 };
-type Player = {
+export type Player = {
   id: string;
   name: string;
   status: string;
+  cards: Card[];
 };
 
 export const PokerGame = () => {

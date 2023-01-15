@@ -11,7 +11,11 @@ import {
 } from 'firebase/database';
 import { MainWrapper } from '../../../entities/CommonComponents';
 import { useNavigate } from 'react-router-dom';
-import { generateDeck, shuffleDeck } from '../Cards/Cards';
+import {
+  generateDeck,
+  //generateDeckWithValues,
+  shuffleDeck,
+} from '../Cards/Cards';
 
 // type Table = {
 //   id: string[];
