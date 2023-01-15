@@ -12,7 +12,73 @@ import {
 } from 'firebase/database';
 import { MainWrapper } from '../../../entities/CommonComponents';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Card } from '../Cards/Cards';
+import { Card, Rank, Suit } from '../Cards/Cards';
+import { checkWinner } from './PokerHandCheck';
+
+//////example
+
+const exTabCards: Card[] = [
+  { suit: Suit.Club, rank: Rank.Two, value: 0 },
+  { suit: Suit.Heart, rank: Rank.King, value: 11 },
+  { suit: Suit.Spade, rank: Rank.Queen, value: 10 },
+  { suit: Suit.Club, rank: Rank.Jack, value: 9 },
+  { suit: Suit.Club, rank: Rank.Three, value: 1 },
+];
+
+const exPlayers: Player[] = [
+  {
+    id: 'id1',
+    name: 'name1',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Club, rank: Rank.Five, value: 3 },
+      { suit: Suit.Club, rank: Rank.Six, value: 4 },
+    ],
+  },
+  {
+    id: 'id2',
+    name: 'name2',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Club, rank: Rank.King, value: 11 },
+      { suit: Suit.Spade, rank: Rank.King, value: 11 },
+    ],
+  },
+  {
+    id: 'id3',
+    name: 'name3',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Club, rank: Rank.Ace, value: 12 },
+      { suit: Suit.Spade, rank: Rank.Ace, value: 12 },
+    ],
+  },
+  {
+    id: 'id4',
+    name: 'name4',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Heart, rank: Rank.Ace, value: 12 },
+      { suit: Suit.Heart, rank: Rank.Ten, value: 8 },
+    ],
+  },
+  {
+    id: 'id5',
+    name: 'name5',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Heart, rank: Rank.Queen, value: 10 },
+      { suit: Suit.Club, rank: Rank.Queen, value: 10 },
+    ],
+  },
+];
+
+///////
 
 type Table = [string, TableSettings];
 type TableSettings = {
@@ -26,6 +92,7 @@ export type Player = {
   name: string;
   status: string;
   cards: Card[];
+  result: number;
 };
 
 export const PokerGame = () => {
@@ -73,10 +140,11 @@ export const PokerGame = () => {
       }
     });
   }, []);
+
   useEffect(() => {
     getCards();
-    //playersCardsHandle();
   }, [table]);
+
   useEffect(() => {
     playersCardsHandle();
   }, [allCards]);
@@ -86,6 +154,7 @@ export const PokerGame = () => {
       setAllCards(Object.values(table[1].cards) as Card[]);
     }
   };
+
   const playersCardsHandle = () => {
     if (!table) {
       return;
@@ -158,6 +227,15 @@ export const PokerGame = () => {
     }
   };
 
+  const hitCard = () => {};
+
+  const winhandler = () => {
+    console.log('abc');
+    if (table) console.log(Object.values(table[1].players));
+    //console.log(checkWinner());
+    console.log(checkWinner(exPlayers, exTabCards));
+  };
+
   return (
     <MainWrapper>
       List of Players:
@@ -179,6 +257,7 @@ export const PokerGame = () => {
         </>
       )}
       <button onClick={setPlayersTurn}>update</button>
+      <button onClick={winhandler}>win</button>
     </MainWrapper>
   );
 };

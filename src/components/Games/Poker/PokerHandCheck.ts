@@ -11,23 +11,33 @@ const karty = [
   { rank: 8, suit: '♦' },
 ];
 
-type PokerResult = {
-  id: string;
-  result: number;
-  cards: number[];
-};
-
-function checkWinner(players: Player[]) {
+// dodaj karty ze stołu
+export function checkWinner(players: Player[], tableCards: Card[]) {
+  console.log(players);
   players.forEach((el) => {
+    const allCards = el.cards.concat(tableCards);
     let result = 0;
-    // while(result === 0) {
-    //   result = checkForPoker(el.cards);
-    //   result = checkForFourOfAKind(el.cards);
-
-    // }
-    // if (checkForPoker(el.cards) !== 0) {
-    // }
+    if (checkForPoker(allCards) !== 0) {
+      result = checkForPoker(allCards);
+    } else if (checkForFourOfAKind(allCards) !== 0) {
+      result = checkForFourOfAKind(allCards);
+    } else if (checkForFullHouse(allCards) !== 0) {
+      result = checkForFullHouse(allCards);
+    } else if (checkForFlush(allCards) !== 0) {
+      result = checkForFlush(allCards);
+    } else if (checkForStraight(allCards) !== 0) {
+      result = checkForStraight(allCards);
+    } else if (checkForThreeOfAKind(allCards) !== 0) {
+      result = checkForThreeOfAKind(allCards);
+    } else if (checkForTwoPairs(allCards) !== 0) {
+      result = checkForTwoPairs(allCards);
+    } else if (checkForPair(allCards) !== 0) {
+      result = checkForPair(allCards);
+    }
+    console.log(result);
+    el.result = result;
   });
+  return sortPlayers(players);
 }
 
 function sortPlayers(arr: any[]) {
@@ -49,7 +59,7 @@ function sortPlayers(arr: any[]) {
   return arr.reverse();
 }
 
-function checkForPoker(cards: Card[]): boolean {
+function checkForPoker(cards: Card[]): number {
   cards.sort((a, b) => a.value - b.value);
   let consecutiveCards = 0;
   let previousCardSuit = null;
@@ -68,13 +78,13 @@ function checkForPoker(cards: Card[]): boolean {
       }
     }
     if (consecutiveCards === 5) {
-      return true;
+      return 8;
     }
   }
-  return false;
+  return 0;
 }
 
-function checkForFourOfAKind(cards: Card[]): boolean {
+function checkForFourOfAKind(cards: Card[]): number {
   let cardValues: { [key: number]: number } = {};
 
   for (let i = 0; i < cards.length; i++) {
@@ -88,13 +98,13 @@ function checkForFourOfAKind(cards: Card[]): boolean {
 
   for (let value in cardValues) {
     if (cardValues[value] === 4) {
-      return true;
+      return 7;
     }
   }
-  return false;
+  return 0;
 }
 
-function checkForFullHouse(cards: Card[]): boolean {
+function checkForFullHouse(cards: Card[]): number {
   let cardValues: { [key: number]: number } = {};
   let threeOfAKind: boolean = false;
   let twoOfAKind: boolean = false;
@@ -117,13 +127,13 @@ function checkForFullHouse(cards: Card[]): boolean {
   }
 
   if (threeOfAKind && twoOfAKind) {
-    return true;
+    return 6;
   }
 
-  return false;
+  return 0;
 }
 
-function checkForFlush(cards: Card[]): boolean {
+function checkForFlush(cards: Card[]): number {
   let cardSuits: { [key: string]: number } = {};
 
   for (let i = 0; i < cards.length; i++) {
@@ -137,13 +147,13 @@ function checkForFlush(cards: Card[]): boolean {
 
   for (let suit in cardSuits) {
     if (cardSuits[suit] >= 5) {
-      return true;
+      return 5;
     }
   }
 
-  return false;
+  return 0;
 }
-function checkForStraight(cards: Card[]): boolean {
+function checkForStraight(cards: Card[]): number {
   cards.sort((a, b) => a.value - b.value);
   let consecutiveCards = 1;
 
@@ -156,13 +166,13 @@ function checkForStraight(cards: Card[]): boolean {
       consecutiveCards = 1;
     }
     if (consecutiveCards === 5) {
-      return true;
+      return 4;
     }
   }
-  return false;
+  return 0;
 }
 
-function checkForThreeOfAKind(cards: Card[]): boolean {
+function checkForThreeOfAKind(cards: Card[]): number {
   let cardValues: { [key: number]: number } = {};
 
   for (let i = 0; i < cards.length; i++) {
@@ -176,14 +186,14 @@ function checkForThreeOfAKind(cards: Card[]): boolean {
 
   for (let value in cardValues) {
     if (cardValues[value] === 3) {
-      return true;
+      return 3;
     }
   }
 
-  return false;
+  return 0;
 }
 
-function checkForTwoPairs(cards: Card[]): boolean {
+function checkForTwoPairs(cards: Card[]): number {
   let cardValues: { [key: number]: number } = {};
   let pairs = 0;
 
@@ -203,12 +213,12 @@ function checkForTwoPairs(cards: Card[]): boolean {
   }
 
   if (pairs >= 2) {
-    return true;
+    return 2;
   }
-  return false;
+  return 0;
 }
 
-function checkForPair(cards: Card[]): boolean {
+function checkForPair(cards: Card[]): number {
   let cardValues: { [key: number]: number } = {};
 
   for (let i = 0; i < cards.length; i++) {
@@ -222,9 +232,9 @@ function checkForPair(cards: Card[]): boolean {
 
   for (let value in cardValues) {
     if (cardValues[value] === 2) {
-      return true;
+      return 1;
     }
   }
 
-  return false;
+  return 0;
 }
