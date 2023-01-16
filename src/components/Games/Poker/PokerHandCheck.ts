@@ -53,7 +53,8 @@ export function checkWinner(players: Player[], tableCards: Card[]) {
 }
 
 function sortPlayers(arr: Player[], tableCards: Card[]) {
-  arr.sort(function (x, y) {
+  const sortedArr = [...arr];
+  sortedArr.sort(function (x, y) {
     var n = x.result - y.result;
     if (n !== 0) {
       return n;
@@ -93,7 +94,7 @@ function sortPlayers(arr: Player[], tableCards: Card[]) {
     }
     return 0;
   });
-  return arr.reverse();
+  return sortedArr.reverse();
 }
 
 function checkForPoker(cards: Card[]): number {

@@ -139,6 +139,111 @@ const exPlayers2: Player[] = [
 
 ///////
 
+const exTabCards3: Card[] = [
+  { suit: Suit.Club, rank: Rank.Nine, value: 7 },
+  { suit: Suit.Club, rank: Rank.Ace, value: 12 },
+  { suit: Suit.Diamond, rank: Rank.Five, value: 3 },
+  { suit: Suit.Spade, rank: Rank.Four, value: 2 },
+  { suit: Suit.Heart, rank: Rank.Nine, value: 7 },
+];
+
+const exPlayers3: Player[] = [
+  {
+    id: 'id1',
+    name: 'name1',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Diamond, rank: Rank.Nine, value: 7, used: false },
+      { suit: Suit.Diamond, rank: Rank.Two, value: 0, used: false },
+    ],
+  },
+  {
+    id: 'id2',
+    name: 'name2',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Diamond, rank: Rank.Jack, value: 9, used: false },
+      { suit: Suit.Spade, rank: Rank.Nine, value: 7, used: false },
+    ],
+  },
+  {
+    id: 'id3',
+    name: 'name3',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Spade, rank: Rank.Ten, value: 8, used: false },
+      { suit: Suit.Club, rank: Rank.Five, value: 3, used: false },
+    ],
+  },
+  {
+    id: 'id4',
+    name: 'name4',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Heart, rank: Rank.Ten, value: 8, used: false },
+      { suit: Suit.Heart, rank: Rank.Three, value: 1, used: false },
+    ],
+  },
+];
+
+///////
+
+const exTabCards4: Card[] = [
+  { suit: Suit.Club, rank: Rank.Seven, value: 5 },
+  { suit: Suit.Diamond, rank: Rank.Ten, value: 8 },
+  { suit: Suit.Spade, rank: Rank.King, value: 11 },
+  { suit: Suit.Heart, rank: Rank.Eight, value: 6 },
+  { suit: Suit.Diamond, rank: Rank.Six, value: 4 },
+];
+
+const exPlayers4: Player[] = [
+  {
+    id: 'id1',
+    name: 'name1',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Diamond, rank: Rank.Jack, value: 9, used: false },
+      { suit: Suit.Spade, rank: Rank.Nine, value: 7, used: false },
+    ],
+  },
+  {
+    id: 'id2',
+    name: 'name2',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Club, rank: Rank.King, value: 11, used: false },
+      { suit: Suit.Heart, rank: Rank.Four, value: 2, used: false },
+    ],
+  },
+  {
+    id: 'id3',
+    name: 'name3',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Heart, rank: Rank.Ten, value: 8, used: false },
+      { suit: Suit.Heart, rank: Rank.Three, value: 1, used: false },
+    ],
+  },
+  {
+    id: 'id4',
+    name: 'name4',
+    status: 's',
+    result: 0,
+    cards: [
+      { suit: Suit.Spade, rank: Rank.Ten, value: 8, used: false },
+      { suit: Suit.Club, rank: Rank.Five, value: 3, used: false },
+    ],
+  },
+];
+
+///////
 type Table = [string, TableSettings];
 type TableSettings = {
   name: string;
@@ -319,8 +424,10 @@ export const PokerGame = () => {
   const winhandler = () => {
     console.log('abc');
     if (table) console.log(Object.values(table[1].players));
-    console.log(checkWinner(exPlayers2, exTabCards2));
-    console.log(checkWinner(exPlayers, exTabCards));
+    // console.log(checkWinner(exPlayers2, exTabCards2));
+    console.log(checkWinner(exPlayers4, exTabCards4));
+    //console.log(checkWinner(exPlayers3, exTabCards3));
+    //console.log(checkWinner(exPlayers, exTabCards));
     //console.log(checkWinner(players, tableCards));
   };
 
