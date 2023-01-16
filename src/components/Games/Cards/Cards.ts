@@ -25,6 +25,7 @@ export interface Card {
   suit: Suit;
   rank: Rank;
   value: number;
+  used?: boolean;
 }
 
 export const generateDeckOneSuit = (): Card[] => {
