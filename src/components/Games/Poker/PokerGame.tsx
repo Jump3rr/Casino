@@ -13,6 +13,7 @@ import {
 import {
   BottomCard,
   CardContainer,
+  Deck,
   MainWrapper,
   MiddleCard,
   TopCard,
@@ -20,6 +21,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, Rank, Suit } from '../Cards/Cards';
 import { checkWinner } from './PokerHandCheck';
+import styled from 'styled-components';
+import { Buttons } from '../../../entities/CommonComponents';
 
 //////example
 
@@ -259,12 +262,28 @@ export type Player = {
   result: number;
 };
 
+const Corner = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: right;
+  text-align: right;
+  margin-top: 5em;
+  margin-left: -5em;
+  //padding: 5em 0 0 5em;
+`;
+const ReadyButtons = styled(Buttons)`
+  margin-top: -15em;
+  padding: 2em;
+`;
+
 export const PokerGame = () => {
   const location = useLocation();
   const tableName = location.pathname.slice(7);
-  const [gameState, setGameState] = useState<'playing' | 'over' | 'waiting'>(
-    'waiting'
-  );
+  const [gameState, setGameState] = useState(false);
+  // const [gameState, setGameState] = useState<'playing' | 'over' | 'waiting'>(
+  //   'waiting'
+  // );
   const [playerState, setPlayerState] = useState<
     | 'playing'
     | 'called'
@@ -274,7 +293,7 @@ export const PokerGame = () => {
     | 'unready'
     | 'ready'
   >('unready');
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
+  //const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [players, setPlayers] = useState<any>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -300,6 +319,7 @@ export const PokerGame = () => {
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
         if (player_temp && player_temp[0]) setPlayer(player_temp[0]);
+
         //getCards();
       }
     });
@@ -313,10 +333,43 @@ export const PokerGame = () => {
     playersCardsHandle();
   }, [allCards]);
 
+  useEffect(() => {
+    console.log('test');
+
+    if (gameState) {
+      return;
+    }
+    console.log('test2');
+    setTimeout(() => {
+      if (players.length > 1) {
+        if (players.every((el: Player) => el.status === 'ready')) {
+          setGameState(true);
+          if (table) {
+            const firstPlayer = getDbIdOfPlayer(table, 0);
+            update(ref(rtdb, `tables/${table[0]}/players/${firstPlayer}/`), {
+              status: 'playing',
+            });
+            setTimeout(() => {
+              console.log('ust');
+              setPlayersTurn();
+            }, 10000);
+          }
+        }
+      }
+    }, 100);
+  }, [players]);
+
   const getCards = () => {
     if (table) {
       setAllCards(Object.values(table[1].cards) as Card[]);
     }
+  };
+
+  const setPlayerReady = () => {
+    if (table)
+      update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+        status: 'ready',
+      });
   };
 
   const playersCardsHandle = () => {
@@ -330,7 +383,6 @@ export const PokerGame = () => {
     //for (let i = 0; i < players.length; i++) {
     //const player_temp = getDbIdOfPlayer(table, i);
     const newPlayerCards = [allCards[0], allCards[1]];
-    console.log(player);
     //if (player_temp === player) {
     setPlayerCards(newPlayerCards);
     //}
@@ -351,17 +403,24 @@ export const PokerGame = () => {
     });
   };
 
+  // useEffect(() => {
+
+  // })
+
   const getDbIdOfPlayer = (table: Table, index: number): string => {
     return Object.entries(table[1].players)[index][0];
   };
 
   const setPlayersTurn = () => {
     if (table) {
+      console.log(table[1].players);
+      console.log(Object.entries(table[1].players));
       const actualPlayerIndex = Object.entries(table[1].players).findIndex(
         (element) => Object(element[1]).status === 'playing'
       );
 
       if (typeof actualPlayerIndex === 'number') {
+        console.log(actualPlayerIndex);
         const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
         let newTurn;
         if (actualPlayerIndex + 1 < players.length)
@@ -382,14 +441,21 @@ export const PokerGame = () => {
                 card !== newTableCards[newTableCards.length - 3]
             );
             setTableCards(newTableCards);
+            update(ref(rtdb, `tables/${table[0]}/`), {
+              tableCards: newTableCards,
+            });
           } else if (tableCards.length >= 3) {
             const newTableCards = [...tableCards, allCards[0]];
             newAllCards = newAllCards.filter(
               (card) => card !== newTableCards[newTableCards.length - 1]
             );
             setTableCards(newTableCards);
+            update(ref(rtdb, `tables/${table[0]}/`), {
+              tableCards: newTableCards,
+            });
           }
           setAllCards(newAllCards);
+
           update(ref(rtdb, `tables/${table[0]}/`), {
             cards: newAllCards,
           });
@@ -430,14 +496,47 @@ export const PokerGame = () => {
     //console.log(checkWinner(exPlayers, exTabCards));
     //console.log(checkWinner(players, tableCards));
   };
+  if (!gameState) {
+    return (
+      <>
+        <Corner>
+          Players:
+          {players.length > 0 &&
+            players.map((el: any, key: number) => {
+              return (
+                <div>
+                  {key + 1}. {el.name ? el.name : el.id}
+                  <span
+                    style={{ color: el.status === 'ready' ? 'green' : 'red' }}
+                  >
+                    {el.status === 'ready' ? ' Ready' : ' Unready'}
+                  </span>
+                </div>
+              );
+            })}
+        </Corner>
+        <MainWrapper>
+          <ReadyButtons onClick={() => setPlayerReady()}>Ready</ReadyButtons>
+        </MainWrapper>
+      </>
+    );
+  }
 
   return (
     <MainWrapper>
       <>
         {tableCards.length > 0 && (
-          <>
+          <Deck>
             {tableCards?.map((card) => (
-              <CardContainer key={card.suit + card.rank}>
+              <CardContainer
+                key={card.suit + card.rank}
+                style={{
+                  color:
+                    card.suit == Suit.Diamond || card.suit === Suit.Heart
+                      ? 'red'
+                      : 'black',
+                }}
+              >
                 <TopCard>
                   {card.suit}
                   {card.rank}
@@ -449,7 +548,7 @@ export const PokerGame = () => {
                 </BottomCard>
               </CardContainer>
             ))}
-          </>
+          </Deck>
         )}
       </>
       List of Players:
@@ -469,6 +568,31 @@ export const PokerGame = () => {
           <button>Raise</button>
           <button>Fold</button>
         </>
+      )}
+      {playerCards.length > 0 && (
+        <Deck>
+          {playerCards?.map((card) => (
+            <CardContainer
+              key={card.suit + card.rank}
+              style={{
+                color:
+                  card.suit == Suit.Diamond || card.suit === Suit.Heart
+                    ? 'red'
+                    : 'black',
+              }}
+            >
+              <TopCard>
+                {card.suit}
+                {card.rank}
+              </TopCard>
+              <MiddleCard>{card.suit}</MiddleCard>
+              <BottomCard>
+                {card.rank}
+                {card.suit}
+              </BottomCard>
+            </CardContainer>
+          ))}
+        </Deck>
       )}
       <button onClick={setPlayersTurn}>update</button>
       <button onClick={winhandler}>win</button>

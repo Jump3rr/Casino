@@ -6,7 +6,7 @@ import {
   MiddleCard,
   BottomCard,
 } from '../../../entities/CommonComponents';
-import { Card } from '../Cards/Cards';
+import { Card, Suit } from '../Cards/Cards';
 
 interface DealerHandProps {
   cards: Card[];
@@ -23,7 +23,15 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
           {cards.length > 0 && (
             <>
               {cards?.map((card) => (
-                <CardContainer key={card.suit + card.rank}>
+                <CardContainer
+                  key={card.suit + card.rank}
+                  style={{
+                    color:
+                      card.suit == Suit.Diamond || card.suit === Suit.Heart
+                        ? 'red'
+                        : 'black',
+                  }}
+                >
                   <TopCard>
                     {card.suit}
                     {card.rank}
@@ -47,7 +55,15 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
       <Deck>
         {cards.length > 0 && (
           <>
-            <CardContainer key={cards[0]?.suit + cards[0]?.rank}>
+            <CardContainer
+              key={cards[0]?.suit + cards[0]?.rank}
+              style={{
+                color:
+                  cards[0].suit == Suit.Diamond || cards[0].suit === Suit.Heart
+                    ? 'red'
+                    : 'black',
+              }}
+            >
               <TopCard>
                 {cards[0]?.suit}
                 {cards[0]?.rank}

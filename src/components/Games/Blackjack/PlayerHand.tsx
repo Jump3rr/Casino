@@ -7,7 +7,7 @@ import {
   MiddleCard,
   BottomCard,
 } from '../../../entities/CommonComponents';
-import { Card } from '../Cards/Cards';
+import { Card, Suit } from '../Cards/Cards';
 
 interface PlayerHandProps {
   cards: Card[];
@@ -19,7 +19,15 @@ const PlayerHand: React.FC<PlayerHandProps> = ({ cards, value }) => {
     <div>
       <Deck>
         {cards?.map((card) => (
-          <CardContainer key={card.suit + card.rank}>
+          <CardContainer
+            key={card.suit + card.rank}
+            style={{
+              color:
+                card.suit == Suit.Diamond || card.suit === Suit.Heart
+                  ? 'red'
+                  : 'black',
+            }}
+          >
             <TopCard>
               {card.suit}
               {card.rank}

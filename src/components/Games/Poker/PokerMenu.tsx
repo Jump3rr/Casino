@@ -65,10 +65,7 @@ export const PokerMenu = () => {
     // console.log(abc);
     onValue(data, (snapshot) => {
       const abc = snapshot.val();
-      console.log(abc);
       const tab: Table[] = Object.values(abc);
-      console.log(Object.entries(abc));
-      console.log(Object.values(Object.entries(abc)[0])[1]);
 
       setTables(Object.entries(abc));
     });
@@ -79,7 +76,6 @@ export const PokerMenu = () => {
 
   //   console.log(data);
   const red = (el: Table) => {
-    console.log('abc');
     joinTable(el);
     return navigate(`/poker/${el[0]}`);
   };
