@@ -24,229 +24,6 @@ import { checkWinner } from './PokerHandCheck';
 import styled from 'styled-components';
 import { Buttons } from '../../../entities/CommonComponents';
 
-//////example
-
-const exTabCards: Card[] = [
-  { suit: Suit.Club, rank: Rank.Two, value: 0 },
-  { suit: Suit.Heart, rank: Rank.Three, value: 1 },
-  { suit: Suit.Spade, rank: Rank.Four, value: 2 },
-  { suit: Suit.Club, rank: Rank.Five, value: 3 },
-  { suit: Suit.Club, rank: Rank.Six, value: 4 },
-];
-
-const exPlayers: Player[] = [
-  {
-    id: 'id1',
-    name: 'name1',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Spade, rank: Rank.Seven, value: 5, used: false },
-      { suit: Suit.Spade, rank: Rank.King, value: 11, used: false },
-    ],
-  },
-  {
-    id: 'id2',
-    name: 'name2',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Club, rank: Rank.King, value: 11, used: false },
-      { suit: Suit.Spade, rank: Rank.Five, value: 3, used: false },
-    ],
-  },
-  {
-    id: 'id3',
-    name: 'name3',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Club, rank: Rank.Ace, value: 12, used: false },
-      { suit: Suit.Spade, rank: Rank.Ace, value: 12, used: false },
-    ],
-  },
-  {
-    id: 'id4',
-    name: 'name4',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Ace, value: 12, used: false },
-      { suit: Suit.Heart, rank: Rank.Ten, value: 8, used: false },
-    ],
-  },
-  {
-    id: 'id5',
-    name: 'name5',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Queen, value: 10, used: false },
-      { suit: Suit.Club, rank: Rank.Queen, value: 10, used: false },
-    ],
-  },
-];
-
-///////////
-
-const exTabCards2: Card[] = [
-  { suit: Suit.Heart, rank: Rank.Eight, value: 6 },
-  { suit: Suit.Diamond, rank: Rank.Ten, value: 8 },
-  { suit: Suit.Spade, rank: Rank.King, value: 11 },
-  { suit: Suit.Spade, rank: Rank.Six, value: 4 },
-  { suit: Suit.Diamond, rank: Rank.Ace, value: 12 },
-];
-
-const exPlayers2: Player[] = [
-  {
-    id: 'id1',
-    name: 'name1',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Seven, value: 5, used: false },
-      { suit: Suit.Club, rank: Rank.Ten, value: 8, used: false },
-    ],
-  },
-  {
-    id: 'id2',
-    name: 'name2',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Jack, value: 9, used: false },
-      { suit: Suit.Heart, rank: Rank.Two, value: 0, used: false },
-    ],
-  },
-  {
-    id: 'id3',
-    name: 'name3',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Spade, rank: Rank.Ten, value: 8, used: false },
-      { suit: Suit.Club, rank: Rank.Ace, value: 12, used: false },
-    ],
-  },
-  {
-    id: 'id4',
-    name: 'name4',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Nine, value: 7, used: false },
-      { suit: Suit.Heart, rank: Rank.King, value: 11, used: false },
-    ],
-  },
-];
-
-///////
-
-const exTabCards3: Card[] = [
-  { suit: Suit.Club, rank: Rank.Nine, value: 7 },
-  { suit: Suit.Club, rank: Rank.Ace, value: 12 },
-  { suit: Suit.Diamond, rank: Rank.Five, value: 3 },
-  { suit: Suit.Spade, rank: Rank.Four, value: 2 },
-  { suit: Suit.Heart, rank: Rank.Nine, value: 7 },
-];
-
-const exPlayers3: Player[] = [
-  {
-    id: 'id1',
-    name: 'name1',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Diamond, rank: Rank.Nine, value: 7, used: false },
-      { suit: Suit.Diamond, rank: Rank.Two, value: 0, used: false },
-    ],
-  },
-  {
-    id: 'id2',
-    name: 'name2',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Diamond, rank: Rank.Jack, value: 9, used: false },
-      { suit: Suit.Spade, rank: Rank.Nine, value: 7, used: false },
-    ],
-  },
-  {
-    id: 'id3',
-    name: 'name3',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Spade, rank: Rank.Ten, value: 8, used: false },
-      { suit: Suit.Club, rank: Rank.Five, value: 3, used: false },
-    ],
-  },
-  {
-    id: 'id4',
-    name: 'name4',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Ten, value: 8, used: false },
-      { suit: Suit.Heart, rank: Rank.Three, value: 1, used: false },
-    ],
-  },
-];
-
-///////
-
-const exTabCards4: Card[] = [
-  { suit: Suit.Club, rank: Rank.Seven, value: 5 },
-  { suit: Suit.Diamond, rank: Rank.Ten, value: 8 },
-  { suit: Suit.Spade, rank: Rank.King, value: 11 },
-  { suit: Suit.Heart, rank: Rank.Eight, value: 6 },
-  { suit: Suit.Diamond, rank: Rank.Six, value: 4 },
-];
-
-const exPlayers4: Player[] = [
-  {
-    id: 'id1',
-    name: 'name1',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Diamond, rank: Rank.Jack, value: 9, used: false },
-      { suit: Suit.Spade, rank: Rank.Nine, value: 7, used: false },
-    ],
-  },
-  {
-    id: 'id2',
-    name: 'name2',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Club, rank: Rank.King, value: 11, used: false },
-      { suit: Suit.Heart, rank: Rank.Four, value: 2, used: false },
-    ],
-  },
-  {
-    id: 'id3',
-    name: 'name3',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Heart, rank: Rank.Ten, value: 8, used: false },
-      { suit: Suit.Heart, rank: Rank.Three, value: 1, used: false },
-    ],
-  },
-  {
-    id: 'id4',
-    name: 'name4',
-    status: 's',
-    result: 0,
-    cards: [
-      { suit: Suit.Spade, rank: Rank.Ten, value: 8, used: false },
-      { suit: Suit.Club, rank: Rank.Five, value: 3, used: false },
-    ],
-  },
-];
-
-///////
 type Table = [string, TableSettings];
 type TableSettings = {
   name: string;
@@ -319,8 +96,6 @@ export const PokerGame = () => {
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
         if (player_temp && player_temp[0]) setPlayer(player_temp[0]);
-
-        //getCards();
       }
     });
   }, []);
@@ -348,11 +123,12 @@ export const PokerGame = () => {
             const firstPlayer = getDbIdOfPlayer(table, 0);
             update(ref(rtdb, `tables/${table[0]}/players/${firstPlayer}/`), {
               status: 'playing',
-            });
-            setTimeout(() => {
-              console.log('ust');
-              setPlayersTurn();
-            }, 10000);
+            }).then(() => checkTurn());
+            // setTimeout(() => {
+            //   console.log('ust');
+            //   checkTurn();
+            //   //setPlayersTurn();
+            // }, 10000);
           }
         }
       }
@@ -380,12 +156,8 @@ export const PokerGame = () => {
       return;
     }
     let newAllCards = allCards;
-    //for (let i = 0; i < players.length; i++) {
-    //const player_temp = getDbIdOfPlayer(table, i);
     const newPlayerCards = [allCards[0], allCards[1]];
-    //if (player_temp === player) {
     setPlayerCards(newPlayerCards);
-    //}
 
     newAllCards = newAllCards.filter(
       (card) =>
@@ -396,16 +168,50 @@ export const PokerGame = () => {
     update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
       cards: newPlayerCards,
     });
-    //}
     setAllCards(newAllCards);
     update(ref(rtdb, `tables/${table[0]}/`), {
       cards: newAllCards,
     });
   };
 
-  // useEffect(() => {
+  const tableCardsHandle = () => {
+    if (!table) {
+      return;
+    }
+    if (tableCards.length > 4) {
+      console.log(checkWinner(players, tableCards));
+      console.log('koniec');
+      return;
+    }
+    let newAllCards = allCards;
+    console.log(tableCards.length);
+    if (tableCards.length < 3) {
+      const newTableCards = [allCards[0], allCards[1], allCards[2]];
+      newAllCards = newAllCards.filter(
+        (card) =>
+          card !== newTableCards[newTableCards.length - 1] &&
+          card !== newTableCards[newTableCards.length - 2] &&
+          card !== newTableCards[newTableCards.length - 3]
+      );
+      update(ref(rtdb, `tables/${table[0]}/`), {
+        tableCards: newTableCards,
+      });
+      setAllCards(newAllCards);
+    } else if (tableCards.length >= 3) {
+      const newTableCards = [...tableCards, allCards[0]];
+      newAllCards = newAllCards.filter(
+        (card) => card !== newTableCards[newTableCards.length - 1]
+      );
+      update(ref(rtdb, `tables/${table[0]}/`), {
+        tableCards: newTableCards,
+      });
+      setAllCards(newAllCards);
+    }
 
-  // })
+    update(ref(rtdb, `tables/${table[0]}/`), {
+      cards: newAllCards,
+    });
+  };
 
   const getDbIdOfPlayer = (table: Table, index: number): string => {
     return Object.entries(table[1].players)[index][0];
@@ -425,52 +231,32 @@ export const PokerGame = () => {
         let newTurn;
         if (actualPlayerIndex + 1 < players.length)
           newTurn = getDbIdOfPlayer(table, actualPlayerIndex + 1);
-        ///new card to table
         else {
-          let newAllCards = allCards;
-
-          if (tableCards.length === 5) {
-            console.log(checkWinner(players, tableCards));
-            console.log('koniec');
-          } else if (tableCards.length < 3) {
-            const newTableCards = [allCards[0], allCards[1], allCards[2]];
-            newAllCards = newAllCards.filter(
-              (card) =>
-                card !== newTableCards[newTableCards.length - 1] &&
-                card !== newTableCards[newTableCards.length - 2] &&
-                card !== newTableCards[newTableCards.length - 3]
-            );
-            setTableCards(newTableCards);
-            update(ref(rtdb, `tables/${table[0]}/`), {
-              tableCards: newTableCards,
-            });
-          } else if (tableCards.length >= 3) {
-            const newTableCards = [...tableCards, allCards[0]];
-            newAllCards = newAllCards.filter(
-              (card) => card !== newTableCards[newTableCards.length - 1]
-            );
-            setTableCards(newTableCards);
-            update(ref(rtdb, `tables/${table[0]}/`), {
-              tableCards: newTableCards,
-            });
-          }
-          setAllCards(newAllCards);
-
-          update(ref(rtdb, `tables/${table[0]}/`), {
-            cards: newAllCards,
-          });
+          tableCardsHandle();
           newTurn = getDbIdOfPlayer(table, 0);
         }
-
+        setCardsTable();
         update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
           status: 'waiting',
         });
-        // if - status wszystkich graczy jest inny od playing - funkcje hitCard - potem kontynuuj.
         update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
           status: 'playing',
         });
         checkTurn();
       }
+    }
+  };
+
+  const setCardsTable = () => {
+    console.log('aaaaAAAAaaaa');
+    if (table) {
+      const dataRef = ref(rtdb, `tables/${table[0]}`);
+      onValue(dataRef, (snapshot) => {
+        console.log('aaaaaaa');
+        const value = snapshot.val();
+        if (tableCards !== value.tableCards) setTableCards(value.tableCards);
+        //else setIsPlayerTurn(false);
+      });
     }
   };
 
@@ -485,17 +271,6 @@ export const PokerGame = () => {
     }
   };
 
-  const hitCard = () => {};
-
-  const winhandler = () => {
-    console.log('abc');
-    if (table) console.log(Object.values(table[1].players));
-    // console.log(checkWinner(exPlayers2, exTabCards2));
-    console.log(checkWinner(exPlayers4, exTabCards4));
-    //console.log(checkWinner(exPlayers3, exTabCards3));
-    //console.log(checkWinner(exPlayers, exTabCards));
-    //console.log(checkWinner(players, tableCards));
-  };
   if (!gameState) {
     return (
       <>
@@ -525,7 +300,7 @@ export const PokerGame = () => {
   return (
     <MainWrapper>
       <>
-        {tableCards.length > 0 && (
+        {tableCards?.length > 0 && (
           <Deck>
             {tableCards?.map((card) => (
               <CardContainer
@@ -562,11 +337,11 @@ export const PokerGame = () => {
         })}
       {isPlayerTurn && (
         <>
-          <button>Check</button>
-          <button>Bet</button>
-          <button>Call</button>
-          <button>Raise</button>
-          <button>Fold</button>
+          <button onClick={setPlayersTurn}>Check</button>
+          <button onClick={setPlayersTurn}>Bet</button>
+          <button onClick={setPlayersTurn}>Call</button>
+          <button onClick={setPlayersTurn}>Raise</button>
+          <button onClick={setPlayersTurn}>Fold</button>
         </>
       )}
       {playerCards.length > 0 && (
@@ -595,7 +370,6 @@ export const PokerGame = () => {
         </Deck>
       )}
       <button onClick={setPlayersTurn}>update</button>
-      <button onClick={winhandler}>win</button>
     </MainWrapper>
   );
 };
