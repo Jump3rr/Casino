@@ -30,6 +30,7 @@ type TableSettings = {
   cards: Card[];
   state: string;
   players: Player;
+  winner: string;
 };
 export type Player = {
   id: string;
@@ -93,10 +94,16 @@ export const PokerGame = () => {
         let players_temp;
         players_temp = Object.values(table_temp[1].players);
         setPlayers(players_temp);
+        setWinner(table_temp[1].winner);
+        setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
-        if (player_temp && player_temp[0]) setPlayer(player_temp[0]);
+        if (player_temp && player_temp[0]) {
+          setPlayer(player_temp[0]);
+          // console.log('abcabc');
+          // console.log(Object(player_temp).cards);
+        }
       }
     });
     //startNewGame();
@@ -104,6 +111,7 @@ export const PokerGame = () => {
 
   useEffect(() => {
     getCards();
+    console.log('test1');
   }, [table]);
 
   useEffect(() => {
@@ -138,16 +146,34 @@ export const PokerGame = () => {
           cards: [],
         });
         setPlayerCards([]);
-      }, 19000);
+      }, 5000);
     }
   }, [gameState]);
+
+  // useEffect(() => {
+  //   console.log(winner);
+  //   console.log('winnertest1');
+  //   setWinner(winner);
+  //   if (winner === '' && table) {
+  //     console.log('winnertest');
+  //     update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+  //       cards: [],
+  //     });
+  //   }
+  // }, [winner]);
 
   const startNewGame = () => {
     if (!table) return;
     update(ref(rtdb, `tables/${table[0]}/`), {
       cards: shuffleDeck(generateDeck()),
       tableCards: [],
+      winner: '',
     });
+    // update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+    //   cards: [],
+    // });
+    // console.log('USUNIĘTE');
+    setWinner('');
     setTableCards([]);
     getCards();
   };
@@ -179,6 +205,10 @@ export const PokerGame = () => {
     if (playerCards.length > 1) {
       return;
     }
+    if (gameState === 'over') {
+      return;
+    }
+    console.log('dodane nowe karty');
     let newAllCards = allCards;
     const newPlayerCards = [allCards[0], allCards[1]];
     setPlayerCards(newPlayerCards);
@@ -206,7 +236,16 @@ export const PokerGame = () => {
     if (tableCards && tableCards.length > 4) {
       console.log('koniec');
       console.log(checkWinner(players, tableCards));
-      setWinner(checkWinner(players, tableCards)[0].name);
+      update(ref(rtdb, `tables/${table[0]}/`), {
+        winner: checkWinner(players, tableCards)[0].name,
+      }).then(() => {
+        const dataRef = ref(rtdb, `tables/${table[0]}`);
+        onValue(dataRef, (snapshot) => {
+          const value = snapshot.val();
+
+          if (value.winner) setWinner(value.winner);
+        });
+      });
       setDbGameState('over');
       setTimeout(() => {
         setDbGameState('playing');
@@ -288,6 +327,7 @@ export const PokerGame = () => {
         console.log('aaaaaaa');
         const value = snapshot.val();
         if (tableCards !== value.tableCards) setTableCards(value.tableCards);
+        //if (value.winner) setWinner(value.winner);
         //else setIsPlayerTurn(false);
       });
     }
