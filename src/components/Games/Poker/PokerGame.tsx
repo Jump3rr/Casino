@@ -9,6 +9,7 @@ import {
   push,
   get,
   DatabaseReference,
+  runTransaction,
 } from 'firebase/database';
 import {
   BottomCard,
@@ -80,6 +81,7 @@ export const PokerGame = () => {
   const [playerCards, setPlayerCards] = useState<Card[]>([]);
   const [table, setTable] = useState<Table>();
   const [player, setPlayer] = useState('');
+  const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
     const dataRef = ref(rtdb, 'tables');
@@ -99,10 +101,12 @@ export const PokerGame = () => {
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
+        //const userCount_temp =
         if (player_temp && player_temp[0]) {
           setPlayer(player_temp[0]);
-          // console.log('abcabc');
-          // console.log(Object(player_temp).cards);
+          setUserCount(
+            Object.keys(table_temp[1].players).indexOf(player_temp[0])
+          );
         }
       }
     });
@@ -110,13 +114,17 @@ export const PokerGame = () => {
   }, []);
 
   useEffect(() => {
-    getCards();
+    if (gameState === 'playing') getCards();
     console.log('test1');
   }, [table]);
 
   useEffect(() => {
-    console.log('ALLCARDSCHANGED');
-    playersCardsHandle();
+    if (gameState === 'playing') {
+      setTimeout(() => {
+        console.log('ALLCARDSCHANGED');
+        playersCardsHandle();
+      }, userCount * 1000);
+    }
   }, [allCards]);
 
   useEffect(() => {
@@ -146,6 +154,13 @@ export const PokerGame = () => {
           cards: [],
         });
         setPlayerCards([]);
+        update(ref(rtdb, `tables/${table[0]}/`), {
+          cards: shuffleDeck(generateDeck()),
+          tableCards: [],
+          winner: '',
+        });
+        setWinner('');
+        setTableCards([]);
       }, 5000);
     }
   }, [gameState]);
@@ -163,24 +178,21 @@ export const PokerGame = () => {
   // }, [winner]);
 
   const startNewGame = () => {
-    if (!table) return;
-    update(ref(rtdb, `tables/${table[0]}/`), {
-      cards: shuffleDeck(generateDeck()),
-      tableCards: [],
-      winner: '',
-    });
-    // update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
-    //   cards: [],
-    // });
-    // console.log('USUNIĘTE');
-    setWinner('');
-    setTableCards([]);
-    getCards();
+    setTimeout(() => {
+      if (!table) return;
+
+      getCards();
+    }, (userCount + 1) * 3000);
   };
 
   const getCards = () => {
     if (table) {
-      setAllCards(Object.values(table[1].cards) as Card[]);
+      const dataRef = ref(rtdb, `tables/${table[0]}`);
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value.cards) setAllCards(value.cards);
+      });
+      //setAllCards(Object.values(table[1].cards) as Card[]);
     }
   };
 
@@ -210,22 +222,42 @@ export const PokerGame = () => {
     }
     console.log('dodane nowe karty');
     let newAllCards = allCards;
-    const newPlayerCards = [allCards[0], allCards[1]];
-    setPlayerCards(newPlayerCards);
+    console.log(newAllCards);
+    const newPlayerCards = [
+      // allCards[Math.floor(Math.random() * newAllCards.length)],
+      // allCards[Math.floor(Math.random() * newAllCards.length)],
+      allCards[userCount],
+      allCards[userCount + 10],
+    ];
+    //setPlayerCards(newPlayerCards);
 
     newAllCards = newAllCards.filter(
       (card) =>
         card !== newPlayerCards[newPlayerCards.length - 1] &&
         card !== newPlayerCards[newPlayerCards.length - 2]
     );
-
     update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
       cards: newPlayerCards,
     });
     setAllCards(newAllCards);
+    // runTransaction(ref(rtdb, `tables/${table[0]}/`), (data: any) => {
+    //   console.log('TRANSACTION1');
+    //   if (data) {
+    //     console.log('TRANSACTION2');
+    //     console.log(data.cards);
+    //     const actualCards = data;
+    //     if (actualCards) {
+    //       actualCards.cards = newAllCards;
+    //     }
+    //     console.log(actualCards);
+    //     return actualCards;
+    //   }
+    // });
     update(ref(rtdb, `tables/${table[0]}/`), {
       cards: newAllCards,
     });
+
+    setCardsPlayer();
   };
 
   const tableCardsHandle = () => {
@@ -327,6 +359,17 @@ export const PokerGame = () => {
         console.log('aaaaaaa');
         const value = snapshot.val();
         if (tableCards !== value.tableCards) setTableCards(value.tableCards);
+        //if (value.winner) setWinner(value.winner);
+        //else setIsPlayerTurn(false);
+      });
+    }
+  };
+  const setCardsPlayer = () => {
+    if (table) {
+      const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        if (playerCards !== value.cards) setPlayerCards(value.cards);
         //if (value.winner) setWinner(value.winner);
         //else setIsPlayerTurn(false);
       });
