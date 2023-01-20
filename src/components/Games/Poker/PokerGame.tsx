@@ -181,6 +181,33 @@ export const PokerGame = () => {
     }
   }, [gameState]);
 
+  useEffect(() => {
+    if (!table) return;
+    const dataRef = ref(rtdb, `tables/${table[0]}`);
+    get(dataRef).then((response) => {
+      const value = response.val();
+      const lowerIndexArr = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id < userCount &&
+          (elem[1].move === 'call' ||
+            elem[1].move === 'bet' ||
+            elem[1].move === 'raise')
+      );
+      const higerIndexArr = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id > userCount &&
+          (elem[1].move === 'call' ||
+            elem[1].move === 'bet' ||
+            elem[1].move === 'raise')
+      );
+      if (userCount > 0 && lowerIndexArr.length > 0) {
+        setCanCheck(false);
+      } else if (higerIndexArr.length > 0) {
+        setCanCheck(false);
+      } else setCanCheck(true);
+    });
+  }, [isPlayerTurn]);
+
   const startNewGame = () => {
     setTimeout(() => {
       if (!table) return;
@@ -315,48 +342,10 @@ export const PokerGame = () => {
     return Object.entries(table[1].players)[index][0];
   };
 
-  // const getNextPlayer = (index: number): number => {
-  //   if (!table) return index;
-  //   let a = index;
-  //   const dataRef = ref(rtdb, `tables/${table[0]}`);
-  //   try {
-  //     return get(dataRef)
-  //       .then((response) => {
-  //         const value = response.val();
-  //         const higherIndexArr = Object.entries(value.players).filter(
-  //           (elem: any, id: number) =>
-  //             id > index &&
-  //             (elem[1].status === 'waiting' || elem[1].status === 'ready')
-  //         );
-  //         const lowerIndexArr = Object.entries(value.players).filter(
-  //           (elem: any, id: number) =>
-  //             id < index &&
-  //             (elem[1].status === 'waiting' || elem[1].status === 'ready')
-  //         );
-  //         a =
-  //           higherIndexArr.length > 0
-  //             ? Object.entries(value.players).findIndex(
-  //                 (el) => el[0] === higherIndexArr[0][0]
-  //               )
-  //             : lowerIndexArr.length > 0
-  //             ? Object.entries(value.players).findIndex(
-  //                 (el) => el[0] === lowerIndexArr[0][0]
-  //               )
-  //             : index;
-
-  //         return a;
-  //       })
-  //       .catch((error) => {
-  //         throw error;
-  //       });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-  const getNextPlayer = (index: number): number => {
-    if (!table) return index;
+  const getNextPlayer = async (index: number): Promise<number> => {
+    if (!table) return Promise.resolve(index);
     const dataRef = ref(rtdb, `tables/${table[0]}`);
-    get(dataRef).then((response) => {
+    return get(dataRef).then((response) => {
       const value = response.val();
       const higherIndexArr = Object.entries(value.players).filter(
         (elem: any, id: number) =>
@@ -368,7 +357,7 @@ export const PokerGame = () => {
           id < index &&
           (elem[1].status === 'waiting' || elem[1].status === 'ready')
       );
-      const a =
+      const nextIndex =
         higherIndexArr.length > 0
           ? Object.entries(value.players).findIndex(
               (el) => el[0] === higherIndexArr[0][0]
@@ -378,24 +367,12 @@ export const PokerGame = () => {
               (el) => el[0] === lowerIndexArr[0][0]
             )
           : index;
-
-      return a;
-      // ) : lowerIndexArr.length > 0 ?
-      // const higherIndex = Object.entries(value.players).findIndex(
-      //   (el) => el[0] === higherIndexArr[0][0]
-      // );
-      // const lowerIndex = Object.entries(value.players).findIndex(
-      //   (el) => el[0] === lowerIndexArr[0][0]
-      // );
-      // return higherIndex > -1
-      //   ? higherIndex
-      //   : lowerIndex > -1
-      //   ? lowerIndex
-      //   : index;
+      console.log(nextIndex);
+      return Promise.resolve(nextIndex);
     });
   };
 
-  const setPlayersTurn = (choice: string) => {
+  const setPlayersTurn = async (choice: string) => {
     if (table) {
       const actualPlayerIndex = Object.entries(table[1].players).findIndex(
         (element) => Object(element[1]).status === 'playing'
@@ -404,17 +381,20 @@ export const PokerGame = () => {
       if (typeof actualPlayerIndex === 'number') {
         const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
         let newTurn;
-        console.log(getNextPlayer(actualPlayerIndex));
-        console.log(actualPlayerIndex);
-        if (getNextPlayer(actualPlayerIndex) > actualPlayerIndex) {
-          newTurn = getDbIdOfPlayer(table, getNextPlayer(actualPlayerIndex));
-        } else if (getNextPlayer(actualPlayerIndex) < actualPlayerIndex) {
-          tableCardsHandle();
-          newTurn = getDbIdOfPlayer(table, getNextPlayer(actualPlayerIndex));
-        } else {
-          //handleWinner(players[actualPlayerIndex].name);
-          return;
+        const nextPlayer = await getNextPlayer(actualPlayerIndex);
+        if (typeof nextPlayer === 'number') {
+          if (nextPlayer > actualPlayerIndex) {
+            newTurn = getDbIdOfPlayer(table, nextPlayer);
+          } else if (nextPlayer < actualPlayerIndex) {
+            if (choice !== 'bet' && choice !== 'raise' && !canCheck)
+              tableCardsHandle();
+            newTurn = getDbIdOfPlayer(table, nextPlayer);
+          } else {
+            handleWinner(players[actualPlayerIndex].name);
+            return;
+          }
         }
+
         setCardsTable();
         update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
           status: choice === 'fold' ? choice : 'waiting',
