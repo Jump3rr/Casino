@@ -49,30 +49,43 @@ const Corner = styled.div`
   text-align: right;
   margin-top: 5em;
   margin-left: -5em;
-  //padding: 5em 0 0 5em;
 `;
 const ReadyButtons = styled(Buttons)`
   margin-top: -15em;
   padding: 2em;
 `;
+const BetButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  button {
+    //padding: 20px;
+    width: 6em;
+    padding: 1em 0 1em 0;
+    font-weight: bolder;
+    font-size: large;
+  }
+`;
 
 export const PokerGame = () => {
   const location = useLocation();
   const tableName = location.pathname.slice(7);
-  //const [gameState, setGameState] = useState(false);
   const [gameState, setGameState] = useState<'playing' | 'over' | 'waiting'>(
     'waiting'
   );
   const [playerState, setPlayerState] = useState<
     | 'playing'
-    | 'called'
-    | 'checked'
-    | 'folded'
+    | 'call'
+    | 'check'
+    | 'bet'
+    | 'raise'
+    | 'fold'
     | 'waiting'
     | 'unready'
     | 'ready'
   >('unready');
   //const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const [canCheck, setCanCheck] = useState(true);
   const [winner, setWinner] = useState('');
   const [players, setPlayers] = useState<any>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
@@ -101,7 +114,6 @@ export const PokerGame = () => {
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
         );
-        //const userCount_temp =
         if (player_temp && player_temp[0]) {
           setPlayer(player_temp[0]);
           setUserCount(
@@ -110,20 +122,17 @@ export const PokerGame = () => {
         }
       }
     });
-    //startNewGame();
   }, []);
 
   useEffect(() => {
     if (gameState === 'playing') getCards();
-    console.log('test1');
   }, [table]);
 
   useEffect(() => {
     if (gameState === 'playing') {
       setTimeout(() => {
-        console.log('ALLCARDSCHANGED');
         playersCardsHandle();
-      }, userCount * 1000);
+      }, userCount * 500);
     }
   }, [allCards]);
 
@@ -134,13 +143,13 @@ export const PokerGame = () => {
     setTimeout(() => {
       if (players.length > 1) {
         if (players.every((el: Player) => el.status === 'ready')) {
-          //setGameState('playing');
           setDbGameState('playing');
           if (table) {
             const firstPlayer = getDbIdOfPlayer(table, 0);
             update(ref(rtdb, `tables/${table[0]}/players/${firstPlayer}/`), {
               status: 'playing',
             }).then(() => checkTurn());
+            console.log('abc');
           }
         }
       }
@@ -161,21 +170,9 @@ export const PokerGame = () => {
         });
         setWinner('');
         setTableCards([]);
-      }, 5000);
+      }, 18000);
     }
   }, [gameState]);
-
-  // useEffect(() => {
-  //   console.log(winner);
-  //   console.log('winnertest1');
-  //   setWinner(winner);
-  //   if (winner === '' && table) {
-  //     console.log('winnertest');
-  //     update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
-  //       cards: [],
-  //     });
-  //   }
-  // }, [winner]);
 
   const startNewGame = () => {
     setTimeout(() => {
@@ -192,7 +189,6 @@ export const PokerGame = () => {
         const value = snapshot.val();
         if (value.cards) setAllCards(value.cards);
       });
-      //setAllCards(Object.values(table[1].cards) as Card[]);
     }
   };
 
@@ -220,16 +216,8 @@ export const PokerGame = () => {
     if (gameState === 'over') {
       return;
     }
-    console.log('dodane nowe karty');
     let newAllCards = allCards;
-    console.log(newAllCards);
-    const newPlayerCards = [
-      // allCards[Math.floor(Math.random() * newAllCards.length)],
-      // allCards[Math.floor(Math.random() * newAllCards.length)],
-      allCards[userCount],
-      allCards[userCount + 10],
-    ];
-    //setPlayerCards(newPlayerCards);
+    const newPlayerCards = [allCards[userCount], allCards[userCount + 10]];
 
     newAllCards = newAllCards.filter(
       (card) =>
@@ -240,19 +228,6 @@ export const PokerGame = () => {
       cards: newPlayerCards,
     });
     setAllCards(newAllCards);
-    // runTransaction(ref(rtdb, `tables/${table[0]}/`), (data: any) => {
-    //   console.log('TRANSACTION1');
-    //   if (data) {
-    //     console.log('TRANSACTION2');
-    //     console.log(data.cards);
-    //     const actualCards = data;
-    //     if (actualCards) {
-    //       actualCards.cards = newAllCards;
-    //     }
-    //     console.log(actualCards);
-    //     return actualCards;
-    //   }
-    // });
     update(ref(rtdb, `tables/${table[0]}/`), {
       cards: newAllCards,
     });
@@ -264,17 +239,13 @@ export const PokerGame = () => {
     if (!table) {
       return;
     }
-    console.log(tableCards);
     if (tableCards && tableCards.length > 4) {
-      console.log('koniec');
-      console.log(checkWinner(players, tableCards));
       update(ref(rtdb, `tables/${table[0]}/`), {
         winner: checkWinner(players, tableCards)[0].name,
       }).then(() => {
         const dataRef = ref(rtdb, `tables/${table[0]}`);
         onValue(dataRef, (snapshot) => {
           const value = snapshot.val();
-
           if (value.winner) setWinner(value.winner);
         });
       });
@@ -283,8 +254,6 @@ export const PokerGame = () => {
         setDbGameState('playing');
         startNewGame();
       }, 20000);
-      //setGameState('over');
-
       return;
     }
     let newAllCards = allCards;
@@ -320,47 +289,60 @@ export const PokerGame = () => {
     return Object.entries(table[1].players)[index][0];
   };
 
-  const setPlayersTurn = () => {
+  const getNextPlayer = (index: number) => {
     if (table) {
-      console.log(table[1].players);
-      console.log(Object.entries(table[1].players));
+      console.log('test');
+      const dataRef = ref(rtdb, `tables/${table[0]}`);
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        console.log(value);
+        console.log(Object.entries(value.players));
+        console.log(player);
+        console.log(
+          Object.entries(value.players).find(
+            (e: any) => e[1].status === 'waiting' && e[0] !== player
+          )
+        );
+      });
+    }
+  };
+
+  const setPlayersTurn = (choice: string) => {
+    if (table) {
       const actualPlayerIndex = Object.entries(table[1].players).findIndex(
         (element) => Object(element[1]).status === 'playing'
       );
 
       if (typeof actualPlayerIndex === 'number') {
-        console.log(actualPlayerIndex);
         const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
         let newTurn;
-        if (actualPlayerIndex + 1 < players.length)
+        if (actualPlayerIndex + 1 < players.length) {
           newTurn = getDbIdOfPlayer(table, actualPlayerIndex + 1);
-        else {
-          console.log('tablecards');
+          getNextPlayer(actualPlayerIndex);
+        } else {
           tableCardsHandle();
           newTurn = getDbIdOfPlayer(table, 0);
         }
         setCardsTable();
         update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
-          status: 'waiting',
+          status: choice === 'fold' ? choice : 'waiting',
+          move: choice,
         });
         update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
           status: 'playing',
         });
+        console.log('updated');
         checkTurn();
       }
     }
   };
 
   const setCardsTable = () => {
-    console.log('aaaaAAAAaaaa');
     if (table) {
       const dataRef = ref(rtdb, `tables/${table[0]}`);
       onValue(dataRef, (snapshot) => {
-        console.log('aaaaaaa');
         const value = snapshot.val();
         if (tableCards !== value.tableCards) setTableCards(value.tableCards);
-        //if (value.winner) setWinner(value.winner);
-        //else setIsPlayerTurn(false);
       });
     }
   };
@@ -370,8 +352,6 @@ export const PokerGame = () => {
       onValue(dataRef, (snapshot) => {
         const value = snapshot.val();
         if (playerCards !== value.cards) setPlayerCards(value.cards);
-        //if (value.winner) setWinner(value.winner);
-        //else setIsPlayerTurn(false);
       });
     }
   };
@@ -414,12 +394,67 @@ export const PokerGame = () => {
   }
 
   return (
-    <MainWrapper>
-      <>
-        {gameState === 'over' && <>{winner + ' wins'}</>}
-        {tableCards?.length > 0 && (
+    <>
+      <Corner>
+        Players:
+        {players.length > 0 &&
+          players.map((el: any, key: number) => {
+            return (
+              <div>
+                {key + 1}. {el.name ? el.name : el.id}
+              </div>
+            );
+          })}
+      </Corner>
+      <MainWrapper>
+        <>
+          {gameState === 'over' && winner && <>{winner + ' wins'}</>}
+          {tableCards?.length > 0 && (
+            <Deck>
+              {tableCards?.map((card) => (
+                <CardContainer
+                  key={card.suit + card.rank}
+                  style={{
+                    color:
+                      card.suit == Suit.Diamond || card.suit === Suit.Heart
+                        ? 'red'
+                        : 'black',
+                  }}
+                >
+                  <TopCard>
+                    {card.suit}
+                    {card.rank}
+                  </TopCard>
+                  <MiddleCard>{card.suit}</MiddleCard>
+                  <BottomCard>
+                    {card.rank}
+                    {card.suit}
+                  </BottomCard>
+                </CardContainer>
+              ))}
+            </Deck>
+          )}
+        </>
+
+        {isPlayerTurn && (
+          <BetButtons>
+            {canCheck ? (
+              <>
+                <Buttons onClick={() => setPlayersTurn('check')}>Check</Buttons>
+                <Buttons onClick={() => setPlayersTurn('bet')}>Bet</Buttons>
+              </>
+            ) : (
+              <>
+                <Buttons onClick={() => setPlayersTurn('call')}>Call</Buttons>
+                <Buttons onClick={() => setPlayersTurn('raise')}>Raise</Buttons>
+              </>
+            )}
+            <Buttons onClick={() => setPlayersTurn('fold')}>Fold</Buttons>
+          </BetButtons>
+        )}
+        {playerCards.length > 0 && (
           <Deck>
-            {tableCards?.map((card) => (
+            {playerCards?.map((card) => (
               <CardContainer
                 key={card.suit + card.rank}
                 style={{
@@ -442,51 +477,7 @@ export const PokerGame = () => {
             ))}
           </Deck>
         )}
-      </>
-      List of Players:
-      {players.length > 0 &&
-        players.map((el: any, key: number) => {
-          return (
-            <div>
-              {key + 1}. {el.name ? el.name : el.id}
-            </div>
-          );
-        })}
-      {isPlayerTurn && (
-        <>
-          <button onClick={setPlayersTurn}>Check</button>
-          <button onClick={setPlayersTurn}>Bet</button>
-          <button onClick={setPlayersTurn}>Call</button>
-          <button onClick={setPlayersTurn}>Raise</button>
-          <button onClick={setPlayersTurn}>Fold</button>
-        </>
-      )}
-      {playerCards.length > 0 && (
-        <Deck>
-          {playerCards?.map((card) => (
-            <CardContainer
-              key={card.suit + card.rank}
-              style={{
-                color:
-                  card.suit == Suit.Diamond || card.suit === Suit.Heart
-                    ? 'red'
-                    : 'black',
-              }}
-            >
-              <TopCard>
-                {card.suit}
-                {card.rank}
-              </TopCard>
-              <MiddleCard>{card.suit}</MiddleCard>
-              <BottomCard>
-                {card.rank}
-                {card.suit}
-              </BottomCard>
-            </CardContainer>
-          ))}
-        </Deck>
-      )}
-      <button onClick={setPlayersTurn}>update</button>
-    </MainWrapper>
+      </MainWrapper>
+    </>
   );
 };
