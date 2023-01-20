@@ -85,6 +85,13 @@ export const PokerGame = () => {
     | 'ready'
   >('unready');
   //const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const [dbSettingsCompleted, setDbSettingsCompleted] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const [canCheck, setCanCheck] = useState(true);
   const [winner, setWinner] = useState('');
   const [players, setPlayers] = useState<any>([]);
@@ -183,16 +190,21 @@ export const PokerGame = () => {
   };
 
   const getCards = () => {
+    if (dbSettingsCompleted[0]) return;
     if (table) {
+      const settings = [...dbSettingsCompleted];
       const dataRef = ref(rtdb, `tables/${table[0]}`);
       onValue(dataRef, (snapshot) => {
         const value = snapshot.val();
         if (value.cards) setAllCards(value.cards);
+        settings[0] = true;
+        setDbSettingsCompleted(settings);
       });
     }
   };
 
   const setPlayerReady = () => {
+    console.log('redi');
     if (table)
       update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
         status: 'ready',
@@ -235,25 +247,39 @@ export const PokerGame = () => {
     setCardsPlayer();
   };
 
+  const handleWinner = (player?: string) => {
+    if (!table) return;
+    let winner;
+    if (player) {
+      winner = player;
+    } else {
+      winner = checkWinner(players, tableCards)[0].name;
+    }
+    const settings = [...dbSettingsCompleted];
+    update(ref(rtdb, `tables/${table[0]}/`), {
+      winner: winner,
+    }).then(() => {
+      const dataRef = ref(rtdb, `tables/${table[0]}`);
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value.winner) setWinner(value.winner);
+        settings[1] = true;
+        setDbSettingsCompleted(settings);
+      });
+    });
+    setDbGameState('over');
+    setTimeout(() => {
+      setDbGameState('playing');
+      startNewGame();
+    }, 20000);
+  };
+
   const tableCardsHandle = () => {
     if (!table) {
       return;
     }
     if (tableCards && tableCards.length > 4) {
-      update(ref(rtdb, `tables/${table[0]}/`), {
-        winner: checkWinner(players, tableCards)[0].name,
-      }).then(() => {
-        const dataRef = ref(rtdb, `tables/${table[0]}`);
-        onValue(dataRef, (snapshot) => {
-          const value = snapshot.val();
-          if (value.winner) setWinner(value.winner);
-        });
-      });
-      setDbGameState('over');
-      setTimeout(() => {
-        setDbGameState('playing');
-        startNewGame();
-      }, 20000);
+      handleWinner();
       return;
     }
     let newAllCards = allCards;
@@ -289,22 +315,84 @@ export const PokerGame = () => {
     return Object.entries(table[1].players)[index][0];
   };
 
-  const getNextPlayer = (index: number) => {
-    if (table) {
-      console.log('test');
-      const dataRef = ref(rtdb, `tables/${table[0]}`);
-      onValue(dataRef, (snapshot) => {
-        const value = snapshot.val();
-        console.log(value);
-        console.log(Object.entries(value.players));
-        console.log(player);
-        console.log(
-          Object.entries(value.players).find(
-            (e: any) => e[1].status === 'waiting' && e[0] !== player
-          )
-        );
-      });
-    }
+  // const getNextPlayer = (index: number): number => {
+  //   if (!table) return index;
+  //   let a = index;
+  //   const dataRef = ref(rtdb, `tables/${table[0]}`);
+  //   try {
+  //     return get(dataRef)
+  //       .then((response) => {
+  //         const value = response.val();
+  //         const higherIndexArr = Object.entries(value.players).filter(
+  //           (elem: any, id: number) =>
+  //             id > index &&
+  //             (elem[1].status === 'waiting' || elem[1].status === 'ready')
+  //         );
+  //         const lowerIndexArr = Object.entries(value.players).filter(
+  //           (elem: any, id: number) =>
+  //             id < index &&
+  //             (elem[1].status === 'waiting' || elem[1].status === 'ready')
+  //         );
+  //         a =
+  //           higherIndexArr.length > 0
+  //             ? Object.entries(value.players).findIndex(
+  //                 (el) => el[0] === higherIndexArr[0][0]
+  //               )
+  //             : lowerIndexArr.length > 0
+  //             ? Object.entries(value.players).findIndex(
+  //                 (el) => el[0] === lowerIndexArr[0][0]
+  //               )
+  //             : index;
+
+  //         return a;
+  //       })
+  //       .catch((error) => {
+  //         throw error;
+  //       });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+  const getNextPlayer = (index: number): number => {
+    if (!table) return index;
+    const dataRef = ref(rtdb, `tables/${table[0]}`);
+    get(dataRef).then((response) => {
+      const value = response.val();
+      const higherIndexArr = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id > index &&
+          (elem[1].status === 'waiting' || elem[1].status === 'ready')
+      );
+      const lowerIndexArr = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id < index &&
+          (elem[1].status === 'waiting' || elem[1].status === 'ready')
+      );
+      const a =
+        higherIndexArr.length > 0
+          ? Object.entries(value.players).findIndex(
+              (el) => el[0] === higherIndexArr[0][0]
+            )
+          : lowerIndexArr.length > 0
+          ? Object.entries(value.players).findIndex(
+              (el) => el[0] === lowerIndexArr[0][0]
+            )
+          : index;
+
+      return a;
+      // ) : lowerIndexArr.length > 0 ?
+      // const higherIndex = Object.entries(value.players).findIndex(
+      //   (el) => el[0] === higherIndexArr[0][0]
+      // );
+      // const lowerIndex = Object.entries(value.players).findIndex(
+      //   (el) => el[0] === lowerIndexArr[0][0]
+      // );
+      // return higherIndex > -1
+      //   ? higherIndex
+      //   : lowerIndex > -1
+      //   ? lowerIndex
+      //   : index;
+    });
   };
 
   const setPlayersTurn = (choice: string) => {
@@ -316,12 +404,16 @@ export const PokerGame = () => {
       if (typeof actualPlayerIndex === 'number') {
         const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
         let newTurn;
-        if (actualPlayerIndex + 1 < players.length) {
-          newTurn = getDbIdOfPlayer(table, actualPlayerIndex + 1);
-          getNextPlayer(actualPlayerIndex);
-        } else {
+        console.log(getNextPlayer(actualPlayerIndex));
+        console.log(actualPlayerIndex);
+        if (getNextPlayer(actualPlayerIndex) > actualPlayerIndex) {
+          newTurn = getDbIdOfPlayer(table, getNextPlayer(actualPlayerIndex));
+        } else if (getNextPlayer(actualPlayerIndex) < actualPlayerIndex) {
           tableCardsHandle();
-          newTurn = getDbIdOfPlayer(table, 0);
+          newTurn = getDbIdOfPlayer(table, getNextPlayer(actualPlayerIndex));
+        } else {
+          //handleWinner(players[actualPlayerIndex].name);
+          return;
         }
         setCardsTable();
         update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
@@ -331,38 +423,49 @@ export const PokerGame = () => {
         update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
           status: 'playing',
         });
-        console.log('updated');
         checkTurn();
       }
     }
   };
 
   const setCardsTable = () => {
+    if (dbSettingsCompleted[2]) return;
     if (table) {
+      const settings = [...dbSettingsCompleted];
       const dataRef = ref(rtdb, `tables/${table[0]}`);
       onValue(dataRef, (snapshot) => {
         const value = snapshot.val();
         if (tableCards !== value.tableCards) setTableCards(value.tableCards);
+        settings[2] = true;
+        setDbSettingsCompleted(settings);
       });
     }
   };
   const setCardsPlayer = () => {
+    if (dbSettingsCompleted[3]) return;
     if (table) {
+      const settings = [...dbSettingsCompleted];
       const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
       onValue(dataRef, (snapshot) => {
         const value = snapshot.val();
         if (playerCards !== value.cards) setPlayerCards(value.cards);
+        settings[3] = true;
+        setDbSettingsCompleted(settings);
       });
     }
   };
 
   const checkTurn = () => {
+    if (dbSettingsCompleted[4]) return;
     if (table) {
+      const settings = [...dbSettingsCompleted];
       const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
       onValue(dataRef, (snapshot) => {
         const value = snapshot.val();
         if (value.status === 'playing') setIsPlayerTurn(true);
         else setIsPlayerTurn(false);
+        settings[4] = true;
+        setDbSettingsCompleted(settings);
       });
     }
   };
