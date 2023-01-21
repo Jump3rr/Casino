@@ -24,14 +24,23 @@ import { Card, generateDeck, Rank, shuffleDeck, Suit } from '../Cards/Cards';
 import { checkWinner } from './PokerHandCheck';
 import styled from 'styled-components';
 import { Buttons } from '../../../entities/CommonComponents';
+import { useSelector } from 'react-redux';
+import { IState } from '../../../reducers';
+import { IBetReducer } from '../../../reducers/betReducer';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
+import { DecrementBet, IncrementBet } from '../../../entities/types';
+import { incrementBet, decrementBet } from '../../../actions/betActions';
+import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 
 type Table = [string, TableSettings];
 type TableSettings = {
   name: string;
   cards: Card[];
   state: string;
-  players: Player;
+  players: Player[];
   winner: string;
+  blind: number;
+  actualBet: number;
 };
 export type Player = {
   id: string;
@@ -39,6 +48,7 @@ export type Player = {
   status: string;
   cards: Card[];
   result: number;
+  bet: number;
 };
 
 const Corner = styled.div`
@@ -64,6 +74,22 @@ const BetButtons = styled.div`
     padding: 1em 0 1em 0;
     font-weight: bolder;
     font-size: large;
+  }
+`;
+const BetValueButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  align-items: center;
+
+  button {
+    //width: 3em;
+    padding: 0.5em;
+    font-size: 1.2em;
+    font-weight: bolder;
+  }
+  div {
+    font-size: 1.2em;
   }
 `;
 
@@ -102,6 +128,28 @@ export const PokerGame = () => {
   const [table, setTable] = useState<Table>();
   const [player, setPlayer] = useState('');
   const [userCount, setUserCount] = useState(0);
+  const [betOrRaise, setBetOrRaise] = useState('');
+  const [bet, setBet] = useState(0);
+  const [isBetOptionsVisible, setIsBetOptionsVisible] = useState(false);
+  const dispatch = useAppDispatch();
+  const fbcredits = useAppSelector((state) => state.fbcredits);
+  // const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
+  //   ...globalState.bet,
+  // }));
+
+  const HandleIncrementBet = (value: number) => {
+    if (bet + value <= fbcredits) {
+      //dispatch<IncrementBet>(incrementBet());
+      setBet(bet + value);
+    }
+  };
+  const HandleDecrementBet = (value: number) => {
+    if (!table) return;
+    if (bet - value > table[1].blind) {
+      //dispatch<DecrementBet>(decrementBet());
+      setBet(bet - value);
+    }
+  };
 
   useEffect(() => {
     const dataRef = ref(rtdb, 'tables');
@@ -117,6 +165,7 @@ export const PokerGame = () => {
         players_temp = Object.values(table_temp[1].players);
         setPlayers(players_temp);
         setWinner(table_temp[1].winner);
+        setBet(table_temp[1].blind * 2);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
@@ -520,20 +569,68 @@ export const PokerGame = () => {
         </>
 
         {isPlayerTurn && (
-          <BetButtons>
-            {canCheck ? (
+          <>
+            <BetButtons>
+              {canCheck ? (
+                <>
+                  <Buttons onClick={() => setPlayersTurn('check')}>
+                    Check
+                  </Buttons>
+                  <Buttons
+                    onClick={() => {
+                      setIsBetOptionsVisible(!isBetOptionsVisible);
+                      setBetOrRaise('bet');
+                    }}
+                  >
+                    Bet
+                  </Buttons>
+                </>
+              ) : (
+                <>
+                  <Buttons onClick={() => setPlayersTurn('call')}>Call</Buttons>
+                  <Buttons
+                    onClick={() => {
+                      setIsBetOptionsVisible(!isBetOptionsVisible);
+                      setBetOrRaise('raise');
+                    }}
+                  >
+                    Raise
+                  </Buttons>
+                </>
+              )}
+              <Buttons onClick={() => setPlayersTurn('fold')}>Fold</Buttons>
+            </BetButtons>
+            {isBetOptionsVisible && (
               <>
-                <Buttons onClick={() => setPlayersTurn('check')}>Check</Buttons>
-                <Buttons onClick={() => setPlayersTurn('bet')}>Bet</Buttons>
-              </>
-            ) : (
-              <>
-                <Buttons onClick={() => setPlayersTurn('call')}>Call</Buttons>
-                <Buttons onClick={() => setPlayersTurn('raise')}>Raise</Buttons>
+                <BetValueButtons>
+                  <Buttons onClick={() => HandleDecrementBet(100)}>
+                    -100
+                  </Buttons>
+                  <Buttons onClick={() => HandleDecrementBet(10)}>-10</Buttons>
+                  <Buttons onClick={() => HandleDecrementBet(1)}>-1</Buttons>
+                  <div>
+                    <div>BET:</div>
+                    <div>{bet}</div>
+                  </div>
+                  <Buttons onClick={() => HandleIncrementBet(1)}>+1</Buttons>
+                  <Buttons onClick={() => HandleIncrementBet(10)}>+10</Buttons>
+                  <Buttons onClick={() => HandleIncrementBet(100)}>
+                    +100
+                  </Buttons>
+                </BetValueButtons>
+                <Buttons
+                  style={{
+                    padding: '1em',
+                    fontSize: 'large',
+                    fontWeight: 'bolder',
+                  }}
+                  onClick={() => setPlayersTurn(betOrRaise)}
+                >
+                  {betOrRaise.charAt(0).toUpperCase() + betOrRaise.slice(1)}
+                </Buttons>
               </>
             )}
-            <Buttons onClick={() => setPlayersTurn('fold')}>Fold</Buttons>
-          </BetButtons>
+          </>
         )}
         {playerCards.length > 0 && (
           <Deck>
