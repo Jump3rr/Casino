@@ -26,6 +26,8 @@ type TableSettings = {
     id: string;
   };
   blind: number;
+  tableValue: number;
+  actualBet: number;
 };
 const TableRow = styled.div`
   margin-top: 1em;
@@ -78,6 +80,8 @@ export const PokerMenu = () => {
       cards: shuffleDeck(generateDeck()),
       players: {},
       blind: Number(blind),
+      actualBet: 0,
+      tableValue: 0,
     });
   };
   const joinTable = (el: Table) => {
@@ -96,7 +100,6 @@ export const PokerMenu = () => {
   const getTables = () => {
     onValue(data, (snapshot) => {
       const value = snapshot.val();
-      console.log(value);
       //const tab: Table[] = Object.values(value);
       setTables(Object.entries(value));
     });

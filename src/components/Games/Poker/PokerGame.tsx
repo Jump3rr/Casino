@@ -41,6 +41,7 @@ type TableSettings = {
   winner: string;
   blind: number;
   actualBet: number;
+  tableValue: number;
 };
 export type Player = {
   id: string;
@@ -117,6 +118,7 @@ export const PokerGame = () => {
     false,
     false,
     false,
+    false,
   ]);
   const [canCheck, setCanCheck] = useState(true);
   const [winner, setWinner] = useState('');
@@ -129,8 +131,11 @@ export const PokerGame = () => {
   const [player, setPlayer] = useState('');
   const [userCount, setUserCount] = useState(0);
   const [betOrRaise, setBetOrRaise] = useState('');
-  const [bet, setBet] = useState(0);
+  const [tempBet, setTempBet] = useState(0);
+  const [tableBet, setTableBet] = useState(0);
+  const [tableValue, setTableValue] = useState(0);
   const [isBetOptionsVisible, setIsBetOptionsVisible] = useState(false);
+
   const dispatch = useAppDispatch();
   const fbcredits = useAppSelector((state) => state.fbcredits);
   // const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
@@ -138,16 +143,16 @@ export const PokerGame = () => {
   // }));
 
   const HandleIncrementBet = (value: number) => {
-    if (bet + value <= fbcredits) {
+    if (tempBet + value <= fbcredits) {
       //dispatch<IncrementBet>(incrementBet());
-      setBet(bet + value);
+      setTempBet(tempBet + value);
     }
   };
   const HandleDecrementBet = (value: number) => {
     if (!table) return;
-    if (bet - value > table[1].blind) {
+    if (tempBet - value > table[1].blind) {
       //dispatch<DecrementBet>(decrementBet());
-      setBet(bet - value);
+      setTempBet(tempBet - value);
     }
   };
 
@@ -165,7 +170,9 @@ export const PokerGame = () => {
         players_temp = Object.values(table_temp[1].players);
         setPlayers(players_temp);
         setWinner(table_temp[1].winner);
-        setBet(table_temp[1].blind * 2);
+        setTempBet(table_temp[1].blind * 2);
+        setTableBet(table_temp[1].actualBet);
+        setTableValue(table_temp[1].tableValue);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
@@ -223,6 +230,8 @@ export const PokerGame = () => {
           cards: shuffleDeck(generateDeck()),
           tableCards: [],
           winner: '',
+          tableValue: 0,
+          actualBet: 0,
         });
         setWinner('');
         setTableCards([]);
@@ -396,6 +405,18 @@ export const PokerGame = () => {
     const dataRef = ref(rtdb, `tables/${table[0]}`);
     return get(dataRef).then((response) => {
       const value = response.val();
+      const higherIndexArrByBet = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id > index &&
+          (elem[1].status === 'waiting' || elem[1].status === 'ready') &&
+          (tableBet === 0 || elem[1].bet < tableBet)
+      );
+      const lowerIndexArrByBet = Object.entries(value.players).filter(
+        (elem: any, id: number) =>
+          id < index &&
+          (elem[1].status === 'waiting' || elem[1].status === 'ready') &&
+          (tableBet === 0 || elem[1].bet !== tableBet)
+      );
       const higherIndexArr = Object.entries(value.players).filter(
         (elem: any, id: number) =>
           id > index &&
@@ -407,7 +428,15 @@ export const PokerGame = () => {
           (elem[1].status === 'waiting' || elem[1].status === 'ready')
       );
       const nextIndex =
-        higherIndexArr.length > 0
+        higherIndexArrByBet.length > 0
+          ? Object.entries(value.players).findIndex(
+              (el) => el[0] === higherIndexArrByBet[0][0]
+            )
+          : lowerIndexArrByBet.length > 0
+          ? Object.entries(value.players).findIndex(
+              (el) => el[0] === lowerIndexArrByBet[0][0]
+            )
+          : higherIndexArr.length > 0
           ? Object.entries(value.players).findIndex(
               (el) => el[0] === higherIndexArr[0][0]
             )
@@ -421,7 +450,7 @@ export const PokerGame = () => {
     });
   };
 
-  const setPlayersTurn = async (choice: string) => {
+  const setPlayersTurn = async (choice: string, bet: number = 0) => {
     if (table) {
       const actualPlayerIndex = Object.entries(table[1].players).findIndex(
         (element) => Object(element[1]).status === 'playing'
@@ -429,14 +458,31 @@ export const PokerGame = () => {
 
       if (typeof actualPlayerIndex === 'number') {
         const actualPlayer = getDbIdOfPlayer(table, actualPlayerIndex);
+        update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
+          status: choice === 'fold' ? choice : 'waiting',
+          move: choice,
+          bet: bet > 0 ? bet : tableBet,
+        });
+        checkTurn();
+        if (choice === 'raise' || choice === 'bet' || choice === 'call') {
+          console.log('abc');
+          console.log(bet);
+          // wyslalo tablebet ktore = 20 wiec tamto ustawilo jako actualbet
+          updateTableBet(bet > 0 ? bet : tableBet);
+        }
+        if (choice === 'call') checkAllPlayersBet();
         let newTurn;
         const nextPlayer = await getNextPlayer(actualPlayerIndex);
+        console.log(nextPlayer);
         if (typeof nextPlayer === 'number') {
+          console.log(nextPlayer);
           if (nextPlayer > actualPlayerIndex) {
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else if (nextPlayer < actualPlayerIndex) {
-            if (choice !== 'bet' && choice !== 'raise' && canCheck)
-              tableCardsHandle();
+            console.log(canCheck);
+            console.log('abcabcabc');
+            if (choice === 'check') checkAllPlayersBet();
+            //if (choice !== 'bet' && choice !== 'raise') tableCardsHandle();
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else {
             handleWinner(players[actualPlayerIndex].name);
@@ -445,16 +491,66 @@ export const PokerGame = () => {
         }
 
         setCardsTable();
-        update(ref(rtdb, `tables/${table[0]}/players/${actualPlayer}/`), {
-          status: choice === 'fold' ? choice : 'waiting',
-          move: choice,
-        });
-        update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
-          status: 'playing',
-        });
-        checkTurn();
+
+        nextPlayer < actualPlayerIndex
+          ? update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
+              status: 'playing',
+              //bet: 0,
+            })
+          : update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
+              status: 'playing',
+            });
+
+        // if ((table[1].actualBet && bet > table[1].actualBet) || bet > 0) {
       }
     }
+  };
+
+  const checkAllPlayersBet = () => {
+    console.log('checkAllPlayersBet');
+    if (!table) return;
+    const dataRef = ref(rtdb, `tables/${table[0]}`);
+    return get(dataRef).then((response) => {
+      const value = response.val();
+      const playersInGame = Object.entries(value.players).filter(
+        (elem: any) => elem[1].status !== 'fold'
+      );
+      const playersBet = Object.entries(value.players).filter(
+        (elem: any) => elem[1].status !== 'fold' && elem[1].bet === tableBet
+      );
+      console.log(playersInGame);
+      console.log(playersBet);
+      if (playersInGame.length === playersBet.length) {
+        console.log(playersInGame);
+        playersInGame.forEach((player) => {
+          update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
+            bet: 0,
+            move: '',
+          });
+          setCanCheck(true);
+          tableCardsHandle();
+        });
+      }
+    });
+  };
+
+  const updateTableBet = (bet: number) => {
+    if (!table) return;
+
+    const dataRef = ref(rtdb, `tables/${table[0]}`);
+    get(dataRef)
+      .then((response) => {
+        return response.val();
+      })
+      .then((res) => {
+        const actualValue = res.tableValue;
+        update(ref(rtdb, `tables/${table[0]}/`), {
+          actualBet: bet,
+          tableValue: actualValue ? actualValue + bet : bet,
+        });
+        //checkTableValue();
+        //setTableValue(actualValue ? actualValue + bet : bet);
+      });
   };
 
   const setCardsTable = () => {
@@ -499,6 +595,21 @@ export const PokerGame = () => {
     }
   };
 
+  // const checkTableValue = () => {
+  //   if (dbSettingsCompleted[5]) return;
+  //   if (table) {
+  //     const settings = [...dbSettingsCompleted];
+  //     const dataRef = ref(rtdb, `tables/${table[0]}`);
+  //     onValue(dataRef, (snapshot) => {
+  //       const value = snapshot.val();
+  //       if (tableValue !== value.tableValue) setTableValue(value.tableValue);
+  //       console.log(value.tableValue);
+  //       settings[5] = true;
+  //       setDbSettingsCompleted(settings);
+  //     });
+  //   }
+  // };
+
   if (gameState === 'waiting') {
     return (
       <>
@@ -541,6 +652,7 @@ export const PokerGame = () => {
       <MainWrapper>
         <>
           {gameState === 'over' && winner && <>{winner + ' wins'}</>}
+          <span>VALUE: {tableValue}</span>
           {tableCards?.length > 0 && (
             <Deck>
               {tableCards?.map((card) => (
@@ -610,7 +722,7 @@ export const PokerGame = () => {
                   <Buttons onClick={() => HandleDecrementBet(1)}>-1</Buttons>
                   <div>
                     <div>BET:</div>
-                    <div>{bet}</div>
+                    <div>{tempBet}</div>
                   </div>
                   <Buttons onClick={() => HandleIncrementBet(1)}>+1</Buttons>
                   <Buttons onClick={() => HandleIncrementBet(10)}>+10</Buttons>
@@ -624,7 +736,11 @@ export const PokerGame = () => {
                     fontSize: 'large',
                     fontWeight: 'bolder',
                   }}
-                  onClick={() => setPlayersTurn(betOrRaise)}
+                  onClick={() => {
+                    //setBet(tempBet);
+                    setPlayersTurn(betOrRaise, tempBet);
+                    setIsBetOptionsVisible(false);
+                  }}
                 >
                   {betOrRaise.charAt(0).toUpperCase() + betOrRaise.slice(1)}
                 </Buttons>
