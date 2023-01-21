@@ -386,7 +386,7 @@ export const PokerGame = () => {
           if (nextPlayer > actualPlayerIndex) {
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else if (nextPlayer < actualPlayerIndex) {
-            if (choice !== 'bet' && choice !== 'raise' && !canCheck)
+            if (choice !== 'bet' && choice !== 'raise' && canCheck)
               tableCardsHandle();
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else {
