@@ -42,6 +42,7 @@ type TableSettings = {
   blind: number;
   actualBet: number;
   tableValue: number;
+  actualPlayer: number;
 };
 export type Player = {
   id: string;
@@ -400,7 +401,10 @@ export const PokerGame = () => {
     return Object.entries(table[1].players)[index][0];
   };
 
-  const getNextPlayer = async (index: number): Promise<number> => {
+  const getNextPlayer = async (
+    index: number,
+    choice?: string
+  ): Promise<number> => {
     if (!table) return Promise.resolve(index);
     const dataRef = ref(rtdb, `tables/${table[0]}`);
     return get(dataRef).then((response) => {
@@ -409,13 +413,13 @@ export const PokerGame = () => {
         (elem: any, id: number) =>
           id > index &&
           (elem[1].status === 'waiting' || elem[1].status === 'ready') &&
-          (tableBet === 0 || elem[1].bet < tableBet)
+          elem[1].bet < tableBet
       );
       const lowerIndexArrByBet = Object.entries(value.players).filter(
         (elem: any, id: number) =>
           id < index &&
           (elem[1].status === 'waiting' || elem[1].status === 'ready') &&
-          (tableBet === 0 || elem[1].bet !== tableBet)
+          elem[1].bet !== tableBet
       );
       const higherIndexArr = Object.entries(value.players).filter(
         (elem: any, id: number) =>
@@ -427,6 +431,11 @@ export const PokerGame = () => {
           id < index &&
           (elem[1].status === 'waiting' || elem[1].status === 'ready')
       );
+      console.log(higherIndexArrByBet.length);
+      console.log(lowerIndexArrByBet.length);
+      console.log(higherIndexArr.length);
+      console.log(lowerIndexArr.length);
+
       const nextIndex =
         higherIndexArrByBet.length > 0
           ? Object.entries(value.players).findIndex(
@@ -446,6 +455,24 @@ export const PokerGame = () => {
             )
           : index;
       console.log(nextIndex);
+      if (
+        choice &&
+        choice === 'check' &&
+        higherIndexArrByBet.length < 1 &&
+        lowerIndexArrByBet.length < 1 &&
+        higherIndexArr.length < 1 &&
+        lowerIndexArr.length > 0
+      ) {
+        checkAllPlayersBet();
+      }
+      if (
+        !choice &&
+        higherIndexArrByBet.length < 1 &&
+        lowerIndexArrByBet.length < 1 &&
+        (higherIndexArr.length > 0 || lowerIndexArr.length > 0)
+      ) {
+        checkAllPlayersBet();
+      }
       return Promise.resolve(nextIndex);
     });
   };
@@ -467,22 +494,26 @@ export const PokerGame = () => {
         if (choice === 'raise' || choice === 'bet' || choice === 'call') {
           console.log('abc');
           console.log(bet);
-          // wyslalo tablebet ktore = 20 wiec tamto ustawilo jako actualbet
           updateTableBet(bet > 0 ? bet : tableBet);
         }
-        if (choice === 'call') checkAllPlayersBet();
+        //if (choice === 'call') checkAllPlayersBet();
         let newTurn;
-        const nextPlayer = await getNextPlayer(actualPlayerIndex);
+        const nextPlayer =
+          choice === 'check'
+            ? await getNextPlayer(actualPlayerIndex, choice)
+            : await getNextPlayer(actualPlayerIndex);
         console.log(nextPlayer);
         if (typeof nextPlayer === 'number') {
           console.log(nextPlayer);
+          // ten if mi juz nic nie daje - zmień na !==
           if (nextPlayer > actualPlayerIndex) {
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else if (nextPlayer < actualPlayerIndex) {
             console.log(canCheck);
             console.log('abcabcabc');
-            if (choice === 'check') checkAllPlayersBet();
-            //if (choice !== 'bet' && choice !== 'raise') tableCardsHandle();
+
+            // dziala dobrze ale w przypadku gdy ostatni gracz podbija i kazdy pozniej wchodzi to ostatni gracz wciaz ma ruch
+            //if (choice === 'check') checkAllPlayersBet();
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else {
             handleWinner(players[actualPlayerIndex].name);
@@ -680,7 +711,7 @@ export const PokerGame = () => {
           )}
         </>
 
-        {isPlayerTurn && (
+        {isPlayerTurn && gameState !== 'over' && (
           <>
             <BetButtons>
               {canCheck ? (
