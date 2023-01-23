@@ -71,7 +71,6 @@ const BetButtons = styled.div`
   flex-direction: row;
 
   button {
-    //padding: 20px;
     width: 6em;
     padding: 1em 0 1em 0;
     font-weight: bolder;
@@ -85,7 +84,6 @@ const BetValueButtons = styled.div`
   align-items: center;
 
   button {
-    //width: 3em;
     padding: 0.5em;
     font-size: 1.2em;
     font-weight: bolder;
@@ -101,18 +99,6 @@ export const PokerGame = () => {
   const [gameState, setGameState] = useState<'playing' | 'over' | 'waiting'>(
     'waiting'
   );
-  const [playerState, setPlayerState] = useState<
-    | 'playing'
-    | 'call'
-    | 'check'
-    | 'bet'
-    | 'raise'
-    | 'fold'
-    | 'waiting'
-    | 'unready'
-    | 'ready'
-  >('unready');
-  //const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [dbSettingsCompleted, setDbSettingsCompleted] = useState([
     false,
     false,
@@ -136,23 +122,19 @@ export const PokerGame = () => {
   const [tableBet, setTableBet] = useState(0);
   const [tableValue, setTableValue] = useState(0);
   const [isBetOptionsVisible, setIsBetOptionsVisible] = useState(false);
+  const [actualPlayer, setActualPlayer] = useState(0);
 
   const dispatch = useAppDispatch();
   const fbcredits = useAppSelector((state) => state.fbcredits);
-  // const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
-  //   ...globalState.bet,
-  // }));
 
   const HandleIncrementBet = (value: number) => {
     if (tempBet + value <= fbcredits) {
-      //dispatch<IncrementBet>(incrementBet());
       setTempBet(tempBet + value);
     }
   };
   const HandleDecrementBet = (value: number) => {
     if (!table) return;
     if (tempBet - value > table[1].blind) {
-      //dispatch<DecrementBet>(decrementBet());
       setTempBet(tempBet - value);
     }
   };
@@ -174,6 +156,7 @@ export const PokerGame = () => {
         setTempBet(table_temp[1].blind * 2);
         setTableBet(table_temp[1].actualBet);
         setTableValue(table_temp[1].tableValue);
+        setActualPlayer(table_temp[1].actualPlayer);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
@@ -209,11 +192,10 @@ export const PokerGame = () => {
         if (players.every((el: Player) => el.status === 'ready')) {
           setDbGameState('playing');
           if (table) {
-            const firstPlayer = getDbIdOfPlayer(table, 0);
+            const firstPlayer = getDbIdOfPlayer(table, actualPlayer);
             update(ref(rtdb, `tables/${table[0]}/players/${firstPlayer}/`), {
               status: 'playing',
             }).then(() => checkTurn());
-            console.log('abc');
           }
         }
       }
@@ -227,12 +209,15 @@ export const PokerGame = () => {
           cards: [],
         });
         setPlayerCards([]);
+        const nextPlayer =
+          actualPlayer + 1 < players.length ? actualPlayer + 1 : 0;
         update(ref(rtdb, `tables/${table[0]}/`), {
           cards: shuffleDeck(generateDeck()),
           tableCards: [],
           winner: '',
           tableValue: 0,
           actualBet: 0,
+          actualPlayer: nextPlayer,
         });
         setWinner('');
         setTableCards([]);
@@ -275,6 +260,31 @@ export const PokerGame = () => {
     }, (userCount + 1) * 3000);
   };
 
+  const setFirstPlayerForNewGame = () => {
+    if (!table) return;
+    setTimeout(() => {
+      const nextPlayer =
+        actualPlayer + 1 < players.length ? actualPlayer + 1 : 0;
+      for (let i = 0; i < players.length; i++) {
+        update(
+          ref(rtdb, `tables/${table[0]}/players/${getDbIdOfPlayer(table, i)}/`),
+          {
+            status: 'waiting',
+          }
+        );
+      }
+      update(
+        ref(
+          rtdb,
+          `tables/${table[0]}/players/${getDbIdOfPlayer(table, nextPlayer)}/`
+        ),
+        {
+          status: 'playing',
+        }
+      );
+    }, 5000);
+  };
+
   const getCards = () => {
     if (dbSettingsCompleted[0]) return;
     if (table) {
@@ -290,7 +300,6 @@ export const PokerGame = () => {
   };
 
   const setPlayerReady = () => {
-    console.log('redi');
     if (table)
       update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
         status: 'ready',
@@ -353,6 +362,7 @@ export const PokerGame = () => {
         setDbSettingsCompleted(settings);
       });
     });
+    setFirstPlayerForNewGame();
     setDbGameState('over');
     setTimeout(() => {
       setDbGameState('playing');
@@ -401,10 +411,7 @@ export const PokerGame = () => {
     return Object.entries(table[1].players)[index][0];
   };
 
-  const getNextPlayer = async (
-    index: number,
-    choice?: string
-  ): Promise<number> => {
+  const getNextPlayer = async (index: number): Promise<number> => {
     if (!table) return Promise.resolve(index);
     const dataRef = ref(rtdb, `tables/${table[0]}`);
     return get(dataRef).then((response) => {
@@ -431,10 +438,6 @@ export const PokerGame = () => {
           id < index &&
           (elem[1].status === 'waiting' || elem[1].status === 'ready')
       );
-      console.log(higherIndexArrByBet.length);
-      console.log(lowerIndexArrByBet.length);
-      console.log(higherIndexArr.length);
-      console.log(lowerIndexArr.length);
 
       const nextIndex =
         higherIndexArrByBet.length > 0
@@ -454,24 +457,11 @@ export const PokerGame = () => {
               (el) => el[0] === lowerIndexArr[0][0]
             )
           : index;
-      console.log(nextIndex);
-      if (
-        choice &&
-        choice === 'check' &&
-        higherIndexArrByBet.length < 1 &&
-        lowerIndexArrByBet.length < 1 &&
-        higherIndexArr.length < 1 &&
-        lowerIndexArr.length > 0
-      ) {
-        checkAllPlayersBet();
-      }
-      if (
-        !choice &&
-        higherIndexArrByBet.length < 1 &&
-        lowerIndexArrByBet.length < 1 &&
-        (higherIndexArr.length > 0 || lowerIndexArr.length > 0)
-      ) {
-        checkAllPlayersBet();
+
+      if (index === lowerIndexArr.concat(higherIndexArr).length) {
+        if (actualPlayer === 0) checkAllPlayersBet();
+      } else {
+        if (index + 1 === actualPlayer) checkAllPlayersBet();
       }
       return Promise.resolve(nextIndex);
     });
@@ -492,28 +482,17 @@ export const PokerGame = () => {
         });
         checkTurn();
         if (choice === 'raise' || choice === 'bet' || choice === 'call') {
-          console.log('abc');
-          console.log(bet);
           updateTableBet(bet > 0 ? bet : tableBet);
         }
-        //if (choice === 'call') checkAllPlayersBet();
+        if (choice === 'raise' || choice === 'bet') {
+          update(ref(rtdb, `tables/${table[0]}/`), {
+            actualPlayer: actualPlayerIndex,
+          });
+        }
         let newTurn;
-        const nextPlayer =
-          choice === 'check'
-            ? await getNextPlayer(actualPlayerIndex, choice)
-            : await getNextPlayer(actualPlayerIndex);
-        console.log(nextPlayer);
+        const nextPlayer = await getNextPlayer(actualPlayerIndex);
         if (typeof nextPlayer === 'number') {
-          console.log(nextPlayer);
-          // ten if mi juz nic nie daje - zmień na !==
-          if (nextPlayer > actualPlayerIndex) {
-            newTurn = getDbIdOfPlayer(table, nextPlayer);
-          } else if (nextPlayer < actualPlayerIndex) {
-            console.log(canCheck);
-            console.log('abcabcabc');
-
-            // dziala dobrze ale w przypadku gdy ostatni gracz podbija i kazdy pozniej wchodzi to ostatni gracz wciaz ma ruch
-            //if (choice === 'check') checkAllPlayersBet();
+          if (nextPlayer !== actualPlayerIndex) {
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else {
             handleWinner(players[actualPlayerIndex].name);
@@ -522,23 +501,14 @@ export const PokerGame = () => {
         }
 
         setCardsTable();
-
-        nextPlayer < actualPlayerIndex
-          ? update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
-              status: 'playing',
-              //bet: 0,
-            })
-          : update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
-              status: 'playing',
-            });
-
-        // if ((table[1].actualBet && bet > table[1].actualBet) || bet > 0) {
+        update(ref(rtdb, `tables/${table[0]}/players/${newTurn}/`), {
+          status: 'playing',
+        });
       }
     }
   };
 
   const checkAllPlayersBet = () => {
-    console.log('checkAllPlayersBet');
     if (!table) return;
     const dataRef = ref(rtdb, `tables/${table[0]}`);
     return get(dataRef).then((response) => {
@@ -549,10 +519,7 @@ export const PokerGame = () => {
       const playersBet = Object.entries(value.players).filter(
         (elem: any) => elem[1].status !== 'fold' && elem[1].bet === tableBet
       );
-      console.log(playersInGame);
-      console.log(playersBet);
       if (playersInGame.length === playersBet.length) {
-        console.log(playersInGame);
         playersInGame.forEach((player) => {
           update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
             bet: 0,
@@ -579,8 +546,6 @@ export const PokerGame = () => {
           actualBet: bet,
           tableValue: actualValue ? actualValue + bet : bet,
         });
-        //checkTableValue();
-        //setTableValue(actualValue ? actualValue + bet : bet);
       });
   };
 
@@ -625,21 +590,6 @@ export const PokerGame = () => {
       });
     }
   };
-
-  // const checkTableValue = () => {
-  //   if (dbSettingsCompleted[5]) return;
-  //   if (table) {
-  //     const settings = [...dbSettingsCompleted];
-  //     const dataRef = ref(rtdb, `tables/${table[0]}`);
-  //     onValue(dataRef, (snapshot) => {
-  //       const value = snapshot.val();
-  //       if (tableValue !== value.tableValue) setTableValue(value.tableValue);
-  //       console.log(value.tableValue);
-  //       settings[5] = true;
-  //       setDbSettingsCompleted(settings);
-  //     });
-  //   }
-  // };
 
   if (gameState === 'waiting') {
     return (
@@ -768,7 +718,6 @@ export const PokerGame = () => {
                     fontWeight: 'bolder',
                   }}
                   onClick={() => {
-                    //setBet(tempBet);
                     setPlayersTurn(betOrRaise, tempBet);
                     setIsBetOptionsVisible(false);
                   }}

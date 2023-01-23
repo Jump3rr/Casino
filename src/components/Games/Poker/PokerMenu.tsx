@@ -82,6 +82,7 @@ export const PokerMenu = () => {
       blind: Number(blind),
       actualBet: 0,
       tableValue: 0,
+      actualPlayer: 0,
     });
   };
   const joinTable = (el: Table) => {
