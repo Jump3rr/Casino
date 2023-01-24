@@ -35,6 +35,7 @@ import {
   decrementFbCredits,
   incrementFbCredits,
 } from '../../../actions/creditsFbActions';
+import Countdown from 'react-countdown';
 
 type Table = [string, TableSettings];
 type TableSettings = {
@@ -296,7 +297,7 @@ export const PokerGame = () => {
           status: 'playing',
         }
       );
-    }, 5000);
+    }, 1000);
   };
 
   const getCards = () => {
@@ -654,8 +655,20 @@ export const PokerGame = () => {
       </Corner>
       <MainWrapper>
         <>
-          {gameState === 'over' && winner && <>{winner + ' wins'}</>}
-          <span>VALUE: {tableValue}</span>
+          {gameState === 'over' && winner && (
+            <>
+              <h3>{winner + ' wins'}</h3>
+              <div>
+                <span>New game starts in: </span>
+                <Countdown
+                  date={Date.now() + 16000}
+                  renderer={({ seconds }) => seconds}
+                />
+              </div>
+            </>
+          )}
+          <span>In game: {tableValue}</span>
+          <span>Actual bet: {tableBet}</span>
           {tableCards?.length > 0 && (
             <Deck>
               {tableCards?.map((card) => (
