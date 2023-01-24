@@ -84,6 +84,7 @@ export const PokerMenu = () => {
       tableValue: 0,
       actualPlayer: 0,
       winner: '',
+      winnerId: '',
     });
   };
   const joinTable = (el: Table) => {

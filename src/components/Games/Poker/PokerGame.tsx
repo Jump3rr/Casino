@@ -47,6 +47,7 @@ type TableSettings = {
   actualBet: number;
   tableValue: number;
   actualPlayer: number;
+  winnerId: string;
 };
 export type Player = {
   id: string;
@@ -113,6 +114,7 @@ export const PokerGame = () => {
   ]);
   const [canCheck, setCanCheck] = useState(true);
   const [winner, setWinner] = useState('');
+  const [winnerId, setWinnerId] = useState('');
   const [players, setPlayers] = useState<any>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -156,12 +158,12 @@ export const PokerGame = () => {
         let players_temp;
         players_temp = Object.values(table_temp[1].players);
         setPlayers(players_temp);
-        setWinner(table_temp[1].winner);
         setTempBet(table_temp[1].blind * 2);
         setTableBet(table_temp[1].actualBet);
         setTableValue(table_temp[1].tableValue);
         setActualPlayer(table_temp[1].actualPlayer);
         setWinner(table_temp[1].winner);
+        setWinnerId(table_temp[1].winnerId);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
@@ -220,11 +222,11 @@ export const PokerGame = () => {
           cards: shuffleDeck(generateDeck()),
           tableCards: [],
           winner: '',
+          winnerId: '',
           tableValue: 0,
           actualBet: 0,
           actualPlayer: nextPlayer,
         });
-        setWinner('');
         setTableCards([]);
       }, 18000);
     }
@@ -256,6 +258,12 @@ export const PokerGame = () => {
       } else setCanCheck(true);
     });
   }, [isPlayerTurn]);
+
+  useEffect(() => {
+    if (winnerId === player) {
+      dispatch(incrementFbCredits(tableValue));
+    }
+  }, [winner, winnerId]);
 
   const startNewGame = () => {
     setTimeout(() => {
@@ -354,29 +362,15 @@ export const PokerGame = () => {
     if (playerName) {
       winner = playerName;
       winnerId = player;
-      //dispatch(incrementFbCredits(tableValue));
     } else {
       const winner_temp = checkWinner(players, tableCards)[0];
       winner = winner_temp.name;
       winnerId = getDbIdOfPlayerById(table, winner_temp.id);
-      //winnerId = checkWinner(players, tableCards)[0]
-    }
-    console.log('test2');
-    if (winnerId === player) {
-      dispatch(incrementFbCredits(tableValue));
     }
 
-    const settings = [...dbSettingsCompleted];
     update(ref(rtdb, `tables/${table[0]}/`), {
       winner: winner,
-    }).then(() => {
-      const dataRef = ref(rtdb, `tables/${table[0]}`);
-      onValue(dataRef, (snapshot) => {
-        const value = snapshot.val();
-        if (value.winner) setWinner(value.winner);
-        settings[1] = true;
-        setDbSettingsCompleted(settings);
-      });
+      winnerId: winnerId,
     });
     setFirstPlayerForNewGame();
     setDbGameState('over');
