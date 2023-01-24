@@ -31,6 +31,10 @@ import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import { DecrementBet, IncrementBet } from '../../../entities/types';
 import { incrementBet, decrementBet } from '../../../actions/betActions';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
+import {
+  decrementFbCredits,
+  incrementFbCredits,
+} from '../../../actions/creditsFbActions';
 
 type Table = [string, TableSettings];
 type TableSettings = {
@@ -157,6 +161,7 @@ export const PokerGame = () => {
         setTableBet(table_temp[1].actualBet);
         setTableValue(table_temp[1].tableValue);
         setActualPlayer(table_temp[1].actualPlayer);
+        setWinner(table_temp[1].winner);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
         const player_temp = Object.entries(table_temp[1].players).find(
           (element) => Object(element[1]).id === auth.currentUser?.uid
@@ -342,14 +347,25 @@ export const PokerGame = () => {
     setCardsPlayer();
   };
 
-  const handleWinner = (player?: string) => {
+  const handleWinner = (playerName?: string) => {
     if (!table) return;
     let winner;
-    if (player) {
-      winner = player;
+    let winnerId;
+    if (playerName) {
+      winner = playerName;
+      winnerId = player;
+      //dispatch(incrementFbCredits(tableValue));
     } else {
-      winner = checkWinner(players, tableCards)[0].name;
+      const winner_temp = checkWinner(players, tableCards)[0];
+      winner = winner_temp.name;
+      winnerId = getDbIdOfPlayerById(table, winner_temp.id);
+      //winnerId = checkWinner(players, tableCards)[0]
     }
+    console.log('test2');
+    if (winnerId === player) {
+      dispatch(incrementFbCredits(tableValue));
+    }
+
     const settings = [...dbSettingsCompleted];
     update(ref(rtdb, `tables/${table[0]}/`), {
       winner: winner,
@@ -409,6 +425,12 @@ export const PokerGame = () => {
 
   const getDbIdOfPlayer = (table: Table, index: number): string => {
     return Object.entries(table[1].players)[index][0];
+  };
+  const getDbIdOfPlayerById = (table: Table, id: string): string => {
+    return getDbIdOfPlayer(
+      table,
+      Object.entries(table[1].players).findIndex((el) => el[1].id === id)
+    );
   };
 
   const getNextPlayer = async (index: number): Promise<number> => {
@@ -483,6 +505,7 @@ export const PokerGame = () => {
         checkTurn();
         if (choice === 'raise' || choice === 'bet' || choice === 'call') {
           updateTableBet(bet > 0 ? bet : tableBet);
+          dispatch(decrementFbCredits(bet > 0 ? bet : tableBet));
         }
         if (choice === 'raise' || choice === 'bet') {
           update(ref(rtdb, `tables/${table[0]}/`), {
@@ -495,6 +518,7 @@ export const PokerGame = () => {
           if (nextPlayer !== actualPlayerIndex) {
             newTurn = getDbIdOfPlayer(table, nextPlayer);
           } else {
+            console.log('test1');
             handleWinner(players[actualPlayerIndex].name);
             return;
           }
@@ -526,8 +550,8 @@ export const PokerGame = () => {
             move: '',
           });
           setCanCheck(true);
-          tableCardsHandle();
         });
+        tableCardsHandle();
       }
     });
   };
