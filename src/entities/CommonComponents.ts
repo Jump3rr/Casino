@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { Colors } from './colors';
 
@@ -45,7 +45,7 @@ export const Buttons = styled.button`
     color: ${Colors.gold};
   }
 `;
-export const TextButtons = styled(Link)`
+export const TextButtons = styled(NavLink)`
   font-size: larger;
   font-weight: bold;
   cursor: pointer;

@@ -1,0 +1,25 @@
+.nav-bar-mobile {
+    display: flex;
+    text-align: right;
+    justify-content: flex-end;
+    align-self: flex-end;
+}
+
+.nav-bar-mobile-menu {
+    background-color: #170000;
+    width: 250px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-bottom: 10wh;
+    position: fixed;
+    right: -100%;
+    top: 10vh;
+    transition: 850ms;
+}
+
+.nav-bar-mobile-menu.active {
+    right: 0;
+    transition: 350ms;
+  }

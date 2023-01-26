@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '../../tools/firebaseConfig';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -6,15 +6,21 @@ import { Colors } from '../../entities/colors';
 import { Buttons, TextButtons } from '../../entities/CommonComponents';
 import store from '../../tools/store';
 import { useAppSelector } from '../../tools/hooks';
+import { useLocation } from 'react-router-dom';
+import { FaBars } from 'react-icons/fa';
+import './style.css';
 
 const TopBarWrapper = styled.div`
   height: 10vh;
+  width: 90vw;
   background-color: ${Colors.darkRed};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding-inline: 5vw;
   align-items: center;
+  position: fixed;
+  margin-top: -10vh;
 `;
 const Menu = styled.div`
   width: 60vw;
@@ -22,6 +28,10 @@ const Menu = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 const LogOutButton = styled(Buttons)`
   width: 5em;
@@ -62,45 +72,65 @@ const ProfileSingleSection = styled.div`
   text-align: center;
 `;
 
+const Bars = styled(FaBars)`
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+    //padding-right: 5vw;
+    font-size: 2rem;
+  }
+`;
+
 export const NavBar = () => {
-  const [user, setUser] = useState<User | any>({});
+  const [mobileNavbarActive, setMobileNavbarActive] = useState(false);
   const fbcredits = useAppSelector((state) => state.fbcredits);
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
   const logout = async () => {
     await auth.signOut();
   };
-  return (
-    <>
-      <TopBarWrapper>
-        <h2>LOGO</h2>
-        <Menu>
-          <ButtonsSection>
-            <TextButtons to='/'>HOME</TextButtons>
-            <TextButtons to='/ranking'>RANKING</TextButtons>
-            <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
-            <TextButtons to='/poker'>LIVE POKER</TextButtons>
-          </ButtonsSection>
-          <ProfileSection>
-            <ProfileSingleSection>
-              {fbcredits && <Texts>Balance: {fbcredits}</Texts>}
 
-              {/* <Texts>Balance: {currentBalance}</Texts> */}
-              <TextButtons to='/'>Add funds</TextButtons>
-            </ProfileSingleSection>
-            <ProfileSingleSection>
-              <Texts>
-                {auth.currentUser?.displayName
-                  ? auth.currentUser.displayName
-                  : auth.currentUser?.email}
-              </Texts>
-              <TextButtons to='/profile'>Profile</TextButtons>
-            </ProfileSingleSection>
-            <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
-          </ProfileSection>
-        </Menu>
-      </TopBarWrapper>
-    </>
+  return (
+    <TopBarWrapper>
+      <h2>LOGO</h2>
+      <Menu>
+        <ButtonsSection>
+          <TextButtons to='/'>HOME</TextButtons>
+          <TextButtons to='/ranking'>RANKING</TextButtons>
+          <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
+          <TextButtons to='/poker'>LIVE POKER</TextButtons>
+        </ButtonsSection>
+        <ProfileSection>
+          <ProfileSingleSection>
+            {fbcredits && <Texts>Balance: {fbcredits}</Texts>}
+
+            {/* <Texts>Balance: {currentBalance}</Texts> */}
+            <TextButtons to='/'>Add funds</TextButtons>
+          </ProfileSingleSection>
+          <ProfileSingleSection>
+            <Texts>
+              {auth.currentUser?.displayName
+                ? auth.currentUser.displayName
+                : auth.currentUser?.email}
+            </Texts>
+            <TextButtons to='/profile'>Profile</TextButtons>
+          </ProfileSingleSection>
+          <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
+        </ProfileSection>
+      </Menu>
+      <Bars onClick={() => setMobileNavbarActive(!mobileNavbarActive)} />
+      <div
+        className={
+          !mobileNavbarActive
+            ? 'nav-bar-mobile-menu'
+            : 'nav-bar-mobile-menu active'
+        }
+      >
+        <div onClick={() => setMobileNavbarActive(!mobileNavbarActive)}></div>
+        <TextButtons to='/'>HOME</TextButtons>
+        <TextButtons to='/ranking'>RANKING</TextButtons>
+        <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
+        <TextButtons to='/poker'>LIVE POKER</TextButtons>
+      </div>
+    </TopBarWrapper>
   );
 };

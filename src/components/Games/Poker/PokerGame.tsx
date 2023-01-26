@@ -8,8 +8,7 @@ import {
   set,
   push,
   get,
-  DatabaseReference,
-  runTransaction,
+  remove,
 } from 'firebase/database';
 import {
   BottomCard,
@@ -19,7 +18,7 @@ import {
   MiddleCard,
   TopCard,
 } from '../../../entities/CommonComponents';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Card, generateDeck, Rank, shuffleDeck, Suit } from '../Cards/Cards';
 import { checkWinner } from './PokerHandCheck';
 import styled from 'styled-components';
@@ -113,6 +112,7 @@ export const PokerGame = () => {
     false,
     false,
   ]);
+  const [mounted, setMounted] = useState(false);
   const [canCheck, setCanCheck] = useState(true);
   const [winner, setWinner] = useState('');
   const [winnerId, setWinnerId] = useState('');
@@ -179,6 +179,18 @@ export const PokerGame = () => {
       }
     });
   }, []);
+
+  const removeFromTable = (table: string, player: string) => {
+    if (!table) return;
+    remove(ref(rtdb, `tables/${table}/players/${player}/`));
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      if (mounted && table) removeFromTable(table[0], player);
+    };
+  }, [player]);
 
   useEffect(() => {
     if (gameState === 'playing') getCards();
