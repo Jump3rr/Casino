@@ -67,11 +67,26 @@ export const ErrorText = styled.div`
   font-weight: bold;
   color: ${Colors.red};
 `;
-
-export const Deck = styled.div`
+export const CardsContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
+  text-align: center;
+  align-items: center;
+`;
+export const Deck = styled.div`
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
+
+  @media screen and (max-width: 520px) {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(auto, auto);
+    max-width: 50%;
+    align-items: center;
+    align-content: center;
+  }
 `;
 
 export const CardContainer = styled.div`

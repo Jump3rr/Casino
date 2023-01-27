@@ -16,6 +16,7 @@ import GameState from './GameState';
 import PlayerHand from './PlayerHand';
 
 const BlackjackGameContainer = styled.div`
+  padding-top: 10vh;
   text-align: center;
   align-items: center;
   align-content: center;
@@ -29,14 +30,6 @@ const BlackjackButtons = styled(Buttons)`
 `;
 
 const deck = generateDeck();
-
-// const shuffleDeck = (deck: Card[]): Card[] => {
-//   for (let i = deck.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [deck[i], deck[j]] = [deck[j], deck[i]];
-//   }
-//   return deck;
-// };
 
 const getHandValue = (cards: Card[]): number => {
   let value = 0;

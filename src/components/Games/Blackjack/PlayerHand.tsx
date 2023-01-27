@@ -6,6 +6,7 @@ import {
   TopCard,
   MiddleCard,
   BottomCard,
+  CardsContainer,
 } from '../../../entities/CommonComponents';
 import { Card, Suit } from '../Cards/Cards';
 
@@ -16,7 +17,7 @@ interface PlayerHandProps {
 
 const PlayerHand: React.FC<PlayerHandProps> = ({ cards, value }) => {
   return (
-    <div>
+    <CardsContainer>
       <Deck>
         {cards?.map((card) => (
           <CardContainer
@@ -41,7 +42,7 @@ const PlayerHand: React.FC<PlayerHandProps> = ({ cards, value }) => {
         ))}
       </Deck>
       PLAYER: {value}
-    </div>
+    </CardsContainer>
   );
 };
 

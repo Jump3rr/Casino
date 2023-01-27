@@ -11,6 +11,13 @@ import { useAppDispatch, useAppSelector } from '../../tools/hooks';
 
 const BetWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+`;
+
+const BetSection = styled.div`
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -19,7 +26,11 @@ const BetButtons = styled(Buttons)`
   padding: 1.2rem;
   font-size: xx-large;
   font-weight: bolder;
-  margin-top: 3.5rem;
+  margin-top: 6rem;
+
+  @media screen and (max-width: 1300px) {
+    margin-top: 4rem;
+  }
 `;
 const BetScreen = styled.div`
   background-color: ${Colors.black};
@@ -53,17 +64,20 @@ const BetComponent = () => {
 
   return (
     <BetWrapper>
-      <BetButtons onClick={() => HandleDecrementBet()}>-</BetButtons>
-      <div>
-        <div>BET:</div>
-        <BetScreen>{bet}</BetScreen>
-      </div>
-
-      <BetButtons onClick={() => HandleIncrementBet()}>+</BetButtons>
-      <div>
-        <div>BALANCE:</div>
-        <BetScreen>{fbcredits}</BetScreen>
-      </div>
+      <BetSection>
+        <BetButtons onClick={() => HandleDecrementBet()}>-</BetButtons>
+        <div>
+          <h2>BET:</h2>
+          <BetScreen>{bet}</BetScreen>
+        </div>
+        <BetButtons onClick={() => HandleIncrementBet()}>+</BetButtons>
+      </BetSection>
+      <BetSection>
+        <div>
+          <h2>BALANCE:</h2>
+          <BetScreen>{fbcredits}</BetScreen>
+        </div>
+      </BetSection>
     </BetWrapper>
   );
 };

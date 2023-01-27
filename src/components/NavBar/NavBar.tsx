@@ -22,6 +22,7 @@ const TopBarWrapper = styled.div`
   align-items: center;
   position: fixed;
   margin-top: -10vh;
+  z-index: 99;
 `;
 const Menu = styled.div`
   width: 70vw;
@@ -134,10 +135,27 @@ export const NavBar = () => {
         }
       >
         <div className='nav-bar-mobile-items'>
-          <MobileButtons to='/'>HOME</MobileButtons>
-          <MobileButtons to='/ranking'>RANKING</MobileButtons>
-          <MobileButtons to='/roulette'>BIGGEST WINS</MobileButtons>
-          <MobileButtons to='/poker'>LIVE POKER</MobileButtons>
+          <MobileButtons to='/' onClick={() => setMobileNavbarActive(false)}>
+            HOME
+          </MobileButtons>
+          <MobileButtons
+            to='/ranking'
+            onClick={() => setMobileNavbarActive(false)}
+          >
+            RANKING
+          </MobileButtons>
+          <MobileButtons
+            to='/roulette'
+            onClick={() => setMobileNavbarActive(false)}
+          >
+            BIGGEST WINS
+          </MobileButtons>
+          <MobileButtons
+            to='/poker'
+            onClick={() => setMobileNavbarActive(false)}
+          >
+            LIVE POKER
+          </MobileButtons>
         </div>
         <div className='nav-bar-mobile-items'>
           {fbcredits && (
@@ -145,7 +163,10 @@ export const NavBar = () => {
               Balance: {fbcredits} <AddButton />
             </Texts>
           )}
-          <TextButtons to='/profile'>
+          <TextButtons
+            to='/profile'
+            onClick={() => setMobileNavbarActive(false)}
+          >
             {auth.currentUser?.displayName
               ? auth.currentUser.displayName
               : auth.currentUser?.email}

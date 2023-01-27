@@ -5,6 +5,7 @@ import {
   TopCard,
   MiddleCard,
   BottomCard,
+  CardsContainer,
 } from '../../../entities/CommonComponents';
 import { Card, Suit } from '../Cards/Cards';
 
@@ -17,7 +18,7 @@ interface DealerHandProps {
 const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
   if (finished) {
     return (
-      <div>
+      <CardsContainer>
         DEALER: {value}
         <Deck>
           {cards.length > 0 && (
@@ -46,11 +47,11 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
             </>
           )}
         </Deck>
-      </div>
+      </CardsContainer>
     );
   }
   return (
-    <div>
+    <CardsContainer>
       DEALER:
       <Deck>
         {cards.length > 0 && (
@@ -82,7 +83,7 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, finished, value }) => {
           </>
         )}
       </Deck>
-    </div>
+    </CardsContainer>
   );
 };
 
