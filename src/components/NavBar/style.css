@@ -11,7 +11,7 @@
     height: 90vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between;
     margin-bottom: 10wh;
     position: fixed;
     right: -100%;
@@ -23,3 +23,9 @@
     right: 0;
     transition: 350ms;
   }
+
+.nav-bar-mobile-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}

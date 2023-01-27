@@ -9,6 +9,7 @@ import { useAppSelector } from '../../tools/hooks';
 import { useLocation } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import './style.css';
+import { MdAddBox } from 'react-icons/md';
 
 const TopBarWrapper = styled.div`
   height: 10vh;
@@ -23,8 +24,7 @@ const TopBarWrapper = styled.div`
   margin-top: -10vh;
 `;
 const Menu = styled.div`
-  width: 60vw;
-  // background-color: yellow;
+  width: 70vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -43,6 +43,10 @@ const LogOutButton = styled(Buttons)`
     background-color: ${Colors.darkRed};
     border-color: ${Colors.red};
   }
+
+  @media screen and (max-width: 768px) {
+    width: 90%;
+  }
 `;
 
 const ButtonsSection = styled.div`
@@ -54,7 +58,7 @@ const ButtonsSection = styled.div`
 `;
 
 const ProfileSection = styled.div`
-  width: 22vw;
+  width: 32vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -62,14 +66,19 @@ const ProfileSection = styled.div`
 `;
 
 const Texts = styled.div`
-  font-size: large;
+  font-size: larger;
   font-weight: bold;
   margin: 0.2em 0.5em 0.5em 0.5em;
+  align-items: center;
+  display: flex;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.5em;
+  }
 `;
 
-const ProfileSingleSection = styled.div`
-  justify-content: center;
-  text-align: center;
+const MobileButtons = styled(TextButtons)`
+  font-size: 2.4em;
 `;
 
 const Bars = styled(FaBars)`
@@ -77,9 +86,12 @@ const Bars = styled(FaBars)`
 
   @media screen and (max-width: 768px) {
     display: block;
-    //padding-right: 5vw;
-    font-size: 2rem;
+    font-size: 4em;
   }
+`;
+
+const AddButton = styled(MdAddBox)`
+  font-size: 2em;
 `;
 
 export const NavBar = () => {
@@ -100,20 +112,16 @@ export const NavBar = () => {
           <TextButtons to='/poker'>LIVE POKER</TextButtons>
         </ButtonsSection>
         <ProfileSection>
-          <ProfileSingleSection>
-            {fbcredits && <Texts>Balance: {fbcredits}</Texts>}
-
-            {/* <Texts>Balance: {currentBalance}</Texts> */}
-            <TextButtons to='/'>Add funds</TextButtons>
-          </ProfileSingleSection>
-          <ProfileSingleSection>
+          {fbcredits && (
             <Texts>
-              {auth.currentUser?.displayName
-                ? auth.currentUser.displayName
-                : auth.currentUser?.email}
+              Balance: {fbcredits} <AddButton />
             </Texts>
-            <TextButtons to='/profile'>Profile</TextButtons>
-          </ProfileSingleSection>
+          )}
+          <TextButtons to='/profile'>
+            {auth.currentUser?.displayName
+              ? auth.currentUser.displayName
+              : auth.currentUser?.email}
+          </TextButtons>
           <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
         </ProfileSection>
       </Menu>
@@ -125,11 +133,25 @@ export const NavBar = () => {
             : 'nav-bar-mobile-menu active'
         }
       >
-        <div onClick={() => setMobileNavbarActive(!mobileNavbarActive)}></div>
-        <TextButtons to='/'>HOME</TextButtons>
-        <TextButtons to='/ranking'>RANKING</TextButtons>
-        <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
-        <TextButtons to='/poker'>LIVE POKER</TextButtons>
+        <div className='nav-bar-mobile-items'>
+          <MobileButtons to='/'>HOME</MobileButtons>
+          <MobileButtons to='/ranking'>RANKING</MobileButtons>
+          <MobileButtons to='/roulette'>BIGGEST WINS</MobileButtons>
+          <MobileButtons to='/poker'>LIVE POKER</MobileButtons>
+        </div>
+        <div className='nav-bar-mobile-items'>
+          {fbcredits && (
+            <Texts>
+              Balance: {fbcredits} <AddButton />
+            </Texts>
+          )}
+          <TextButtons to='/profile'>
+            {auth.currentUser?.displayName
+              ? auth.currentUser.displayName
+              : auth.currentUser?.email}
+          </TextButtons>
+          <LogOutButton onClick={logout}>LOG OUT</LogOutButton>
+        </div>
       </div>
     </TopBarWrapper>
   );

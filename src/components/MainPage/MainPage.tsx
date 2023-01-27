@@ -8,6 +8,11 @@ const GamesCategoryContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   width: 80vw;
+  align-items: center;
+
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
 `;
 const GameContainer = styled.div`
   margin-inline: 5em;
@@ -16,6 +21,19 @@ const GameContainer = styled.div`
   flex-direction: row;
   text-align: center;
   cursor: pointer;
+
+  @media screen and (max-width: 1000px) {
+    width: 60%;
+    margin: 2em 0 2em 0;
+  }
+  @media screen and (max-width: 650px) {
+    align-items: flex-start;
+    width: 70vw;
+    margin: 2em 0 2em 0;
+  }
+  @media screen and (max-width: 470px) {
+    font-size: 0.8em;
+  }
 `;
 const GameDescription = styled.div`
   display: flex;
@@ -25,13 +43,28 @@ const GameDescription = styled.div`
 
   p {
     text-align: start;
-    font-size: small;
-    padding: 1em;
-    height: 10em;
+    padding: 0 1em 0.5em 1em;
+  }
+
+  @media screen and (max-width: 1000px) {
+    width: 50%;
   }
 `;
 const GamesLogo = styled.img`
   width: 15em;
+
+  @media screen and (max-width: 1000px) {
+    width: 50%;
+    align-self: center;
+  }
+`;
+
+const GameCategory = styled.h2`
+  font-size: 2.5em;
+
+  @media screen and (max-width: 650px) {
+    font-size: 2em;
+  }
 `;
 
 export const MainPage = () => {
@@ -39,8 +72,8 @@ export const MainPage = () => {
 
   return (
     <MainWrapper>
-      <h1>GAMES</h1>
-      <h2>Card games</h2>
+      <GameCategory>GAMES</GameCategory>
+      <GameCategory>Card games</GameCategory>
       <GamesCategoryContainer>
         <GameContainer onClick={() => navigate('/blackjack')}>
           <GamesLogo src='/img/logo/blackjack-logo.png' alt='' />
@@ -65,7 +98,7 @@ export const MainPage = () => {
           </GameDescription>
         </GameContainer>
       </GamesCategoryContainer>
-      <h2>Slots</h2>
+      <GameCategory>Slots</GameCategory>
       <GamesCategoryContainer>
         <GameContainer onClick={() => navigate('/slots')}>
           <GamesLogo src='/img/logo/slots-machine-logo.png' alt='' />
@@ -80,7 +113,7 @@ export const MainPage = () => {
           </GameDescription>
         </GameContainer>
       </GamesCategoryContainer>
-      <h2>Others</h2>
+      <GameCategory>Others</GameCategory>
       <GamesCategoryContainer>
         <GameContainer onClick={() => navigate('/roulette')}>
           <GamesLogo src='/img/logo/roulette-logo.png' alt='' />
