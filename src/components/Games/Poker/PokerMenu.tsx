@@ -9,7 +9,11 @@ import {
   push,
   get,
 } from 'firebase/database';
-import { Buttons, MainWrapper } from '../../../entities/CommonComponents';
+import {
+  Buttons,
+  Input,
+  MainWrapper,
+} from '../../../entities/CommonComponents';
 import { useNavigate } from 'react-router-dom';
 import { generateDeck, shuffleDeck } from '../Cards/Cards';
 import styled from 'styled-components';
@@ -17,18 +21,8 @@ import { Colors } from '../../../entities/colors';
 import { AiFillPlusSquare, AiOutlineClose } from 'react-icons/ai';
 import Modal from 'react-modal';
 import './PokerStyles.css';
+import { Table } from '../../../entities/types';
 
-type Table = [string, TableSettings];
-type TableSettings = {
-  name: string;
-  state: string;
-  players: {
-    id: string;
-  };
-  blind: number;
-  tableValue: number;
-  actualBet: number;
-};
 const TableRow = styled.div`
   margin-top: 1em;
   border: 1px ${Colors.red} solid;
@@ -39,6 +33,11 @@ const TableRow = styled.div`
   padding-inline: 1em;
   align-items: center;
   border-radius: 5px;
+
+  span {
+    width: 25%;
+    word-wrap: break-word;
+  }
 `;
 const TopPage = styled.div`
   display: flex;
@@ -63,16 +62,36 @@ const AddButton = styled(AiFillPlusSquare)`
     color: ${Colors.lighterGreen};
   }
 `;
+const TableInput = styled(Input)`
+  align-self: center;
+  width: 70%;
+  height: 1em;
+`;
+const SelectBlind = styled.select`
+  align-self: center;
+  width: 70%;
+  background-color: ${Colors.mainGreen};
+  border: 1px ${Colors.gold} solid;
+  color: ${Colors.gold};
+  border-radius: 1em;
+  text-align: center;
+`;
 
 export const PokerMenu = () => {
   const navigate = useNavigate();
   const [tableName, setTableName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [blind, setBlind] = useState('10');
   const [tables, setTables] = useState<Table[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const data = ref(rtdb, 'tables');
 
   const newTable = () => {
+    if (tableName.length < 2 || tableName.length > 10) {
+      setErrorMessage('Table name should be 2 to 10 characters long');
+      return;
+    }
+    setErrorMessage('');
     setIsModalOpen(false);
     push(data, {
       name: tableName,
@@ -86,6 +105,7 @@ export const PokerMenu = () => {
       winner: '',
       winnerId: '',
     });
+    setTableName('');
   };
   const joinTable = (el: Table) => {
     const playerId = auth.currentUser?.uid;
@@ -111,7 +131,10 @@ export const PokerMenu = () => {
     getTables();
   }, []);
 
-  const red = (el: Table) => {
+  const redirect = (el: Table) => {
+    if (el[1].players && Object.values(el[1].players)?.length > 7) {
+      return;
+    }
     joinTable(el);
     return navigate(`/poker/${el[0]}`);
   };
@@ -128,18 +151,19 @@ export const PokerMenu = () => {
         contentLabel='Example Modal'
         onRequestClose={() => setIsModalOpen(false)}
         shouldCloseOnOverlayClick={true}
+        ariaHideApp={false}
       >
-        <span>
-          <CloseButton onClick={() => setIsModalOpen(!isModalOpen)} />
-        </span>
         <h3>Create new table</h3>
         <label>Table name</label>
-        <input
+        <TableInput
           type='text'
+          min={2}
+          max={10}
           onChange={(event) => setTableName(event.target.value)}
-        ></input>
+        ></TableInput>
+        <span>{errorMessage}</span>
         <label>Small blind / Big blind</label>
-        <select
+        <SelectBlind
           value={blind}
           onChange={(e) => {
             const selectedBlind = e.target.value;
@@ -164,8 +188,8 @@ export const PokerMenu = () => {
           <option id='6' value='400'>
             200 / 400
           </option>
-        </select>
-        <button onClick={newTable}>Create</button>
+        </SelectBlind>
+        <Buttons onClick={newTable}>Create</Buttons>
       </Modal>
       <div>
         <TableRow>
@@ -173,8 +197,9 @@ export const PokerMenu = () => {
             Name
           </span>
           <span style={{ fontWeight: 'bolder', paddingBlock: '1em' }}>
-            Small blind / Big blind
+            Blind
           </span>
+          <span>Players</span>
           <span></span>
         </TableRow>
         {tables.length > 0 && (
@@ -186,7 +211,13 @@ export const PokerMenu = () => {
                   <span>
                     {el[1].blind / 2} / {el[1].blind}
                   </span>
-                  <JoinButton onClick={() => red(el)}>Join</JoinButton>
+                  <span>
+                    {el[1]?.players
+                      ? Object.values(el[1].players)?.length
+                      : '0'}{' '}
+                    / 8
+                  </span>
+                  <JoinButton onClick={() => redirect(el)}>Join</JoinButton>
                 </TableRow>
               );
             })}

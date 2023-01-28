@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Input, MainWrapper } from '../../entities/CommonComponents';
+import { Buttons, Input, MainWrapper } from '../../entities/CommonComponents';
 import { auth } from '../../tools/firebaseConfig';
 import { updateProfile, updatePhoneNumber } from 'firebase/auth';
 import { AiOutlineEdit } from 'react-icons/ai';
@@ -9,10 +9,19 @@ const OneLine = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 30vw;
+  width: 40vw;
+
+  @media screen and (max-width: 768px) {
+    width: 70vw;
+  }
 `;
 const ProfileInput = styled(Input)`
   width: 10vw;
+
+  @media screen and (max-width: 768px) {
+    width: 15vw;
+    height: 0.8em;
+  }
 `;
 export const ProfileComponent = () => {
   const [displayName, setDisplayName] = useState(auth.currentUser?.displayName);
@@ -37,13 +46,13 @@ export const ProfileComponent = () => {
   return (
     <MainWrapper>
       <h1>Your account:</h1>
-      <OneLine>
+      {/* <OneLine>
         <h3>Profile picture:</h3>
         <h3>
           {auth.currentUser?.photoURL}
           <AiOutlineEdit />
         </h3>
-      </OneLine>
+      </OneLine> */}
       <OneLine>
         <h3>Email: </h3>
         <h3>{auth.currentUser?.email}</h3>
@@ -56,19 +65,20 @@ export const ProfileComponent = () => {
         <h3>Name</h3>
         <h3>
           {isEditingDisplayName ? (
-            <div>
+            <span>
               <ProfileInput
                 type='text'
                 placeholder='Name'
                 onChange={(event) => setDisplayName(event.target.value)}
               />
-              <button onClick={editDisplayName}>Save</button>
-            </div>
+              <Buttons onClick={editDisplayName}>Save</Buttons>
+            </span>
           ) : (
-            <div>{auth.currentUser?.displayName}</div>
+            <span>{auth.currentUser?.displayName}</span>
           )}
 
           <AiOutlineEdit
+            style={{ fontSize: '1.5em', marginLeft: '10px' }}
             onClick={() => setIsEditingDisplayName(!isEditingDisplayName)}
           />
         </h3>

@@ -18,7 +18,7 @@ import {
   MiddleCard,
   TopCard,
 } from '../../../entities/CommonComponents';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useBeforeUnload } from 'react-router-dom';
 import { Card, generateDeck, Rank, shuffleDeck, Suit } from '../Cards/Cards';
 import { checkWinner } from './PokerHandCheck';
 import styled from 'styled-components';
@@ -27,7 +27,12 @@ import { useSelector } from 'react-redux';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
-import { DecrementBet, IncrementBet } from '../../../entities/types';
+import {
+  DecrementBet,
+  IncrementBet,
+  Player,
+  Table,
+} from '../../../entities/types';
 import { incrementBet, decrementBet } from '../../../actions/betActions';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 import {
@@ -35,28 +40,6 @@ import {
   incrementFbCredits,
 } from '../../../actions/creditsFbActions';
 import Countdown from 'react-countdown';
-
-type Table = [string, TableSettings];
-type TableSettings = {
-  name: string;
-  cards: Card[];
-  state: string;
-  players: Player[];
-  winner: string;
-  blind: number;
-  actualBet: number;
-  tableValue: number;
-  actualPlayer: number;
-  winnerId: string;
-};
-export type Player = {
-  id: string;
-  name: string;
-  status: string;
-  cards: Card[];
-  result: number;
-  bet: number;
-};
 
 const Corner = styled.div`
   display: flex;
@@ -184,6 +167,15 @@ export const PokerGame = () => {
     if (!table) return;
     remove(ref(rtdb, `tables/${table}/players/${player}/`));
   };
+  const removeTable = () => {
+    if (!table) return;
+    remove(ref(rtdb, `tables/${table[0]}/`));
+  };
+
+  useBeforeUnload(() => {
+    if (!table) return;
+    players.length === 1 ? removeTable() : removeFromTable(table[0], player);
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -191,6 +183,26 @@ export const PokerGame = () => {
       if (mounted && table) removeFromTable(table[0], player);
     };
   }, [player]);
+
+  useEffect(() => {
+    return () => {
+      let e = new Event('componentUnmount');
+      document.dispatchEvent(e);
+    };
+  }, []);
+
+  useEffect(() => {
+    function doOnUnmount() {
+      if (players.length === 1) {
+        removeTable();
+      }
+    }
+
+    document.addEventListener('componentUnmount', doOnUnmount);
+    return () => {
+      document.removeEventListener('componentUnmount', doOnUnmount);
+    };
+  }, [players]);
 
   useEffect(() => {
     if (gameState === 'playing') getCards();

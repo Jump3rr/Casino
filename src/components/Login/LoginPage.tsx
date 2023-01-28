@@ -9,29 +9,10 @@ import {
   Input,
   Buttons,
   TextButtons,
+  Logo,
+  LoginButton,
 } from '../../entities/CommonComponents';
 import './styles.css';
-
-const LoginButton = styled(Buttons)`
-  height: 2.5em;
-  width: 31em;
-  font-size: large;
-  font-weight: bold;
-`;
-
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: 'red';
-  font-size: larger;
-
-  &:focus,
-  &:hover,
-  &:visited,
-  &:link,
-  &:active {
-    text-decoration: none;
-  }
-`;
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -49,7 +30,7 @@ export const LoginPage = () => {
   };
   return (
     <MainWrapper>
-      <h1>LOGO</h1>
+      <Logo src='/img/logo/logo1.png' alt='' />
       <h3>Welcome to the Grand Luck Casino</h3>
       <h4>Please, login to play</h4>
       <Input
@@ -63,8 +44,6 @@ export const LoginPage = () => {
         onChange={(event) => setPassword(event.target.value)}
       />
       <LoginButton onClick={login}>Login</LoginButton>
-      {/* <TextButtons onClick={() => navigate('/register')}> */}
-      {/* <TextButtons> */}
       <TextButtons to='/register'>Create new account</TextButtons>
       {/* </TextButtons> */}
       {/* <TextButtons onClick={() => navigate('/')}>Forgot password?</TextButtons> */}

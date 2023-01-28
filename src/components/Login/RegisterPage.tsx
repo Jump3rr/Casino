@@ -8,17 +8,12 @@ import {
   Buttons,
   TextButtons,
   ErrorText,
+  Logo,
+  LoginButton,
 } from '../../entities/CommonComponents';
 import styled from 'styled-components';
 import { onValue, ref, push, set } from 'firebase/database';
 import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
-
-const RegisterButton = styled(Buttons)`
-  height: 2.5em;
-  width: 31em;
-  font-size: large;
-  font-weight: bold;
-`;
 
 export const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -69,7 +64,7 @@ export const RegisterPage = () => {
   };
   return (
     <MainWrapper>
-      <h1>LOGO</h1>
+      <Logo src='/img/logo/logo1.png' alt='' />
       <h3>Welcome to the Grand Luck Casino</h3>
       <h4>Create new account</h4>
       <Input
@@ -88,7 +83,7 @@ export const RegisterPage = () => {
         onChange={(event) => setConfirmPassword(event.target.value)}
       />
       <ErrorText>{errorMessage}</ErrorText>
-      <RegisterButton onClick={register}>Sign Up</RegisterButton>
+      <LoginButton onClick={register}>Sign Up</LoginButton>
       <TextButtons to='/login'>Already have an account?</TextButtons>
     </MainWrapper>
   );

@@ -13,15 +13,6 @@
     border: 3px gold solid;
     padding-inline: 5em;
   }
-  .modal h3 {
-    padding-top: 5vh;
-  }
-  .modal span {
-    text-align: end;
-    margin-right: -4em;
-    margin-top: 1em;
-    cursor: pointer;
-  }
   .modal label {
     margin-top: 1em;
     margin-bottom: 0.5em;
@@ -45,9 +36,14 @@
     right: 10vw;
     left: 10vw;
     top: 20vh;
-    bottom: 20vh;
   }
-  .modal span {
-    margin-right: 0;
+  .modal h3 {
+    padding-top: 3vh;
   }
 }
+  @media screen and (max-height: 680px) {
+    .modal {
+      top: 15vh;
+      bottom: 5vh;
+    }    
+  }

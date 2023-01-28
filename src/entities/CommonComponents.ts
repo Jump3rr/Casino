@@ -32,6 +32,10 @@ export const Input = styled.input`
     color: ${Colors.gold};
     opacity: 0.5;
   }
+
+  @media screen and (max-width: 768px) {
+    width: 15em;
+  }
 `;
 export const Buttons = styled.button`
   margin: 1em;
@@ -60,6 +64,21 @@ export const TextButtons = styled(NavLink)`
     text-decoration: underline;
     color: ${Colors.red};
   }
+`;
+
+export const LoginButton = styled(Buttons)`
+  height: 2.5em;
+  width: 31em;
+  font-size: large;
+  font-weight: bold;
+
+  @media screen and (max-width: 768px) {
+    width: 16em;
+  }
+`;
+
+export const Logo = styled.img`
+  width: 15em;
 `;
 
 export const ErrorText = styled.div`

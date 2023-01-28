@@ -94,6 +94,13 @@ const Bars = styled(FaBars)`
 const AddButton = styled(MdAddBox)`
   font-size: 2em;
 `;
+const Logo = styled.img`
+  width: 5em;
+
+  @media screen and (max-width: 1300px) {
+    width: 7em;
+  }
+`;
 
 export const NavBar = () => {
   const [mobileNavbarActive, setMobileNavbarActive] = useState(false);
@@ -104,12 +111,11 @@ export const NavBar = () => {
 
   return (
     <TopBarWrapper>
-      <h2>LOGO</h2>
+      <Logo src='/img/logo/logo1.png' alt='' />
       <Menu>
         <ButtonsSection>
           <TextButtons to='/'>HOME</TextButtons>
           <TextButtons to='/ranking'>RANKING</TextButtons>
-          <TextButtons to='/roulette'>BIGGEST WINS</TextButtons>
           <TextButtons to='/poker'>LIVE POKER</TextButtons>
         </ButtonsSection>
         <ProfileSection>
@@ -143,12 +149,6 @@ export const NavBar = () => {
             onClick={() => setMobileNavbarActive(false)}
           >
             RANKING
-          </MobileButtons>
-          <MobileButtons
-            to='/roulette'
-            onClick={() => setMobileNavbarActive(false)}
-          >
-            BIGGEST WINS
           </MobileButtons>
           <MobileButtons
             to='/poker'

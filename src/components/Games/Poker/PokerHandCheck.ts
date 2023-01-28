@@ -1,5 +1,5 @@
+import { Player } from '../../../entities/types';
 import { Card } from '../Cards/Cards';
-import { Player } from './PokerGame';
 
 const karty = [
   { rank: 8, suit: '♦', value: 6, used: false },

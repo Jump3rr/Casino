@@ -33,10 +33,7 @@ export const RankingComponent = () => {
                     <>
                       <h4>
                         {`${id + 1}. ${
-                          el.email
-                            ? el.email.substring(0, 6) +
-                              '*'.repeat(el.email.length - 3)
-                            : ''
+                          el.email ? el.email.split('@')[0] : ''
                         } `}
                       </h4>
                       <h4>Credits: {Math.round(el.credits * 100) / 100}</h4>
