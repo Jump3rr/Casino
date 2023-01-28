@@ -12,7 +12,7 @@ import {
 } from '../../../actions/creditsFbActions';
 import { shuffleItems } from '../../../actions/slotsActions';
 import { Colors } from '../../../entities/colors';
-import { Buttons } from '../../../entities/CommonComponents';
+import { Buttons, MainWrapper } from '../../../entities/CommonComponents';
 import { SmallDisplay } from '../../../entities/components';
 import {
   ShuffleItems,
@@ -28,22 +28,14 @@ import { IItemsReducer } from '../../../reducers/itemsReducer';
 import { useAppDispatch } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
-const MainWrapper = styled.div`
-  height: 40vh;
-  width: 95vw;
-  background-color: ${Colors.black};
-  color: ${Colors.matrixGreen};
-  /* display: flex;
-  justify-content: center; */
-`;
+// const MainWrapper = styled.div`
+//   height: 40vh;
+//   width: 95vw;
+//   color: ${Colors.matrixGreen};
+// `;
 const SpinButton = styled(Buttons)`
   width: 10em;
   height: 5em;
-`;
-
-const TempDiv = styled.div`
-  display: flex;
-  justify-content: center;
 `;
 
 export const BottomMachine: FC = () => {
@@ -110,16 +102,15 @@ export const BottomMachine: FC = () => {
       const score = await CheckScore();
       await timeout(3000);
       dispatch(incrementFbCredits(bet * score));
-      //await dispatch<PushStat>(pushStat(bet * score));
       await setClicked(false);
     }
   }
 
   return (
     <MainWrapper>
-      <TempDiv>
+      <div>
         <SpinButton onClick={HandleClick}>SPIN</SpinButton>
-      </TempDiv>
+      </div>
       <BetComponent />
     </MainWrapper>
   );

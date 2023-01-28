@@ -23,7 +23,6 @@ export default () => {
   }, [mustSpin]);
 
   const handleSpinClick = () => {
-    console.log(rouletteData().length);
     const newPrizeNumber = Math.floor(Math.random() * rouletteData().length);
     setPrizeNumber(newPrizeNumber);
     setMustSpin(true);

@@ -79,6 +79,9 @@ const Craps: React.FC = () => {
       }
     }
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (shotCounter > 0) rollDice();

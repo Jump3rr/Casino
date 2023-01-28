@@ -137,8 +137,8 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
   return (
     <div>
       <BetComponent />
-      <div>NUMBER: {winningNumber}</div>
-      <div>You won: {won}</div>
+      <div className='roulette-info-text'>NUMBER: {winningNumber}</div>
+      <div className='roulette-info-text'>You won: {won}</div>
       <div className='parent'>
         {rouletteData().map((el) => {
           if (el.option === '0')

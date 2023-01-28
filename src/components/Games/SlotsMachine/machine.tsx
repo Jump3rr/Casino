@@ -14,7 +14,6 @@ import { GetItems, GetCredits, GetBet } from '../../../entities/types';
 const MainWrapper = styled.div`
   padding-top: 5vh;
   flex-direction: column;
-  background-color: ${Colors.black};
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -35,6 +34,7 @@ export const Machine: FC = () => {
     dispatch<GetItems>(getItems());
     dispatch<GetCredits>(getCredits());
     dispatch<GetBet>(getBet());
+    window.scrollTo(0, 0);
   }, []);
 
   return (
