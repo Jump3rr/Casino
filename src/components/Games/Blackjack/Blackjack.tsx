@@ -99,7 +99,6 @@ const Blackjack: React.FC = () => {
     if (gameState === 'playing') {
       let i = 0;
       while (getHandValue(newDealerCards) < 17) {
-        console.log(shuffledDeck);
         newDealerCards.push(shuffledDeck[i]);
         setShuffledDeck(
           shuffledDeck.filter(

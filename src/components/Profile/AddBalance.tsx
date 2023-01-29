@@ -74,7 +74,7 @@ export const AddBalanceComponent = () => {
         </ErrorText>
       )}
       <h4>Chance to win:</h4>
-      <ul>
+      <ul style={{ paddingInlineStart: '10px' }}>
         <li>100 credits - 50%</li>
         <li>200 credits - 30%</li>
         <li>500 credits - 15%</li>

@@ -63,7 +63,7 @@ export const ProfileComponent = () => {
         setIsEditingDisplayName(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   };
   const editPassword = () => {
@@ -81,7 +81,7 @@ export const ProfileComponent = () => {
         setIsEditingPassword(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   };
 

@@ -200,7 +200,9 @@ export const PokerMenu = () => {
           <span style={{ fontWeight: 'bolder', paddingBlock: '1em' }}>
             Blind
           </span>
-          <span>Players</span>
+          <span style={{ fontWeight: 'bolder', paddingBlock: '1em' }}>
+            Players
+          </span>
           <span></span>
         </TableRow>
         {tables.length > 0 && (
@@ -218,7 +220,9 @@ export const PokerMenu = () => {
                       : '0'}{' '}
                     / 8
                   </span>
-                  <JoinButton onClick={() => redirect(el)}>Join</JoinButton>
+                  <span>
+                    <JoinButton onClick={() => redirect(el)}>Join</JoinButton>
+                  </span>
                 </TableRow>
               );
             })}

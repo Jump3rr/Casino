@@ -50,7 +50,6 @@ export const RegisterPage = () => {
         credits: 5000,
         email: email,
       });
-      console.log('Document written with ID: ');
     } catch (e) {
       console.error('Error adding document: ', e);
     }

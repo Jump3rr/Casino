@@ -22,7 +22,6 @@ export const LoginPage = () => {
   const login = async () => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-      console.log(user);
       navigate('/');
     } catch (error: any) {
       console.log(error.message);

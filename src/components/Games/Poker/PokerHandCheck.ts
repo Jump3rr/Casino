@@ -246,7 +246,6 @@ function checkForStraight(cards: Card[]): number {
         }
       }
       if (userCards.includes(cards[i])) {
-        //console.log(cards[i]);
         cards[i].used = true;
       }
     } else if (consecutiveCards < 5 && cards[i].value === cards[i - 1].value) {
