@@ -8,7 +8,7 @@ import {
 import { Buttons } from '../../../entities/CommonComponents';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
-import { useAppDispatch } from '../../../tools/hooks';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 import { generateDeck, Card, shuffleDeck } from '../Cards/Cards';
 import DealerHand from './DealerHand';
@@ -61,6 +61,7 @@ const Blackjack: React.FC = () => {
   const [playerValue, setPlayerValue] = useState(0);
   const [dealerValue, setDealerValue] = useState(0);
   const dispatch = useAppDispatch();
+  const fbcredits = useAppSelector((state) => state.fbcredits);
 
   const [gameState, setGameState] = useState<
     'playing' | 'won' | 'lost' | 'tied' | 'waiting'
@@ -123,6 +124,7 @@ const Blackjack: React.FC = () => {
   };
 
   const startGame = () => {
+    if (bet > fbcredits) return;
     dispatch(decrementFbCredits(bet));
     setGameState('playing');
     let newDeck = [...shuffledDeck];

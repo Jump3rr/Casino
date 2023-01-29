@@ -25,7 +25,7 @@ import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { ICreditsReducer } from '../../../reducers/creditsReducer';
 import { IItemsReducer } from '../../../reducers/itemsReducer';
-import { useAppDispatch } from '../../../tools/hooks';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
 // const MainWrapper = styled.div`
@@ -39,6 +39,7 @@ const SpinButton = styled(Buttons)`
 `;
 
 export const BottomMachine: FC = () => {
+  const fbcredits = useAppSelector((state) => state.fbcredits);
   const dispatch = useAppDispatch();
   const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
     ...globalState.bet,
@@ -95,6 +96,7 @@ export const BottomMachine: FC = () => {
   }
 
   async function HandleClick() {
+    if (bet > fbcredits) return;
     if (!clicked) {
       await setClicked(true);
       await dispatch<ShuffleItems>(shuffleItems());

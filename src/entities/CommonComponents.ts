@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Colors } from './colors';
 
 export const MainWrapper = styled.div`
-  background-color: ${Colors.mainGreen};
   min-height: 70vh;
   justify-content: center;
   align-items: center;

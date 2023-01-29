@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Colors } from '../../entities/colors';
 import { MainWrapper } from '../../entities/CommonComponents';
 
 const GamesCategoryContainer = styled.div`
@@ -16,7 +17,7 @@ const GamesCategoryContainer = styled.div`
 `;
 const GameContainer = styled.div`
   margin-inline: 5em;
-  background-color: black;
+  background-color: ${Colors.darkRed};
   display: flex;
   flex-direction: row;
   text-align: center;

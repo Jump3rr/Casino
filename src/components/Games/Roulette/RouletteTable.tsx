@@ -8,7 +8,7 @@ import { Colors } from '../../../entities/colors';
 import { SelectedFields } from '../../../entities/types';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
-import { useAppDispatch } from '../../../tools/hooks';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 import { rouletteData } from './RouletteData';
 import './RouletteTable.css';
@@ -29,6 +29,7 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
   const { bet } = useSelector<IState, IBetReducer>((globalState) => ({
     ...globalState.bet,
   }));
+  const fbcredits = useAppSelector((state) => state.fbcredits);
 
   useEffect(() => {
     handleResult();
@@ -46,6 +47,8 @@ export const RouletteTable: React.FC<RouletteTableProps> = ({
         currentElement.style.backgroundColor = inArray.backgroundColor;
         setPlayerTempBet(playerTempBet.filter((item) => item.value !== value));
       } else {
+        if (playerTempBet.reduce((acc, cur) => acc + cur.bet, bet) > fbcredits)
+          return;
         const newArray = [
           ...playerTempBet,
           {

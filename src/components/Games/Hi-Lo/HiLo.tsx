@@ -17,7 +17,7 @@ import {
 } from '../../../entities/CommonComponents';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
-import { useAppDispatch } from '../../../tools/hooks';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 import { Card, generateDeckOneSuit } from '../Cards/Cards';
 
@@ -41,6 +41,7 @@ const payouts = [
 const reversedPayouts = [...payouts].reverse();
 
 export const HiLo = () => {
+  const fbcredits = useAppSelector((state) => state.fbcredits);
   const [card, setCard] = useState<Card | null>(null);
   const [newCard, setNewCard] = useState<Card | null>(null);
   const [playerPick, setPlayerPick] = useState(0);
@@ -73,6 +74,7 @@ export const HiLo = () => {
     ) {
       return;
     }
+    if (bet > fbcredits) return;
     dispatch(decrementFbCredits(bet));
     switch (playerPick) {
       case 1:

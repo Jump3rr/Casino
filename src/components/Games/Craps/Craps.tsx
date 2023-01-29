@@ -12,7 +12,7 @@ import { Buttons, MainWrapper } from '../../../entities/CommonComponents';
 import { SelectedFields } from '../../../entities/types';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
-import { useAppDispatch } from '../../../tools/hooks';
+import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
 const Dices = styled.div`
@@ -48,6 +48,7 @@ const BetButton = styled(Buttons)`
 `;
 
 const Craps: React.FC = () => {
+  const fbcredits = useAppSelector((state) => state.fbcredits);
   const [result, setResult] = useState(0);
   const [shotCounter, setShotCounter] = useState(0);
   const [winningNumber, setWinningNumber] = useState(0);
@@ -66,6 +67,8 @@ const Craps: React.FC = () => {
         currentElement.style.backgroundColor = inArray.backgroundColor;
         setPlayerTempBet(playerTempBet.filter((item) => item.value !== value));
       } else {
+        if (playerTempBet.reduce((acc, cur) => acc + cur.bet, bet) > fbcredits)
+          return;
         const newArray = [
           ...playerTempBet,
           {

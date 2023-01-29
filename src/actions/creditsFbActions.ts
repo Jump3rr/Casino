@@ -47,6 +47,11 @@ export const getFbCredits = () => async (dispatch: Dispatch) => {
         type: actionTypes.GET_FBCREDITS,
         payload: doc.data()?.credits,
       });
+    } else {
+      dispatch({
+        type: actionTypes.GET_FBCREDITS,
+        payload: 0,
+      });
     }
   });
 };

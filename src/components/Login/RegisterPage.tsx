@@ -32,7 +32,9 @@ export const RegisterPage = () => {
       setErrorMessage('');
       const user = await createUserWithEmailAndPassword(auth, email, password);
       console.log(user);
-      createDefaultDbUser();
+      createDefaultDbUser().then(() => {
+        navigate('/');
+      });
     } catch (error: any) {
       setErrorMessage(error.message);
       console.log(error.message);

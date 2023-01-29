@@ -6,7 +6,7 @@ import { Colors } from '../../entities/colors';
 import { Buttons, TextButtons } from '../../entities/CommonComponents';
 import store from '../../tools/store';
 import { useAppSelector } from '../../tools/hooks';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import './style.css';
 import { MdAddBox } from 'react-icons/md';
@@ -103,6 +103,7 @@ const Logo = styled.img`
 `;
 
 export const NavBar = () => {
+  const navigate = useNavigate();
   const [mobileNavbarActive, setMobileNavbarActive] = useState(false);
   const fbcredits = useAppSelector((state) => state.fbcredits);
   const logout = async () => {
@@ -111,7 +112,7 @@ export const NavBar = () => {
 
   return (
     <TopBarWrapper>
-      <Logo src='/img/logo/logo1.png' alt='' />
+      <Logo src='/img/logo/logo1.png' alt='' onClick={() => navigate('/')} />
       <Menu>
         <ButtonsSection>
           <TextButtons to='/'>HOME</TextButtons>
