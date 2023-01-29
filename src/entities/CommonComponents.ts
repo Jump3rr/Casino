@@ -84,6 +84,8 @@ export const ErrorText = styled.div`
   font-size: larger;
   font-weight: bold;
   color: ${Colors.red};
+  width: 80%;
+  align-self: center;
 `;
 export const CardsContainer = styled.div`
   display: flex;

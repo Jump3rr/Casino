@@ -120,7 +120,7 @@ export const NavBar = () => {
           <TextButtons to='/poker'>LIVE POKER</TextButtons>
         </ButtonsSection>
         <ProfileSection>
-          {fbcredits && (
+          {(fbcredits || fbcredits === 0) && (
             <Texts>
               Balance: {fbcredits} <AddButton />
             </Texts>
@@ -159,7 +159,7 @@ export const NavBar = () => {
           </MobileButtons>
         </div>
         <div className='nav-bar-mobile-items'>
-          {fbcredits && (
+          {(fbcredits || fbcredits === 0) && (
             <Texts>
               Balance: {fbcredits} <AddButton />
             </Texts>

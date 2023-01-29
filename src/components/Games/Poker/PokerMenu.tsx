@@ -11,6 +11,7 @@ import {
 } from 'firebase/database';
 import {
   Buttons,
+  ErrorText,
   Input,
   MainWrapper,
 } from '../../../entities/CommonComponents';
@@ -161,7 +162,7 @@ export const PokerMenu = () => {
           max={10}
           onChange={(event) => setTableName(event.target.value)}
         ></TableInput>
-        <span>{errorMessage}</span>
+        <ErrorText>{errorMessage}</ErrorText>
         <label>Small blind / Big blind</label>
         <SelectBlind
           value={blind}

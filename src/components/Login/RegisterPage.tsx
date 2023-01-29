@@ -14,6 +14,7 @@ import {
 import styled from 'styled-components';
 import { onValue, ref, push, set } from 'firebase/database';
 import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
+import { passwordValidation } from '../../entities/commonFunctions';
 
 export const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -24,14 +25,14 @@ export const RegisterPage = () => {
   const navigate = useNavigate();
 
   const register = async () => {
-    if (password !== confirmPassword) {
-      setErrorMessage(`Those passwords didn't match.`);
+    const error_temp = passwordValidation(password, confirmPassword);
+    if (error_temp) {
+      setErrorMessage(error_temp);
       return;
     }
     try {
       setErrorMessage('');
       const user = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(user);
       createDefaultDbUser().then(() => {
         navigate('/');
       });
@@ -53,16 +54,6 @@ export const RegisterPage = () => {
     } catch (e) {
       console.error('Error adding document: ', e);
     }
-    // const query = ref(db, `users/${auth.currentUser?.uid}`);
-    // // const defaultCredits = {
-    // //   credits: 5000,
-    // // };
-    // const defaultCredits = 5000;
-    // push(query, defaultCredits);
-    //---------------
-    // set(ref(db, `users/${auth.currentUser?.uid}`), {
-    //   credits: 5000,
-    // });
   };
   return (
     <MainWrapper>

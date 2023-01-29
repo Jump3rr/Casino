@@ -47,3 +47,9 @@
       bottom: 5vh;
     }    
   }
+  @media screen and (max-height: 860px) and (min-height: 680px) {
+    .modal {
+      top: 20vh;
+      bottom: 20vh;
+    }    
+  }
