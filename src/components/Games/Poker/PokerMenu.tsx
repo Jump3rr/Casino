@@ -23,6 +23,7 @@ import { AiFillPlusSquare, AiOutlineClose } from 'react-icons/ai';
 import Modal from 'react-modal';
 import './PokerStyles.css';
 import { Table } from '../../../entities/types';
+import { useAppSelector } from '../../../tools/hooks';
 
 const TableRow = styled.div`
   margin-top: 1em;
@@ -79,6 +80,7 @@ const SelectBlind = styled.select`
 `;
 
 export const PokerMenu = () => {
+  const fbcredits = useAppSelector((state) => state.fbcredits);
   const navigate = useNavigate();
   const [tableName, setTableName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -86,6 +88,7 @@ export const PokerMenu = () => {
   const [tables, setTables] = useState<Table[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const data = ref(rtdb, 'tables');
+  const [errorTable, setErrorTable] = useState({ id: '', message: '' });
 
   const newTable = () => {
     if (tableName.length < 2 || tableName.length > 10) {
@@ -103,6 +106,8 @@ export const PokerMenu = () => {
       actualBet: 0,
       tableValue: 0,
       actualPlayer: 0,
+      sbPlayer: 0,
+      bbPlayer: 0,
       winner: '',
       winnerId: '',
     });
@@ -134,8 +139,18 @@ export const PokerMenu = () => {
 
   const redirect = (el: Table) => {
     if (el[1].players && Object.values(el[1].players)?.length > 7) {
+      setErrorTable({ id: el[0], message: 'Max players reached' });
       return;
     }
+    if (el[1].state !== 'waiting') {
+      setErrorTable({ id: el[0], message: 'Game already started' });
+      return;
+    }
+    if (el[1].blind > fbcredits) {
+      setErrorTable({ id: el[0], message: 'Not enough credits' });
+      return;
+    }
+    setErrorTable({ id: '', message: '' });
     joinTable(el);
     return navigate(`/poker/${el[0]}`);
   };
@@ -209,21 +224,26 @@ export const PokerMenu = () => {
           <div>
             {tables.map((el) => {
               return (
-                <TableRow>
-                  <span>{el[1].name}</span>
-                  <span>
-                    {el[1].blind / 2} / {el[1].blind}
-                  </span>
-                  <span>
-                    {el[1]?.players
-                      ? Object.values(el[1].players)?.length
-                      : '0'}{' '}
-                    / 8
-                  </span>
-                  <span>
-                    <JoinButton onClick={() => redirect(el)}>Join</JoinButton>
-                  </span>
-                </TableRow>
+                <>
+                  <TableRow>
+                    <span>{el[1].name}</span>
+                    <span>
+                      {el[1].blind / 2} / {el[1].blind}
+                    </span>
+                    <span>
+                      {el[1]?.players
+                        ? Object.values(el[1].players)?.length
+                        : '0'}{' '}
+                      / 8
+                    </span>
+                    <span>
+                      <JoinButton onClick={() => redirect(el)}>Join</JoinButton>
+                    </span>
+                  </TableRow>
+                  {errorTable.id === el[0] && (
+                    <ErrorText>{errorTable.message}</ErrorText>
+                  )}
+                </>
               );
             })}
           </div>

@@ -114,6 +114,9 @@ export const PokerGame = () => {
   const [tableValue, setTableValue] = useState(0);
   const [isBetOptionsVisible, setIsBetOptionsVisible] = useState(false);
   const [actualPlayer, setActualPlayer] = useState(0);
+  const [sbPlayer, setsbPlayer] = useState(0);
+  const [bbPlayer, setbbPlayer] = useState(0);
+  const [blind, setBlind] = useState(0);
 
   const dispatch = useAppDispatch();
   const fbcredits = useAppSelector((state) => state.fbcredits);
@@ -125,7 +128,7 @@ export const PokerGame = () => {
   };
   const HandleDecrementBet = (value: number) => {
     if (!table) return;
-    if (tempBet - value > table[1].blind) {
+    if (tempBet - value >= table[1].blind) {
       setTempBet(tempBet - value);
     }
   };
@@ -147,6 +150,20 @@ export const PokerGame = () => {
         setTableBet(table_temp[1].actualBet);
         setTableValue(table_temp[1].tableValue);
         setActualPlayer(table_temp[1].actualPlayer);
+        setBlind(table_temp[1].blind);
+        setbbPlayer(table_temp[1].bbPlayer);
+        setsbPlayer(table_temp[1].sbPlayer);
+        console.log('BBCCBB');
+        console.log(Object.values(table_temp[1].players).length);
+        if (Object.values(table_temp[1].players).length > 1) {
+          setBlinds(
+            table_temp[0],
+            Object.values(table_temp[1].players).length - 1,
+            table_temp[1].actualPlayer,
+            table_temp[1].blind
+          );
+        }
+
         setWinner(table_temp[1].winner);
         setWinnerId(table_temp[1].winnerId);
         setGameState(table_temp[1].state as 'playing' | 'over' | 'waiting');
@@ -162,6 +179,48 @@ export const PokerGame = () => {
       }
     });
   }, []);
+
+  const setBlinds = (
+    table: string,
+    playersNumber: number,
+    actualPlayer: number,
+    blind: number
+  ) => {
+    console.log('AAA');
+    console.log(table);
+    console.log(playersNumber);
+    console.log(actualPlayer);
+    const bigBlindPlayer = actualPlayer > 0 ? actualPlayer - 1 : playersNumber;
+    const smallBlindPlayer =
+      bigBlindPlayer > 0 ? bigBlindPlayer - 1 : playersNumber;
+    console.log(bigBlindPlayer);
+    console.log(smallBlindPlayer);
+    console.log('AasdfAA');
+    update(ref(rtdb, `tables/${table}/`), {
+      bbPlayer: bigBlindPlayer, //playersNumber,
+      sbPlayer: smallBlindPlayer, //playersNumber - 1,
+    });
+    if (bigBlindPlayer === userCount && tableCards.length < 3) {
+      dispatch(decrementFbCredits(blind));
+      update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
+        bet: blind / 2,
+        move: '',
+      });
+    }
+    if (smallBlindPlayer === userCount && tableCards.length < 3) {
+      dispatch(decrementFbCredits(blind / 2));
+      update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
+        bet: blind,
+        move: '',
+      });
+    }
+    console.log('updatetablevalues');
+    console.log(blind);
+    update(ref(rtdb, `tables/${table}/`), {
+      tableValue: blind * 1.5,
+      actualBet: blind,
+    });
+  };
 
   const removeFromTable = (table: string, player: string) => {
     if (!table) return;
@@ -244,6 +303,8 @@ export const PokerGame = () => {
         setPlayerCards([]);
         const nextPlayer =
           actualPlayer + 1 < players.length ? actualPlayer + 1 : 0;
+        console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+        console.log(blind);
         update(ref(rtdb, `tables/${table[0]}/`), {
           cards: shuffleDeck(generateDeck()),
           tableCards: [],
@@ -252,6 +313,8 @@ export const PokerGame = () => {
           tableValue: 0,
           actualBet: 0,
           actualPlayer: nextPlayer,
+        }).then(() => {
+          setBlinds(table[0], players.length, nextPlayer, blind);
         });
         setTableCards([]);
       }, 18000);
@@ -511,6 +574,8 @@ export const PokerGame = () => {
   };
 
   const setPlayersTurn = async (choice: string, newBet: number = 0) => {
+    if ((tableBet > fbcredits || newBet > fbcredits) && choice !== 'fold')
+      return;
     if (table) {
       const actualPlayerIndex = Object.entries(table[1].players).findIndex(
         (element) => Object(element[1]).status === 'playing'
@@ -625,6 +690,7 @@ export const PokerGame = () => {
 
   const checkTurn = () => {
     if (dbSettingsCompleted[4]) return;
+
     if (table) {
       const settings = [...dbSettingsCompleted];
       const dataRef = ref(rtdb, `tables/${table[0]}/players/${player}`);
@@ -691,6 +757,8 @@ export const PokerGame = () => {
               </div>
             </>
           )}
+          <span>{bbPlayer === userCount ? 'BB TRUE' : 'BB FALSE'}</span>
+          <span>{sbPlayer === userCount ? 'SB TRUE' : 'SB FALSE'}</span>
           <span>In game: {tableValue}</span>
           <span>Actual bet: {tableBet}</span>
           {tableCards?.length > 0 && (

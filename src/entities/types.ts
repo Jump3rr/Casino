@@ -37,6 +37,8 @@ export type TableSettings = {
   tableValue: number;
   actualPlayer: number;
   winnerId: string;
+  bbPlayer: number;
+  sbPlayer: number;
 };
 export type Player = {
   id: string;
