@@ -86,6 +86,7 @@ export const ErrorText = styled.div`
   color: ${Colors.red};
   width: 80%;
   align-self: center;
+  text-align: center;
 `;
 export const CardsContainer = styled.div`
   display: flex;

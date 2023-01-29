@@ -23,6 +23,7 @@ import { getRanking } from './actions/rankingActions';
 import { RankingComponent } from './components/Ranking/RankingComponent';
 import { PokerMenu } from './components/Games/Poker/PokerMenu';
 import { PokerGame } from './components/Games/Poker/PokerGame';
+import { AddBalanceComponent } from './components/Profile/AddBalance';
 
 function MainRouter() {
   const dispatch = useAppDispatch();
@@ -46,6 +47,7 @@ function MainRouter() {
         >
           <Route path='/' element={<MainPage />} />
           <Route path='/profile' element={<ProfileComponent />} />
+          <Route path='/balance' element={<AddBalanceComponent />} />
           <Route path='/ranking' element={<RankingComponent />} />
           <Route path='/blackjack' element={<Blackjack />} />
           <Route path='/roulette' element={<Roulette />} />

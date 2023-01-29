@@ -93,6 +93,7 @@ const Bars = styled(FaBars)`
 
 const AddButton = styled(MdAddBox)`
   font-size: 2em;
+  cursor: pointer;
 `;
 const Logo = styled.img`
   width: 5em;
@@ -122,7 +123,8 @@ export const NavBar = () => {
         <ProfileSection>
           {(fbcredits || fbcredits === 0) && (
             <Texts>
-              Balance: {fbcredits} <AddButton />
+              Balance: {fbcredits}{' '}
+              <AddButton onClick={() => navigate('/balance')} />
             </Texts>
           )}
           <TextButtons to='/profile'>
@@ -161,7 +163,13 @@ export const NavBar = () => {
         <div className='nav-bar-mobile-items'>
           {(fbcredits || fbcredits === 0) && (
             <Texts>
-              Balance: {fbcredits} <AddButton />
+              Balance: {fbcredits}{' '}
+              <AddButton
+                onClick={() => {
+                  navigate('/balance');
+                  setMobileNavbarActive(false);
+                }}
+              />
             </Texts>
           )}
           <TextButtons
