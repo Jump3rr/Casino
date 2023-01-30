@@ -2,14 +2,12 @@ import { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { BottomMachine } from './bottomMachine';
 import { useDispatch } from 'react-redux';
-import { Router, Route } from 'react-router-dom';
 import { getBet } from '../../../actions/betActions';
-import { getCredits } from '../../../actions/creditsActions';
 import { getItems } from '../../../actions/slotsActions';
 import { Colors } from '../../../entities/colors';
 import { MainGame } from './MainGame';
 import './styles.css';
-import { GetItems, GetCredits, GetBet } from '../../../entities/types';
+import { GetItems, GetBet } from '../../../entities/types';
 
 const MainWrapper = styled.div`
   padding-top: 5vh;
@@ -32,7 +30,6 @@ export const Machine: FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<GetItems>(getItems());
-    dispatch<GetCredits>(getCredits());
     dispatch<GetBet>(getBet());
     window.scrollTo(0, 0);
   }, []);

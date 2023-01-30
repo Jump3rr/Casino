@@ -1,15 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { auth, rtdb } from '../../../tools/firebaseConfig';
-import {
-  refFromURL,
-  ref,
-  onValue,
-  update,
-  set,
-  push,
-  get,
-  remove,
-} from 'firebase/database';
+import { ref, onValue, update, get, remove } from 'firebase/database';
 import {
   BottomCard,
   CardContainer,
@@ -23,18 +14,8 @@ import { Card, generateDeck, Rank, shuffleDeck, Suit } from '../Cards/Cards';
 import { checkWinner } from './PokerHandCheck';
 import styled from 'styled-components';
 import { Buttons } from '../../../entities/CommonComponents';
-import { useSelector } from 'react-redux';
-import { IState } from '../../../reducers';
-import { IBetReducer } from '../../../reducers/betReducer';
 import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
-import {
-  DecrementBet,
-  IncrementBet,
-  Player,
-  Table,
-} from '../../../entities/types';
-import { incrementBet, decrementBet } from '../../../actions/betActions';
-import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
+import { Player, Table } from '../../../entities/types';
 import {
   decrementFbCredits,
   incrementFbCredits,
@@ -158,8 +139,7 @@ export const PokerGame = () => {
           setBlinds(
             table_temp[0],
             Object.values(table_temp[1].players).length - 1,
-            table_temp[1].actualPlayer,
-            table_temp[1].blind
+            table_temp[1].actualPlayer
           );
         }
 
@@ -182,8 +162,7 @@ export const PokerGame = () => {
   const setBlinds = (
     table: string,
     playersNumber: number,
-    actualPlayer: number,
-    blind: number
+    actualPlayer: number
   ) => {
     const bigBlindPlayer = actualPlayer > 0 ? actualPlayer - 1 : playersNumber;
     const smallBlindPlayer =
@@ -193,25 +172,7 @@ export const PokerGame = () => {
         bbPlayer: bigBlindPlayer,
         sbPlayer: smallBlindPlayer,
       });
-      console.log('ABABABAB BBPLAYER');
     }, 100);
-
-    // if (bbPlayer === userCount) {
-    //   dispatch(decrementFbCredits(blind));
-    //   update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
-    //     bet: blind,
-    //   });
-    // }
-    // if (sbPlayer === userCount) {
-    //   dispatch(decrementFbCredits(blind / 2));
-    //   update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
-    //     bet: blind / 2,
-    //   });
-    // }
-    // update(ref(rtdb, `tables/${table}/`), {
-    //   tableValue: blind * 1.5,
-    //   actualBet: blind,
-    // });
   };
 
   const removeFromTable = (table: string, player: string) => {
@@ -304,7 +265,7 @@ export const PokerGame = () => {
           actualBet: blind,
           actualPlayer: nextPlayer,
         }).then(() => {
-          setBlinds(table[0], players.length, nextPlayer, blind);
+          setBlinds(table[0], players.length, nextPlayer);
         });
         setTableCards([]);
       }, 18000);
@@ -344,8 +305,6 @@ export const PokerGame = () => {
         const value = response.val();
         table_val_temp = value.actualBet;
       });
-      await console.log('ABABABAB ' + bet_temp);
-      await console.log('ABABABAB ' + table_val_temp);
       if (!tableCards || tableCards.length < 3) {
         (await bet_temp) === (await table_val_temp)
           ? setCanCheck(true)
@@ -438,10 +397,7 @@ export const PokerGame = () => {
     await get(dataRef).then((response) => {
       const value = response.val();
       blind_temp = value.bet;
-      console.log('AAAAAAAAAAAAAAAAAAAAAA');
-      console.log(value.bet);
     });
-    console.log(blind_temp);
     if (blind_temp === blind || blind_temp === blind / 2) return;
     if (bbPlayer === userCount) {
       dispatch(decrementFbCredits(blind));
@@ -725,7 +681,6 @@ export const PokerGame = () => {
           actualBet: newBet > tableBet || newBet === 0 ? newBet : tableBet,
           tableValue: actualValue ? actualValue + newBet : newBet,
         });
-        console.log('ABABABAB UPDATETABLEBET');
       });
   };
 
@@ -825,8 +780,6 @@ export const PokerGame = () => {
               </div>
             </>
           )}
-          <span>{bbPlayer === userCount ? 'BB TRUE' : 'BB FALSE'}</span>
-          <span>{sbPlayer === userCount ? 'SB TRUE' : 'SB FALSE'}</span>
           <span>In game: {tableValue}</span>
           <span>Actual bet: {tableBet}</span>
           {tableCards?.length > 0 && (

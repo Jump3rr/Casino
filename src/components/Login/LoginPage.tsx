@@ -1,13 +1,10 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth } from '../../tools/firebaseConfig';
-import styled from 'styled-components';
-import { Colors } from '../../entities/colors';
 import {
   MainWrapper,
   Input,
-  Buttons,
   TextButtons,
   Logo,
   LoginButton,
@@ -44,8 +41,6 @@ export const LoginPage = () => {
       />
       <LoginButton onClick={login}>Login</LoginButton>
       <TextButtons to='/register'>Create new account</TextButtons>
-      {/* </TextButtons> */}
-      {/* <TextButtons onClick={() => navigate('/')}>Forgot password?</TextButtons> */}
     </MainWrapper>
   );
 };

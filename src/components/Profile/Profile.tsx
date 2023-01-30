@@ -7,11 +7,7 @@ import {
   MainWrapper,
 } from '../../entities/CommonComponents';
 import { auth } from '../../tools/firebaseConfig';
-import {
-  updateProfile,
-  updatePhoneNumber,
-  updatePassword,
-} from 'firebase/auth';
+import { updateProfile, updatePassword } from 'firebase/auth';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { passwordValidation } from '../../entities/commonFunctions';
 
@@ -51,8 +47,6 @@ export const ProfileComponent = () => {
   const [isEditingDisplayName, setIsEditingDisplayName] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(auth.currentUser?.phoneNumber);
-  const [isEditingPhoneNumber, setIsEditingPhoneNumber] = useState(false);
 
   const editDisplayName = () => {
     if (!auth.currentUser) {

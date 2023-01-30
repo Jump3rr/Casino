@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-//import Dice from 'react-dice-roll';
+import React, { useEffect, useState } from 'react';
 import { Dice } from './Dice';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -15,12 +14,6 @@ import { IBetReducer } from '../../../reducers/betReducer';
 import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
-const Dices = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 40vw;
-  margin-bottom: 8em;
-`;
 const CrapsBets = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;

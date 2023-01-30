@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth, rtdb } from '../../../tools/firebaseConfig';
-import {
-  refFromURL,
-  ref,
-  onValue,
-  update,
-  set,
-  push,
-  get,
-} from 'firebase/database';
+import { ref, onValue, push } from 'firebase/database';
 import {
   Buttons,
   ErrorText,
@@ -51,9 +43,6 @@ const TopPage = styled.div`
 const JoinButton = styled(Buttons)`
   padding: 1em;
   font-weight: bolder;
-`;
-const CloseButton = styled(AiOutlineClose)`
-  font-size: 2.5em;
 `;
 const AddButton = styled(AiFillPlusSquare)`
   color: ${Colors.red};
@@ -129,7 +118,6 @@ export const PokerMenu = () => {
   const getTables = () => {
     onValue(data, (snapshot) => {
       const value = snapshot.val();
-      //const tab: Table[] = Object.values(value);
       setTables(Object.entries(value));
     });
   };

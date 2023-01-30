@@ -5,15 +5,12 @@ import { auth, db } from '../../tools/firebaseConfig';
 import {
   MainWrapper,
   Input,
-  Buttons,
   TextButtons,
   ErrorText,
   Logo,
   LoginButton,
 } from '../../entities/CommonComponents';
-import styled from 'styled-components';
-import { onValue, ref, push, set } from 'firebase/database';
-import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 import { passwordValidation } from '../../entities/commonFunctions';
 
 export const RegisterPage = () => {

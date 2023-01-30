@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '../../tools/firebaseConfig';
-import { onAuthStateChanged, User } from 'firebase/auth';
 import { Colors } from '../../entities/colors';
 import { Buttons, TextButtons } from '../../entities/CommonComponents';
-import store from '../../tools/store';
 import { useAppSelector } from '../../tools/hooks';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import './style.css';
 import { MdAddBox } from 'react-icons/md';

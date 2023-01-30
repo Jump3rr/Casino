@@ -1,33 +1,8 @@
 import { Player } from '../../../entities/types';
 import { Card } from '../Cards/Cards';
 
-const karty = [
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-  { rank: 8, suit: '♦', value: 6, used: false },
-];
-
-const karty1 = [
-  { rank: 4, suit: '♦', value: 2 },
-  { rank: 10, suit: '♦', value: 8 },
-];
-
-const karty2 = [
-  { rank: 5, suit: '♦', value: 3 },
-  { rank: 6, suit: '♦', value: 4 },
-  { rank: 4, suit: '♦', value: 2 },
-  { rank: 9, suit: '♦', value: 7 },
-  { rank: 6, suit: '♦', value: 4 },
-];
-
-// dodaj karty ze stołu
 export function checkWinner(players: Player[], tableCards: Card[]) {
   players.forEach((el) => {
-    //const copy = [el.cards.concat(tableCards)];
     const copy = JSON.parse(JSON.stringify(el.cards.concat(tableCards)));
     let result = 0;
     if (checkForPoker(copy) !== 0) {

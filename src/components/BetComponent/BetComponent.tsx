@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { incrementBet, decrementBet } from '../../actions/betActions';
 import { Colors } from '../../entities/colors';
