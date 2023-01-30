@@ -1,26 +1,13 @@
-import { FC, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { incrementBet, decrementBet } from '../../../actions/betActions';
-import {
-  incrementCredits,
-  decrementCredits,
-} from '../../../actions/creditsActions';
 import {
   decrementFbCredits,
   incrementFbCredits,
 } from '../../../actions/creditsFbActions';
 import { shuffleItems } from '../../../actions/slotsActions';
-import { Colors } from '../../../entities/colors';
 import { Buttons, MainWrapper } from '../../../entities/CommonComponents';
-import { SmallDisplay } from '../../../entities/components';
-import {
-  ShuffleItems,
-  DecrementCredits,
-  IncrementCredits,
-  IncrementBet,
-  DecrementBet,
-} from '../../../entities/types';
+import { ShuffleItems } from '../../../entities/types';
 import { IState } from '../../../reducers';
 import { IBetReducer } from '../../../reducers/betReducer';
 import { ICreditsReducer } from '../../../reducers/creditsReducer';
@@ -28,11 +15,6 @@ import { IItemsReducer } from '../../../reducers/itemsReducer';
 import { useAppDispatch, useAppSelector } from '../../../tools/hooks';
 import BetComponent from '../../BetComponent/BetComponent';
 
-// const MainWrapper = styled.div`
-//   height: 40vh;
-//   width: 95vw;
-//   color: ${Colors.matrixGreen};
-// `;
 const SpinButton = styled(Buttons)`
   width: 10em;
   height: 5em;

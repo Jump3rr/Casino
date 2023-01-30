@@ -1,13 +1,6 @@
 import { User, onAuthStateChanged } from 'firebase/auth';
-import React, { useContext, useState } from 'react';
-import {
-  Route,
-  redirect,
-  Navigate,
-  Outlet,
-  useLocation,
-} from 'react-router-dom';
-import { NavBar } from './components/NavBar/NavBar';
+import { useState } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 import { auth } from './tools/firebaseConfig';
 
 const PrivateRoute = () => {

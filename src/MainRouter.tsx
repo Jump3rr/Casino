@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import store from './tools/store';
+import React from 'react';
 import { NavBar } from './components/NavBar/NavBar';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './components/Login/LoginPage';
@@ -11,7 +10,6 @@ import Blackjack from './components/Games/Blackjack/Blackjack';
 import Roulette from './components/Games/Roulette/Roulette';
 import { HiLo } from './components/Games/Hi-Lo/HiLo';
 import { Machine } from './components/Games/SlotsMachine/machine';
-import { useDispatch } from 'react-redux';
 import { getFbCredits } from './actions/creditsFbActions';
 import { auth } from './tools/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
