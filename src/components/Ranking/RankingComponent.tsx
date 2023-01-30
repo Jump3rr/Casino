@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { MainWrapper } from '../../entities/CommonComponents';
 import { useAppSelector } from '../../tools/hooks';
@@ -14,10 +14,11 @@ const RankingPlace = styled.div`
 
 export const RankingComponent = () => {
   const ranking = useAppSelector((state) => {
-    return state.ranking.slice(0, 10);
-  });
-  const sortedRanking = ranking.sort((a: any, b: any) => {
-    return b.credits - a.credits;
+    return state.ranking
+      .sort((a: any, b: any) => {
+        return b.credits - a.credits;
+      })
+      .slice(0, 10);
   });
 
   return (
@@ -26,10 +27,10 @@ export const RankingComponent = () => {
       <div>
         {ranking.length > 0 && (
           <>
-            {sortedRanking.map((el: any, id: number) => (
+            {ranking.map((el: any, id: number) => (
               <>
                 {id < ranking.length && (
-                  <RankingPlace>
+                  <RankingPlace key={el.id}>
                     <>
                       <h4>
                         {`${id + 1}. ${

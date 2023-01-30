@@ -42,6 +42,7 @@ const reversedPayouts = [...payouts].reverse();
 
 export const HiLo = () => {
   const fbcredits = useAppSelector((state) => state.fbcredits);
+  const [prevCard, setPrevCard] = useState<Card | null>(null);
   const [card, setCard] = useState<Card | null>(null);
   const [newCard, setNewCard] = useState<Card | null>(null);
   const [playerPick, setPlayerPick] = useState(0);
@@ -58,7 +59,7 @@ export const HiLo = () => {
 
   const handleClick = () => {
     handleBet();
-
+    setPrevCard(card);
     setCard(newCard);
     setNewCard(getRandomCard());
     setPlayerPick(0);
@@ -117,8 +118,27 @@ export const HiLo = () => {
   return (
     <MainWrapper>
       <Deck>
+        {prevCard ? (
+          <CardContainer key={Math.random()}>
+            <TopCard>
+              {prevCard?.suit}
+              {prevCard?.rank}
+            </TopCard>
+            <MiddleCard>{card?.suit}</MiddleCard>
+            <BottomCard>
+              {prevCard?.rank}
+              {prevCard?.suit}
+            </BottomCard>
+          </CardContainer>
+        ) : (
+          <CardContainer key={-1}>
+            <TopCard>{card?.suit}?</TopCard>
+            <MiddleCard>{card?.suit}</MiddleCard>
+            <BottomCard>?{card?.suit}</BottomCard>
+          </CardContainer>
+        )}
         {card && (
-          <CardContainer key={card?.suit + card?.rank}>
+          <CardContainer key={Math.random()}>
             <TopCard>
               {card?.suit}
               {card?.rank}
@@ -131,7 +151,7 @@ export const HiLo = () => {
           </CardContainer>
         )}
         {newCard && (
-          <CardContainer key={newCard?.suit + newCard?.rank + 15}>
+          <CardContainer key={Math.random()}>
             <TopCard>{newCard?.suit}?</TopCard>
             <MiddleCard>{newCard?.suit}</MiddleCard>
             <BottomCard>?{newCard?.suit}</BottomCard>
