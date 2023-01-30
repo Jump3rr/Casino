@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { auth, rtdb } from '../../../tools/firebaseConfig';
 import {
   refFromURL,
@@ -134,6 +134,7 @@ export const PokerGame = () => {
   };
 
   useEffect(() => {
+    //if (!table) return;
     const dataRef = ref(rtdb, 'tables');
     onValue(dataRef, (snapshot) => {
       const data = snapshot.val();
@@ -153,8 +154,6 @@ export const PokerGame = () => {
         setBlind(table_temp[1].blind);
         setbbPlayer(table_temp[1].bbPlayer);
         setsbPlayer(table_temp[1].sbPlayer);
-        console.log('BBCCBB');
-        console.log(Object.values(table_temp[1].players).length);
         if (Object.values(table_temp[1].players).length > 1) {
           setBlinds(
             table_temp[0],
@@ -186,40 +185,33 @@ export const PokerGame = () => {
     actualPlayer: number,
     blind: number
   ) => {
-    console.log('AAA');
-    console.log(table);
-    console.log(playersNumber);
-    console.log(actualPlayer);
     const bigBlindPlayer = actualPlayer > 0 ? actualPlayer - 1 : playersNumber;
     const smallBlindPlayer =
       bigBlindPlayer > 0 ? bigBlindPlayer - 1 : playersNumber;
-    console.log(bigBlindPlayer);
-    console.log(smallBlindPlayer);
-    console.log('AasdfAA');
-    update(ref(rtdb, `tables/${table}/`), {
-      bbPlayer: bigBlindPlayer, //playersNumber,
-      sbPlayer: smallBlindPlayer, //playersNumber - 1,
-    });
-    if (bigBlindPlayer === userCount && tableCards.length < 3) {
-      dispatch(decrementFbCredits(blind));
-      update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
-        bet: blind / 2,
-        move: '',
+    setTimeout(() => {
+      update(ref(rtdb, `tables/${table}/`), {
+        bbPlayer: bigBlindPlayer,
+        sbPlayer: smallBlindPlayer,
       });
-    }
-    if (smallBlindPlayer === userCount && tableCards.length < 3) {
-      dispatch(decrementFbCredits(blind / 2));
-      update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
-        bet: blind,
-        move: '',
-      });
-    }
-    console.log('updatetablevalues');
-    console.log(blind);
-    update(ref(rtdb, `tables/${table}/`), {
-      tableValue: blind * 1.5,
-      actualBet: blind,
-    });
+      console.log('ABABABAB BBPLAYER');
+    }, 100);
+
+    // if (bbPlayer === userCount) {
+    //   dispatch(decrementFbCredits(blind));
+    //   update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+    //     bet: blind,
+    //   });
+    // }
+    // if (sbPlayer === userCount) {
+    //   dispatch(decrementFbCredits(blind / 2));
+    //   update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+    //     bet: blind / 2,
+    //   });
+    // }
+    // update(ref(rtdb, `tables/${table}/`), {
+    //   tableValue: blind * 1.5,
+    //   actualBet: blind,
+    // });
   };
 
   const removeFromTable = (table: string, player: string) => {
@@ -303,15 +295,13 @@ export const PokerGame = () => {
         setPlayerCards([]);
         const nextPlayer =
           actualPlayer + 1 < players.length ? actualPlayer + 1 : 0;
-        console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-        console.log(blind);
         update(ref(rtdb, `tables/${table[0]}/`), {
           cards: shuffleDeck(generateDeck()),
           tableCards: [],
           winner: '',
           winnerId: '',
-          tableValue: 0,
-          actualBet: 0,
+          tableValue: blind * 1.5,
+          actualBet: blind,
           actualPlayer: nextPlayer,
         }).then(() => {
           setBlinds(table[0], players.length, nextPlayer, blind);
@@ -324,7 +314,7 @@ export const PokerGame = () => {
   useEffect(() => {
     if (!table) return;
     const dataRef = ref(rtdb, `tables/${table[0]}`);
-    get(dataRef).then((response) => {
+    get(dataRef).then(async (response) => {
       const value = response.val();
       const lowerIndexArr = Object.entries(value.players).filter(
         (elem: any, id: number) =>
@@ -340,13 +330,40 @@ export const PokerGame = () => {
             elem[1].move === 'bet' ||
             elem[1].move === 'raise')
       );
-      if (userCount > 0 && lowerIndexArr.length > 0) {
-        setCanCheck(false);
-      } else if (higerIndexArr.length > 0) {
-        setCanCheck(false);
-      } else setCanCheck(true);
+      let bet_temp;
+      let table_val_temp;
+      const dataTableRef = await ref(rtdb, `tables/${table[0]}`);
+      const dataRef = await ref(rtdb, `tables/${table[0]}/players/${player}/`);
+      await get(dataRef).then((response) => {
+        const value = response.val();
+        bet_temp = value.bet;
+        bet_temp === tableBet ? setCanCheck(true) : setCanCheck(false);
+      });
+
+      await get(dataTableRef).then((response) => {
+        const value = response.val();
+        table_val_temp = value.actualBet;
+      });
+      await console.log('ABABABAB ' + bet_temp);
+      await console.log('ABABABAB ' + table_val_temp);
+      if (!tableCards || tableCards.length < 3) {
+        (await bet_temp) === (await table_val_temp)
+          ? setCanCheck(true)
+          : setCanCheck(false);
+      } else {
+        if (userCount > 0 && lowerIndexArr.length > 0) {
+          setCanCheck(false);
+        } else if (higerIndexArr.length > 0) {
+          setCanCheck(false);
+        } else if (
+          bbPlayer !== userCount &&
+          (!tableCards || tableCards.length < 3)
+        ) {
+          setCanCheck(false);
+        } else setCanCheck(true);
+      }
     });
-  }, [isPlayerTurn]);
+  }, [isPlayerTurn, bbPlayer]);
 
   useEffect(() => {
     if (winnerId === player) {
@@ -414,6 +431,35 @@ export const PokerGame = () => {
       state: state,
     });
   };
+  const handlePlayersBlind = async () => {
+    if (!table) return;
+    let blind_temp;
+    const dataRef = await ref(rtdb, `tables/${table[0]}/players/${player}/`);
+    await get(dataRef).then((response) => {
+      const value = response.val();
+      blind_temp = value.bet;
+      console.log('AAAAAAAAAAAAAAAAAAAAAA');
+      console.log(value.bet);
+    });
+    console.log(blind_temp);
+    if (blind_temp === blind || blind_temp === blind / 2) return;
+    if (bbPlayer === userCount) {
+      dispatch(decrementFbCredits(blind));
+      update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+        bet: blind,
+      });
+    }
+    if (sbPlayer === userCount) {
+      dispatch(decrementFbCredits(blind / 2));
+      update(ref(rtdb, `tables/${table[0]}/players/${player}/`), {
+        bet: blind / 2,
+      });
+    }
+    update(ref(rtdb, `tables/${table[0]}/`), {
+      tableValue: blind * 1.5,
+      actualBet: blind,
+    });
+  };
 
   const playersCardsHandle = () => {
     if (!table) {
@@ -425,6 +471,7 @@ export const PokerGame = () => {
     if (gameState === 'over') {
       return;
     }
+    handlePlayersBlind();
     let newAllCards = allCards;
     const newPlayerCards = [allCards[userCount], allCards[userCount + 10]];
 
@@ -590,8 +637,28 @@ export const PokerGame = () => {
         });
         checkTurn();
         if (choice === 'raise' || choice === 'bet' || choice === 'call') {
-          updateTableBet(newBet > 0 ? newBet : tableBet - bet);
-          dispatch(decrementFbCredits(newBet > 0 ? newBet : tableBet - bet));
+          !tableCards || tableCards.length < 3
+            ? updateTableBet(
+                newBet > 0
+                  ? newBet
+                  : sbPlayer === userCount
+                  ? blind / 2
+                  : tableBet - bet
+              )
+            : updateTableBet(newBet > 0 ? newBet : tableBet - bet);
+          !tableCards || tableCards.length < 3
+            ? dispatch(
+                decrementFbCredits(
+                  newBet > 0
+                    ? newBet
+                    : sbPlayer === userCount
+                    ? blind / 2
+                    : tableBet - bet
+                )
+              )
+            : dispatch(
+                decrementFbCredits(newBet > 0 ? newBet : tableBet - bet)
+              );
         }
         if (choice === 'raise' || choice === 'bet') {
           update(ref(rtdb, `tables/${table[0]}/`), {
@@ -632,8 +699,8 @@ export const PokerGame = () => {
         (elem: any) => elem[1].status !== 'fold' && elem[1].bet === tableBet
       );
       if (playersInGame.length === playersBet.length) {
-        playersInGame.forEach((player) => {
-          update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
+        playersInGame.forEach(async (player) => {
+          await update(ref(rtdb, `tables/${table[0]}/players/${player[0]}/`), {
             bet: 0,
             move: '',
           });
@@ -658,6 +725,7 @@ export const PokerGame = () => {
           actualBet: newBet > tableBet || newBet === 0 ? newBet : tableBet,
           tableValue: actualValue ? actualValue + newBet : newBet,
         });
+        console.log('ABABABAB UPDATETABLEBET');
       });
   };
 
